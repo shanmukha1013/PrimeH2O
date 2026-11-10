@@ -1,0 +1,8 @@
+# Never upload local secrets with `vercel deploy` (production values live in Vercel's settings)
+.env
+.env.*
+!.env.example
+server/.env
+*.local
+node_modules
+dist
