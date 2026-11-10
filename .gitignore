@@ -1,0 +1,19 @@
+node_modules/
+dist/
+# server secrets
+server/.env
+.env
+*.local
+# any other env files, except the documented template
+.env.*
+!.env.example
+
+# deployment / tooling
+.vercel/
+*.log
+npm-debug.log*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini

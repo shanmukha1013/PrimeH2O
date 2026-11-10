@@ -1,0 +1,53 @@
+# Render blueprint for PRIME H₂O (optional; nothing is deployed until you create it in Render).
+# One free web service serves the website, /admin and the API. PostgreSQL: use Neon (free plan)
+# and paste its DIRECT connection string into DATABASE_URL. Secrets are entered in the Render
+# dashboard (sync: false) and are never stored in this file.
+services:
+  - type: web
+    name: prime-h2o
+    runtime: node
+    plan: free
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: APP_ENV
+        value: production
+      - key: TRUST_PROXY
+        value: "true"
+      - key: DATABASE_SSL
+        value: "true"
+      - key: DATABASE_URL
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD_HASH
+        sync: false
+      - key: BREVO_API_KEY
+        sync: false
+      - key: BREVO_SENDER_EMAIL
+        sync: false
+      - key: BREVO_SENDER_NAME
+        value: PRIME H₂O
+      - key: BREVO_WEBHOOK_TOKEN
+        generateValue: true
+      - key: BUSINESS_EMAIL
+        value: prime2417@gmail.com
+      - key: WHATSAPP_ACCESS_TOKEN
+        sync: false
+      - key: WHATSAPP_PHONE_NUMBER_ID
+        sync: false
+      - key: WHATSAPP_BUSINESS_ACCOUNT_ID
+        sync: false
+      - key: META_APP_SECRET
+        sync: false
+      - key: WHATSAPP_WEBHOOK_VERIFY_TOKEN
+        generateValue: true
+      - key: WHATSAPP_OWNER_NUMBER
+        value: "918143489222"
