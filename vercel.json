@@ -13,6 +13,14 @@
   "crons": [
     { "path": "/api/cron/notifications", "schedule": "0 3 * * *" }
   ],
+  "redirects": [
+    {
+      "source": "/:path(.*)",
+      "has": [{ "type": "host", "value": "www.primeh2o.in" }],
+      "destination": "https://primeh2o.in/:path",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api" },
     { "source": "/admin", "destination": "/admin.html" },
