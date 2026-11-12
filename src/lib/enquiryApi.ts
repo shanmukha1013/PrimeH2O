@@ -60,7 +60,45 @@ export function submitOrder(payload: Record<string, unknown>): Promise<EnquiryRe
   return post('/api/orders', payload);
 }
 
-async function post(path: string, payload: Record<string, unknown>): Promise<EnquiryResult> {
+// ------------------------------------------------------------------ online product orders
+
+/** A size customers can order. unitPricePaise is null until PRIME H₂O configures a price. */
+export interface CatalogueProduct {
+  code: string;
+  name: string;
+  size: string;
+  unitPricePaise: number | null;
+}
+
+/** GET /api/products: the sizes on sale and their configured prices (per bottle). */
+export async function fetchProducts(): Promise<CatalogueProduct[]> {
+  const res = await fetch(`${API_BASE}/api/products`, { headers: { accept: 'application/json' } });
+  const data = await res.json().catch(() => null);
+  if (!res.ok || !Array.isArray(data?.products)) throw new Error('Online ordering is not available right now.');
+  return data.products as CatalogueProduct[];
+}
+
+/** The saved order exactly as stored by the server (server-side prices). */
+export interface PlacedOrder {
+  createdAt: string;
+  items: { code: string; name: string; size: string; quantity: number; unitPricePaise: number | null; lineTotalPaise: number | null }[];
+  totalPaise: number | null;
+  customer: { name: string; phone: string; whatsapp: string | null; email: string | null };
+  delivery: { address: string; city: string; state: string; pinCode: string };
+  instructions: string | null;
+  whatsappOptIn: boolean;
+}
+
+export interface ProductOrderResult extends EnquiryResult {
+  order: PlacedOrder | null;
+}
+
+/** Online order form → POST /api/product-orders. Saved as PENDING until PRIME H₂O confirms it. */
+export function submitProductOrder(payload: Record<string, unknown>): Promise<ProductOrderResult> {
+  return post<ProductOrderResult>('/api/product-orders', payload);
+}
+
+async function post<T extends EnquiryResult = EnquiryResult>(path: string, payload: Record<string, unknown>): Promise<T> {
   let res: Response;
   try {
     res = await fetch(`${API_BASE}${path}`, {
@@ -75,7 +113,7 @@ async function post(path: string, payload: Record<string, unknown>): Promise<Enq
   if (!res.ok || !data?.enquiryId) {
     throw new EnquiryError(data?.error ?? 'Something went wrong while sending your enquiry. Please try again.', data?.fields ?? {});
   }
-  return data as EnquiryResult;
+  return data as T;
 }
 
 /**

@@ -2,6 +2,10 @@
 // move it on. A status is reached at most once (enforced again in the database), so an
 // order can never be approved twice or notify anyone twice for the same event.
 
+/** Record types that are orders (with a status lifecycle). 'contact' enquiries are not orders. */
+export const ORDER_SOURCES = ['custom_bottle', 'product_order'];
+export const isOrderSource = (source) => ORDER_SOURCES.includes(source);
+
 export const ORDER_STATUSES = [
   'PENDING',
   'ACCEPTED',

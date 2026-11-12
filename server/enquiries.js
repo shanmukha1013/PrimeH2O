@@ -1,16 +1,37 @@
 import crypto from 'node:crypto';
 import {
   EVENT_FOR_STATUS,
+  ORDER_SOURCES,
   ORDER_STATUSES,
   REASON_REQUIRED,
   STATUS_LABEL,
   allowedTransitions,
   canTransition,
+  isOrderSource,
 } from './orderStatus.js';
 
 const ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no 0/O/1/I
 const DUPLICATE_WINDOW = '15 minutes';
 const NOTE_MAX = 1000;
+const MAX_PRICE_PAISE = 10_000_000; // ₹1,00,000 per bottle: anything above is a typing mistake
+
+/** BIGINT columns arrive as strings from pg; amounts in paise are well within Number's safe range. */
+const num = (v) => (v == null ? null : Number(v));
+
+/** Parses a price in rupees ("12", "12.5", 12.5) to paise without floating-point rounding. */
+export function rupeesToPaise(value) {
+  const s = typeof value === 'number' ? String(value) : String(value ?? '').trim();
+  if (!/^\d{1,6}(\.\d{1,2})?$/.test(s)) return NaN;
+  const [rupees, fraction = ''] = s.split('.');
+  return Number(rupees) * 100 + Number(fraction.padEnd(2, '0'));
+}
+
+const publicProduct = (p) => ({
+  code: p.code,
+  name: p.name,
+  size: p.bottle_size,
+  unitPricePaise: num(p.unit_price_paise),
+});
 
 /** e.g. PRM-261107-7KQ3XA (date in IST + 6 random characters). */
 export function makePublicId(now = new Date()) {
@@ -53,17 +74,43 @@ export function createEnquiryStore({ pool, notifier, log = SILENT, idGenerator =
     }
   }
 
-  /** The customer directory: one row per email + phone; latest name and company are kept. */
+  /** The customer directory: one row per email + phone; the latest name, company, WhatsApp and address are kept. */
   async function upsertCustomer(client, v) {
     const { rows: [c] } = await client.query(
-      `INSERT INTO customers (full_name, company_name, phone, email) VALUES ($1, $2, $3, $4)
+      `INSERT INTO customers (full_name, company_name, phone, email, whatsapp, address, city, state, pin_code)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
        ON CONFLICT (email_key, phone) DO UPDATE
          SET full_name = EXCLUDED.full_name, company_name = COALESCE(EXCLUDED.company_name, customers.company_name),
-             email = EXCLUDED.email
+             email = EXCLUDED.email, whatsapp = COALESCE(EXCLUDED.whatsapp, customers.whatsapp),
+             address = COALESCE(EXCLUDED.address, customers.address), city = COALESCE(EXCLUDED.city, customers.city),
+             state = COALESCE(EXCLUDED.state, customers.state), pin_code = COALESCE(EXCLUDED.pin_code, customers.pin_code)
        RETURNING id`,
-      [v.name, v.company, v.phone, v.email],
+      [v.name, v.company, v.phone, v.email, v.whatsapp ?? null, v.address ?? null, v.city ?? null, v.state ?? null, v.pinCode ?? null],
     );
     return c.id;
+  }
+
+  /**
+   * Order lines for a product order, priced from the products table at this moment. A line has a
+   * price only when the owner has configured one; the order total exists only when every line has one.
+   */
+  async function priceLines(client, items) {
+    const { rows } = await client.query(
+      'SELECT code, name, bottle_size, unit_price_paise, active FROM products WHERE code = ANY($1::text[]) FOR SHARE',
+      [items.map((i) => i.productCode)],
+    );
+    const lines = items.map((it, i) => {
+      const p = rows.find((x) => x.code === it.productCode);
+      if (!p || !p.active) {
+        throw new OrderError(422, 'One of the selected bottle sizes is not available right now. Please review your order.', {
+          [`items.${it.productCode}`]: 'This size is not available right now.',
+        });
+      }
+      const unit = num(p.unit_price_paise);
+      return { position: i + 1, code: p.code, name: p.name, size: p.bottle_size, quantity: it.quantity, unit, lineTotal: unit == null ? null : unit * it.quantity };
+    });
+    const total = lines.every((l) => l.lineTotal != null) ? lines.reduce((sum, l) => sum + l.lineTotal, 0) : null;
+    return { lines, total };
   }
 
   /**
@@ -98,7 +145,9 @@ export function createEnquiryStore({ pool, notifier, log = SILENT, idGenerator =
         return { enquiry: dup, duplicate: true, notificationIds: [] };
       }
 
-      const isOrder = v.source === 'custom_bottle';
+      const isOrder = isOrderSource(v.source);
+      const isProductOrder = v.source === 'product_order';
+      const priced = isProductOrder ? await priceLines(client, v.items) : null;
       const customerId = await upsertCustomer(client, v);
       let enquiry = null;
       for (let i = 0; i < 5 && !enquiry; i++) {
@@ -106,10 +155,11 @@ export function createEnquiryStore({ pool, notifier, log = SILENT, idGenerator =
           `INSERT INTO enquiries (public_id, source, client_request_id, content_hash, customer_name, customer_phone,
                                   customer_email, company_name, bottle_size, quantity, delivery_date, customization,
                                   customer_message, ip_address, user_agent, order_status, status_changed_at,
-                                  customer_whatsapp, whatsapp_opt_in, whatsapp_opt_in_at, whatsapp_opt_in_text, customer_id)
+                                  customer_whatsapp, whatsapp_opt_in, whatsapp_opt_in_at, whatsapp_opt_in_text, customer_id,
+                                  delivery_address, delivery_city, delivery_state, delivery_pin_code, total_paise)
            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12::jsonb, $13, $14, $15, $16,
                    CASE WHEN $16::text IS NULL THEN NULL ELSE now() END,
-                   $17, $18, CASE WHEN $18 THEN now() END, $19, $20)
+                   $17, $18, CASE WHEN $18 THEN now() END, $19, $20, $21, $22, $23, $24, $25)
            ON CONFLICT DO NOTHING RETURNING *`,
           [
             idGenerator(),
@@ -128,10 +178,16 @@ export function createEnquiryStore({ pool, notifier, log = SILENT, idGenerator =
             meta.ip ?? null,
             meta.userAgent ? String(meta.userAgent).slice(0, 300) : null,
             isOrder ? 'PENDING' : null,
-            v.whatsappOptIn ? v.whatsapp : null,
+            // online orders always keep the WhatsApp number given; custom orders only when opted in
+            isProductOrder ? v.whatsapp : v.whatsappOptIn ? v.whatsapp : null,
             !!v.whatsappOptIn,
             v.whatsappOptIn ? v.whatsappConsentText : null,
             customerId,
+            v.address ?? null,
+            v.city ?? null,
+            v.state ?? null,
+            v.pinCode ?? null,
+            priced?.total ?? null,
           ],
         );
         enquiry = r.rows[0] ?? null;
@@ -150,6 +206,13 @@ export function createEnquiryStore({ pool, notifier, log = SILENT, idGenerator =
         await client.query(
           `INSERT INTO enquiry_files (enquiry_id, kind, filename, content_type, size_bytes, data) VALUES ($1, $2, $3, $4, $5, $6)`,
           [enquiry.id, f.kind, f.filename, f.contentType, f.data.length, f.data],
+        );
+      }
+      for (const l of priced?.lines ?? []) {
+        await client.query(
+          `INSERT INTO order_items (enquiry_id, position, product_code, product_name, bottle_size, quantity, unit_price_paise, line_total_paise)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+          [enquiry.id, l.position, l.code, l.name, l.size, l.quantity, l.unit, l.lineTotal],
         );
       }
 
@@ -196,7 +259,7 @@ export function createEnquiryStore({ pool, notifier, log = SILENT, idGenerator =
       await client.query('BEGIN');
       const { rows: [order] } = await client.query('SELECT * FROM enquiries WHERE public_id = $1 FOR UPDATE', [publicId]);
       if (!order) throw new OrderError(404, 'Order not found.');
-      if (order.source !== 'custom_bottle') throw new OrderError(404, 'Order not found. (This is a general enquiry, not an order.)');
+      if (!isOrderSource(order.source)) throw new OrderError(404, 'Order not found. (This is a general enquiry, not an order.)');
       if (order.order_status === to) {
         throw new OrderError(409, `This order is already ${STATUS_LABEL[to]}. Nothing was changed and no notifications were sent again.`);
       }
@@ -264,7 +327,40 @@ export function createEnquiryStore({ pool, notifier, log = SILENT, idGenerator =
     };
   }
 
-  /** Admin list. type: order | enquiry | all; status: an order status; q: id / name / phone / email / company. */
+  /**
+   * What the customer sees on the confirmation screen right after placing an online order: the
+   * saved order exactly as stored (server-side prices, not what the browser computed).
+   */
+  async function orderConfirmation(enquiryId) {
+    const { rows: [e] } = await pool.query('SELECT * FROM enquiries WHERE id = $1', [enquiryId]);
+    if (!e || e.source !== 'product_order') return null;
+    const { rows: items } = await pool.query(
+      `SELECT product_code, product_name, bottle_size, quantity, unit_price_paise, line_total_paise
+         FROM order_items WHERE enquiry_id = $1 ORDER BY position`,
+      [enquiryId],
+    );
+    return {
+      createdAt: e.created_at,
+      items: items.map((i) => ({
+        code: i.product_code,
+        name: i.product_name,
+        size: i.bottle_size,
+        quantity: i.quantity,
+        unitPricePaise: num(i.unit_price_paise),
+        lineTotalPaise: num(i.line_total_paise),
+      })),
+      totalPaise: num(e.total_paise),
+      customer: { name: e.customer_name, phone: e.customer_phone, whatsapp: e.customer_whatsapp, email: e.customer_email },
+      delivery: { address: e.delivery_address, city: e.delivery_city, state: e.delivery_state, pinCode: e.delivery_pin_code },
+      instructions: e.customer_message,
+      whatsappOptIn: e.whatsapp_opt_in,
+    };
+  }
+
+  /**
+   * Admin list. type: order (both order types) | product_order | custom_bottle | enquiry | all;
+   * status: an order status; q: order ID, name, phone or WhatsApp (any formatting), email, company.
+   */
   async function list({ type = 'order', status = null, q = '', limit = 100, before = null } = {}) {
     const where = [];
     const params = [];
@@ -272,15 +368,24 @@ export function createEnquiryStore({ pool, notifier, log = SILENT, idGenerator =
       params.push(value);
       where.push(sql.replace('?', `$${params.length}`));
     };
-    if (type === 'order') where.push(`e.source = 'custom_bottle'`);
+    if (type === 'order') where.push(`e.source IN ('custom_bottle', 'product_order')`);
+    else if (ORDER_SOURCES.includes(type)) add('e.source = ?', type);
     else if (type === 'enquiry') where.push(`e.source = 'contact'`);
     if (status && ORDER_STATUSES.includes(status)) add('e.order_status = ?', status);
     const term = String(q ?? '').trim().slice(0, 100);
     if (term) {
       params.push(`%${term.replace(/[\\%_]/g, (c) => `\\${c}`)}%`);
       const p = `$${params.length}`;
+      // phone numbers are stored as +91XXXXXXXXXX: also match the digits however they were typed
+      const digits = term.replace(/\D/g, '');
+      let phoneDigits = '';
+      if (digits.length >= 4) {
+        params.push(`%${digits}%`);
+        const d = `$${params.length}`;
+        phoneDigits = ` OR regexp_replace(e.customer_phone, '\\D', '', 'g') LIKE ${d} OR regexp_replace(COALESCE(e.customer_whatsapp, ''), '\\D', '', 'g') LIKE ${d}`;
+      }
       where.push(
-        `(e.public_id ILIKE ${p} OR e.customer_name ILIKE ${p} OR e.customer_phone ILIKE ${p} OR e.customer_email ILIKE ${p} OR e.company_name ILIKE ${p})`,
+        `(e.public_id ILIKE ${p} OR e.customer_name ILIKE ${p} OR e.customer_phone ILIKE ${p} OR e.customer_email ILIKE ${p} OR e.company_name ILIKE ${p}${phoneDigits})`,
       );
     }
     if (before && !Number.isNaN(Date.parse(before))) add('e.created_at < ?', before);
@@ -288,6 +393,9 @@ export function createEnquiryStore({ pool, notifier, log = SILENT, idGenerator =
     const { rows } = await pool.query(
       `SELECT e.public_id, e.source, e.order_status, e.customer_name, e.company_name, e.customer_phone, e.customer_email,
               e.bottle_size, e.quantity, e.delivery_date, e.created_at, e.updated_at, e.status_changed_at, e.whatsapp_opt_in, e.customer_id,
+              e.delivery_city, e.total_paise,
+              (SELECT json_agg(json_build_object('size', oi.bottle_size, 'quantity', oi.quantity) ORDER BY oi.position)
+                 FROM order_items oi WHERE oi.enquiry_id = e.id) AS items,
               count(n.id) FILTER (WHERE n.status IN ('failed', 'bounced'))::int AS failed_notifications,
               count(n.id) FILTER (WHERE n.status IN ('pending', 'sending', 'retrying'))::int AS pending_notifications,
               count(n.id) FILTER (WHERE n.status = 'skipped')::int AS skipped_notifications,
@@ -297,7 +405,7 @@ export function createEnquiryStore({ pool, notifier, log = SILENT, idGenerator =
         GROUP BY e.id ORDER BY e.created_at DESC LIMIT $${params.length}`,
       params,
     );
-    return rows;
+    return rows.map((r) => ({ ...r, total_paise: num(r.total_paise) }));
   }
 
   async function counts() {
@@ -338,14 +446,21 @@ export function createEnquiryStore({ pool, notifier, log = SILENT, idGenerator =
       ),
     ]);
     const { rows: [customer] } = await pool.query(
-      `SELECT c.id, c.full_name, c.company_name, c.phone, c.email, c.created_at,
-              (SELECT count(*)::int FROM enquiries x WHERE x.customer_id = c.id AND x.source = 'custom_bottle') AS order_count
+      `SELECT c.id, c.full_name, c.company_name, c.phone, c.email, c.whatsapp, c.address, c.city, c.state, c.pin_code, c.created_at,
+              (SELECT count(*)::int FROM enquiries x WHERE x.customer_id = c.id AND x.source IN ('custom_bottle', 'product_order')) AS order_count
          FROM customers c WHERE c.id = $1`,
       [e.customer_id],
+    );
+    const { rows: items } = await pool.query(
+      `SELECT position, product_code, product_name, bottle_size, quantity, unit_price_paise, line_total_paise
+         FROM order_items WHERE enquiry_id = $1 ORDER BY position`,
+      [e.id],
     );
     const { content_hash: _hash, ...rest } = e;
     return {
       ...rest,
+      total_paise: num(e.total_paise),
+      items: items.map((i) => ({ ...i, unit_price_paise: num(i.unit_price_paise), line_total_paise: num(i.line_total_paise) })),
       customer: customer ?? null,
       notifications,
       files,
@@ -353,6 +468,39 @@ export function createEnquiryStore({ pool, notifier, log = SILENT, idGenerator =
       history,
       allowedTransitions: e.order_status ? allowedTransitions(e.order_status) : [],
     };
+  }
+
+  /** The products customers can order, with the configured price per bottle (null = not configured). */
+  async function products() {
+    const { rows } = await pool.query('SELECT * FROM products WHERE active ORDER BY sort_order, code');
+    return rows.map(publicProduct);
+  }
+
+  /** All products with who last changed each price (admin). */
+  async function adminProducts() {
+    const { rows } = await pool.query('SELECT * FROM products ORDER BY sort_order, code');
+    return rows.map((p) => ({ ...publicProduct(p), active: p.active, priceUpdatedAt: p.price_updated_at, priceUpdatedBy: p.price_updated_by }));
+  }
+
+  /**
+   * Owner action: sets (or clears, with null) the price per bottle of one product, in rupees.
+   * Applies to new orders only; existing orders keep the price they were placed with.
+   */
+  async function setProductPrice({ code, unitPrice, admin }) {
+    let paise = null;
+    if (unitPrice !== null && unitPrice !== '') {
+      paise = rupeesToPaise(unitPrice);
+      if (!Number.isInteger(paise) || paise < 1 || paise > MAX_PRICE_PAISE) {
+        throw new OrderError(422, 'Enter the price per bottle in rupees, from ₹0.01 to ₹1,00,000 (e.g. 12 or 12.50).', { unitPrice: 'Invalid price' });
+      }
+    }
+    const { rows: [p] } = await pool.query(
+      `UPDATE products SET unit_price_paise = $2, price_updated_at = now(), price_updated_by = $3 WHERE code = $1 RETURNING *`,
+      [code, paise, `${admin.name} <${admin.email}>`],
+    );
+    if (!p) throw new OrderError(404, 'Product not found.');
+    log.info('product price updated', { product: p.code, configured: paise != null, by: admin.email });
+    return { ...publicProduct(p), active: p.active, priceUpdatedAt: p.price_updated_at, priceUpdatedBy: p.price_updated_by };
   }
 
   async function file(publicId, kind) {
@@ -364,5 +512,5 @@ export function createEnquiryStore({ pool, notifier, log = SILENT, idGenerator =
     return f ?? null;
   }
 
-  return { create, transition, publicSummary, list, counts, detail, file };
+  return { create, transition, publicSummary, orderConfirmation, list, counts, detail, file, products, adminProducts, setProductPrice };
 }

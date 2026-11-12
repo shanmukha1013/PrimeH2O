@@ -36,9 +36,11 @@ export function loadConfig(env = process.env) {
     phoneNumberId: str(env.WHATSAPP_PHONE_NUMBER_ID),
     businessAccountId: str(env.WHATSAPP_BUSINESS_ACCOUNT_ID),
     templateLanguage: str(env.WHATSAPP_TEMPLATE_LANGUAGE, 'en'),
-    // owner's WhatsApp number (WHATSAPP_OWNER_NUMBER; WHATSAPP_NOTIFY_TO is the older name)
-    notifyTo: str(env.WHATSAPP_OWNER_NUMBER || env.WHATSAPP_NOTIFY_TO, '918143489222').replace(/\D/g, ''),
-    graphVersion: str(env.WHATSAPP_GRAPH_VERSION, 'v23.0'),
+    // the company's WhatsApp number that receives new-order alerts
+    // (PRIME_H2O_BUSINESS_WHATSAPP; WHATSAPP_OWNER_NUMBER and WHATSAPP_NOTIFY_TO are older names)
+    notifyTo: str(env.PRIME_H2O_BUSINESS_WHATSAPP || env.WHATSAPP_OWNER_NUMBER || env.WHATSAPP_NOTIFY_TO, '918143489222').replace(/\D/g, ''),
+    // Graph API version (WHATSAPP_API_VERSION; WHATSAPP_GRAPH_VERSION is the older name)
+    graphVersion: str(env.WHATSAPP_API_VERSION || env.WHATSAPP_GRAPH_VERSION, 'v23.0'),
     // Meta app secret, verifies webhook signatures (META_APP_SECRET; WHATSAPP_APP_SECRET is the older name)
     appSecret: str(env.META_APP_SECRET || env.WHATSAPP_APP_SECRET),
     webhookVerifyToken: str(env.WHATSAPP_WEBHOOK_VERIFY_TOKEN),

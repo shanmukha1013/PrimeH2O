@@ -1,18 +1,21 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Check, Phone, ArrowRight } from 'lucide-react';
+import { X, Check, Phone, ArrowRight, ShoppingBag } from 'lucide-react';
 import { ProductItem } from './ProductCollection';
 
 interface ProductModalProps {
   product: ProductItem | null;
   onClose: () => void;
   onInquire: (size: string) => void;
+  /** Opens the online order form with this size selected. */
+  onOrder?: (size: string) => void;
 }
 
 export const ProductModal: React.FC<ProductModalProps> = ({
   product,
   onClose,
   onInquire,
+  onOrder,
 }) => {
   if (!product) return null;
 
@@ -124,6 +127,19 @@ export const ProductModal: React.FC<ProductModalProps> = ({
               </div>
 
               {/* Actions */}
+              {onOrder && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onClose();
+                    onOrder(product.size);
+                  }}
+                  className="w-full inline-flex items-center justify-center gap-2 py-3.5 px-4 text-xs font-bold uppercase tracking-[0.16em] bg-maroon-gradient text-brand-cream border border-brand-bronze/50 hover:shadow-bronze-glow transition-all rounded-sm shadow-md"
+                >
+                  <ShoppingBag className="w-4 h-4 text-brand-bronze" />
+                  <span>Order {product.size} Online</span>
+                </button>
+              )}
               <div className="pt-2 flex flex-col sm:flex-row gap-3">
                 <button
                   type="button"

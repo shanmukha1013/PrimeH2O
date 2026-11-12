@@ -26,6 +26,49 @@ export const WHATSAPP_CONSENT_TEXT =
   'Send me updates about this order on WhatsApp. I agree that PRIME H₂O may message me on WhatsApp about this order ' +
   '(received, confirmed or declined, processing, dispatch and delivery). I can reply STOP at any time to opt out.';
 
+// Online product orders (src/components/ProductOrder.tsx). Codes match the `products` table.
+export const PRODUCT_CODES = ['prime-250', 'prime-500', 'prime-1000'];
+export const MAX_LINE_QUANTITY = 100_000; // bottles of one size per order; larger orders are arranged directly
+// States and union territories of India. Must match INDIAN_STATES in src/lib/orderForm.ts.
+export const INDIAN_STATES = [
+  'Andaman and Nicobar Islands',
+  'Andhra Pradesh',
+  'Arunachal Pradesh',
+  'Assam',
+  'Bihar',
+  'Chandigarh',
+  'Chhattisgarh',
+  'Dadra and Nagar Haveli and Daman and Diu',
+  'Delhi',
+  'Goa',
+  'Gujarat',
+  'Haryana',
+  'Himachal Pradesh',
+  'Jammu and Kashmir',
+  'Jharkhand',
+  'Karnataka',
+  'Kerala',
+  'Ladakh',
+  'Lakshadweep',
+  'Madhya Pradesh',
+  'Maharashtra',
+  'Manipur',
+  'Meghalaya',
+  'Mizoram',
+  'Nagaland',
+  'Odisha',
+  'Puducherry',
+  'Punjab',
+  'Rajasthan',
+  'Sikkim',
+  'Tamil Nadu',
+  'Telangana',
+  'Tripura',
+  'Uttar Pradesh',
+  'Uttarakhand',
+  'West Bengal',
+];
+
 /** WhatsApp needs a mobile number: for India, 10 digits starting 6-9. */
 export const isWhatsAppNumber = (e164) => !!e164 && (e164.startsWith('+91') ? /^\+91[6-9]\d{9}$/.test(e164) : /^\+[1-9]\d{7,14}$/.test(e164));
 
@@ -260,6 +303,154 @@ export function validateEnquiry(body) {
         customization,
         whatsappOptIn ? whatsapp : null,
         files.map((f) => [f.kind, crypto.createHash('sha256').update(f.data).digest('hex')]),
+      ]),
+    )
+    .digest('hex');
+  return value;
+}
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+/**
+ * Validates and normalises an online product order: one or more PRIME H₂O sizes, the
+ * customer's contact details and a delivery address. Prices are never accepted from the
+ * browser; the server applies the configured prices.
+ * Throws ValidationError({ field: message }) when anything is wrong.
+ */
+export function validateProductOrder(body) {
+  if (!body || typeof body !== 'object' || Array.isArray(body)) throw new ValidationError({ form: 'Invalid request.' });
+  const errors = {};
+  const text = (key, label, { required = false, max = 200, min = 0, requiredMessage } = {}) => {
+    const raw = body[key];
+    if (raw != null && typeof raw !== 'string') {
+      errors[key] = `${label} is invalid.`;
+      return null;
+    }
+    const v = (raw ?? '').replace(/\u0000/g, '').trim();
+    if (required && !v) errors[key] = requiredMessage ?? `Please enter ${label.toLowerCase()}.`;
+    else if (v && v.length < min) errors[key] = requiredMessage ?? `Please enter ${label.toLowerCase()}.`;
+    else if (v.length > max) errors[key] = `${label} must be ${max} characters or fewer.`;
+    return v || null;
+  };
+
+  let clientRequestId = null;
+  if (body.clientRequestId != null) {
+    if (typeof body.clientRequestId === 'string' && UUID_RE.test(body.clientRequestId)) clientRequestId = body.clientRequestId.toLowerCase();
+    else errors.clientRequestId = 'Invalid request id.';
+  }
+
+  const name = text('name', 'Your full name', { required: true, max: 100, min: 2, requiredMessage: 'Please enter your full name.' });
+
+  const mobileError = 'Please enter a valid 10-digit mobile number (e.g. 98765 43210).';
+  const phoneRaw = text('phone', 'Mobile number', { required: true, max: 25, requiredMessage: 'Please enter your mobile number.' });
+  const phone = phoneRaw ? normalizePhone(phoneRaw) : null;
+  if (phoneRaw && !isWhatsAppNumber(phone)) errors.phone = mobileError;
+
+  // WhatsApp number: blank means "same as my mobile number"
+  const waRaw = text('whatsapp', 'WhatsApp number', { max: 25 });
+  let whatsapp = phone && isWhatsAppNumber(phone) ? phone : null;
+  if (waRaw) {
+    whatsapp = normalizePhone(waRaw);
+    if (!isWhatsAppNumber(whatsapp)) {
+      errors.whatsapp = 'Please enter a valid WhatsApp mobile number (e.g. 98765 43210).';
+      whatsapp = null;
+    }
+  }
+
+  const emailRaw = text('email', 'Email address', { max: 254 });
+  const email = emailRaw ? normalizeEmail(emailRaw) : null;
+  if (emailRaw && !email) errors.email = 'Please enter a valid email address, or leave it blank.';
+
+  const address = text('address', 'Delivery address', {
+    required: true,
+    max: 300,
+    min: 8,
+    requiredMessage: 'Please enter your complete delivery address (house / flat, street and area).',
+  });
+  const city = text('city', 'City', { required: true, max: 60, min: 2, requiredMessage: 'Please enter your city.' });
+  const stateRaw = text('state', 'State', { required: true, max: 60, requiredMessage: 'Please choose your state.' });
+  const state = stateRaw ? INDIAN_STATES.find((s) => s.toLowerCase() === stateRaw.toLowerCase()) ?? null : null;
+  if (stateRaw && !state) errors.state = 'Please choose a state from the list.';
+  const pinRaw = text('pinCode', 'PIN code', { required: true, max: 10, requiredMessage: 'Please enter your 6-digit PIN code.' });
+  const pinCode = pinRaw ? pinRaw.replace(/\s/g, '') : null;
+  if (pinRaw && !/^[1-9][0-9]{5}$/.test(pinCode)) errors.pinCode = 'Please enter a valid 6-digit PIN code (e.g. 500068).';
+
+  // order lines: one per size, 1 to MAX_LINE_QUANTITY bottles each
+  const items = [];
+  if (!Array.isArray(body.items) || !body.items.length) {
+    errors.items = 'Please choose at least one bottle size and enter how many bottles you need.';
+  } else if (body.items.length > PRODUCT_CODES.length) {
+    errors.items = 'Too many order lines.';
+  } else {
+    const seen = new Set();
+    body.items.forEach((it, i) => {
+      const code = it && typeof it === 'object' ? it.product : undefined;
+      if (typeof code !== 'string' || !PRODUCT_CODES.includes(code)) {
+        errors[`items.${i}`] = 'Unknown product.';
+        return;
+      }
+      if (seen.has(code)) {
+        errors[`items.${code}`] = 'This size was added twice. Please enter one quantity per size.';
+        return;
+      }
+      seen.add(code);
+      const q = typeof it.quantity === 'number' ? it.quantity : /^\s*\d+\s*$/.test(String(it.quantity ?? '')) ? Number(it.quantity) : NaN;
+      if (!Number.isInteger(q) || q < 1 || q > MAX_LINE_QUANTITY) {
+        errors[`items.${code}`] = `Please enter a whole number of bottles from 1 to ${MAX_LINE_QUANTITY.toLocaleString('en-IN')}.`;
+        return;
+      }
+      items.push({ productCode: code, quantity: q });
+    });
+  }
+  items.sort((a, b) => PRODUCT_CODES.indexOf(a.productCode) - PRODUCT_CODES.indexOf(b.productCode));
+
+  const instructions = text('instructions', 'Additional instructions', { max: 1000 });
+
+  let whatsappOptIn = false;
+  if (body.whatsappOptIn != null && typeof body.whatsappOptIn !== 'boolean') errors.whatsappOptIn = 'Invalid WhatsApp preference.';
+  else whatsappOptIn = body.whatsappOptIn === true;
+  if (whatsappOptIn && !whatsapp && !errors.whatsapp && !errors.phone) errors.whatsapp = 'Please enter your WhatsApp number to receive updates there.';
+
+  if (Object.keys(errors).length) throw new ValidationError(errors);
+
+  const value = {
+    source: 'product_order',
+    clientRequestId,
+    name,
+    phone,
+    email,
+    company: null,
+    whatsapp,
+    whatsappOptIn,
+    whatsappConsentText: whatsappOptIn ? WHATSAPP_CONSENT_TEXT : null,
+    address,
+    city,
+    state,
+    pinCode,
+    items,
+    message: instructions,
+    bottleSize: null,
+    quantity: null,
+    deliveryDate: null,
+    customization: null,
+    files: [],
+  };
+  value.contentHash = crypto
+    .createHash('sha256')
+    .update(
+      JSON.stringify([
+        'product_order',
+        name.toLowerCase(),
+        phone,
+        whatsapp,
+        email?.toLowerCase() ?? null,
+        address.toLowerCase(),
+        city.toLowerCase(),
+        state,
+        pinCode,
+        items.map((i) => [i.productCode, i.quantity]),
+        instructions,
+        whatsappOptIn,
       ]),
     )
     .digest('hex');

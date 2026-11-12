@@ -2,6 +2,7 @@
 
 Node.js (Express 5) + PostgreSQL backend for the PRIME H₂O website. It handles:
 
+- **online orders**: one or more PRIME H₂O sizes (250 / 500 / 1000 mL) with a delivery address, priced from owner-configured prices, with owner approval
 - customer **orders** (custom-label bottles), with owner approval
 - **enquiries** from the Contact form
 - the owner's **admin dashboard** at `/admin`, plus an admin API
@@ -77,6 +78,8 @@ Public (rate-limited per IP; CORS only for `FRONTEND_URL` / `ALLOWED_ORIGINS`):
 | Method | Path | Notes |
 | --- | --- | --- |
 | GET | `/api/health` | Database and provider configuration status. |
+| GET | `/api/products` | The sizes on sale: `{ products: [{ code, name, size, unitPricePaise }] }`. `unitPricePaise` is `null` until the owner sets a price. Not cached. |
+| POST | `/api/product-orders` | Online order (see below). Returns `201 { orderId, orderStatus: "PENDING", customerEmail, customerWhatsApp, teamNotified, order }`, where `order` is the saved order with server-side prices. Duplicates behave as for `/api/orders`. |
 | POST | `/api/orders` | Custom bottle order. Returns `201 { orderId, orderStatus: "PENDING", customerEmail, customerWhatsApp, teamNotified }`. Same `clientRequestId` or identical content within 15 minutes → `200` with the same order (`duplicate: true`). |
 | POST | `/api/enquiries` | Contact-form enquiry (`source: "contact"`). Still accepts `source: "custom_bottle"` for compatibility. |
 | GET/POST | `/api/webhooks/whatsapp` | Meta verification handshake; delivery statuses and STOP/START replies. Signature-checked with `META_APP_SECRET`. |
@@ -97,6 +100,22 @@ Order body (`POST /api/orders`):
 }
 ```
 
+Online order body (`POST /api/product-orders`). Prices and totals are never accepted from the browser:
+
+```json
+{
+  "clientRequestId": "uuid (idempotency key, optional)",
+  "name": "Lakshmi Devi", "phone": "98765 43210 (a mobile number)", "whatsapp": "optional, blank = same as phone",
+  "email": "optional",
+  "address": "Flat 12, Sai Residency, Road No. 3, Nagole", "city": "Hyderabad", "state": "Telangana", "pinCode": "500068",
+  "items": [{ "product": "prime-500", "quantity": 24 }, { "product": "prime-1000", "quantity": 12 }],
+  "instructions": "optional, ≤ 1000 characters",
+  "whatsappOptIn": true
+}
+```
+
+Products are `prime-250`, `prime-500` and `prime-1000`; each size at most once, 1 to 100,000 bottles. `state` must be an Indian state or union territory. The total is set only when every ordered size has a price.
+
 Validation errors return `422 { error, fields: { field: message } }`.
 
 Admin. Use **either** the dashboard's HttpOnly session cookie (state changes also need the header `X-Prime-Admin: 1`) **or** `Authorization: Bearer <token>`:
@@ -112,6 +131,9 @@ Admin. Use **either** the dashboard's HttpOnly session cookie (state changes als
 | POST | `/api/admin/orders/{orderId}/reject` | admin | `{ reason }`: required, sent to the customer. |
 | PATCH | `/api/admin/orders/{orderId}/status` | admin | `{ status, note? \| reason?, expectedFrom? }`. A reason is required for `CANCELLED`. |
 | POST | `/api/admin/notifications/{id}/retry` | admin | Retry a failed or skipped message. Messages the provider already accepted are never re-sent. |
+| GET | `/api/admin/enquiries?type=&status=&q=` | any | Dashboard list. `type`: `order` (both kinds), `product_order`, `custom_bottle`, `enquiry` or `all`. `q` matches the order ID, name, email, company, and phone or WhatsApp number however it is typed. |
+| GET | `/api/admin/products` | any | Products with their price and who last changed it. |
+| PUT | `/api/admin/products/{code}/price` | admin | `{ unitPrice: "12.50" \| 12.5 \| null }`: rupees per bottle (₹0.01 to ₹1,00,000), or `null` to remove the price. Applies to new orders only. |
 
 Repeating a decision (for example accepting twice) returns `409` and sends nothing. Invalid jumps (for example PENDING → DISPATCHED) also return `409`.
 
@@ -121,6 +143,7 @@ JWTs are HS256 with issuer `prime-h2o` and audience `prime-h2o-admin`, signed wi
 
 | Website piece | Calls |
 | --- | --- |
+| Online order form (`src/components/ProductOrder.tsx`, section `#order`) | `fetchProducts()` → `GET /api/products`, then `submitProductOrder()` → `POST /api/product-orders`. Shows the confirmation from the saved order. If the API cannot be reached it offers WhatsApp and phone ordering instead of a broken form. |
 | Custom bottle form (`src/components/LabelStudio.tsx`) | `submitOrder()` → `POST /api/orders`. Sends name, company, phone, email, bottle size, quantity, delivery date, instructions, label design, logo, preview and the WhatsApp opt-in checkbox (unticked by default) with an optional WhatsApp number. |
 | Contact form (`src/components/ContactSection.tsx`) | `submitEnquiry()` → `POST /api/enquiries` |
 | Admin dashboard (`admin.html`, `src/admin/`) | `/api/admin/*` with the session cookie |
@@ -133,13 +156,53 @@ Migrations live in [`migrations/`](migrations/) and are applied automatically at
 
 | Table | Purpose |
 | --- | --- |
-| `customers` | One per email + phone: name, company, phone, email, timestamps. |
-| `enquiries` | Orders (`source = custom_bottle`) and Contact enquiries. Holds the order ID, `customer_id`, size, quantity, delivery date, customization (JSON), WhatsApp opt-in and its consent text, `order_status`, accepted/rejected/cancelled timestamps and reasons, `created_at` and `updated_at`. |
+| `customers` | One per email + phone: name, company, phone, email, WhatsApp number, latest address / city / state / PIN code, timestamps. |
+| `enquiries` | Online orders (`source = product_order`), custom bottle orders (`custom_bottle`) and Contact enquiries (`contact`). Holds the order ID, `customer_id`, size, quantity, delivery date, customization (JSON), the delivery address of online orders, `total_paise` (null until every size had a price), WhatsApp number, opt-in and its consent text, `order_status`, accepted/rejected/cancelled timestamps and reasons, `created_at` and `updated_at`. |
+| `order_items` | The lines of an online order: product, size, quantity, and the price per bottle and line total when it was placed (null when no price was set). |
+| `products` | The three sizes, whether they can be ordered, the price per bottle in paise (null = not set) and who last changed it. |
 | `enquiry_files` | Uploaded logo and label preview (validated by type and content, size-limited). |
 | `order_status_history` | Previous status, new status, who changed it, when, and the note or reason. |
 | `notifications` | One row per order + event + owner/customer + email/WhatsApp. Holds status, test mode, attempts, provider message ID, last error and timestamps. |
 | `notification_events` | Raw provider delivery events (delivered, read, bounced…) and manual retries. |
 | `admin_users`, `admin_sessions` | scrypt password hashes, role (`admin` / `viewer`), active flag, revocable sessions. |
+
+## WhatsApp messages for online orders
+
+Business-initiated WhatsApp messages must use templates approved by Meta (category UTILITY). Online orders use two templates of their own, and status updates use the shared ones:
+
+| Template | Sent to | When | Content |
+| --- | --- | --- | --- |
+| `prime_product_order_new` | the company (`PRIME_H2O_BUSINESS_WHATSAPP`) | order placed | Order ID, date and time, status, customer name, mobile, WhatsApp (and whether they agreed to updates), email, every size × bottles with price and amount when set, total, full delivery address, instructions |
+| `prime_product_order_received` | the customer, only with consent | order placed | Order ID, name, every size × bottles with prices when set, total, delivery address, "Received — Awaiting Confirmation", contact number |
+| `prime_order_accepted`, `prime_order_processing`, `prime_order_ready`, `prime_order_dispatched`, `prime_order_delivered`, `prime_order_cancelled`, `prime_order_rejected` | the customer, only with consent | the owner changes the status | as for custom bottle orders; the confirmation lists the ordered sizes |
+| `prime_order_update_owner` | the company | every status change | order ID, customer, new status, who changed it, note |
+
+Every message is also sent by email when the customer gave an address, and the owner always gets an email with the full order. A filled-in WhatsApp message is kept within Meta's 1,024-character limit by shortening only the longest free-text values (address, instructions), never the order ID. The owner email always carries the full text.
+
+To switch WhatsApp on:
+
+1. A permanent **System User access token** (`WHATSAPP_ACCESS_TOKEN`) with `whatsapp_business_messaging` and `whatsapp_business_management`. Temporary tokens from the developer dashboard expire after about a day.
+2. `WHATSAPP_PHONE_NUMBER_ID` and `WHATSAPP_BUSINESS_ACCOUNT_ID` of the registered **sender** number, and `PRIME_H2O_BUSINESS_WHATSAPP`, the company number that receives order alerts. The two numbers must be different.
+3. `npm run whatsapp:templates` lists which templates exist and are approved. `npm run whatsapp:templates -- --create` submits the missing ones for Meta's review. Until a template is approved, its messages are recorded as **failed** with Meta's reason, and can be retried from the dashboard afterwards.
+4. For delivery receipts (sent / delivered / read) and STOP replies: `META_APP_SECRET` and `WHATSAPP_WEBHOOK_VERIFY_TOKEN`, with the Meta webhook pointed at `https://<your-domain>/api/webhooks/whatsapp` and subscribed to `messages`. Without it, messages stay at "Accepted by provider" and are never shown as delivered.
+
+`npm run verify:services` checks all of this without sending anything.
+
+## Privacy and data retention
+
+- **What is stored.** For online orders: name, mobile number, WhatsApp number, email (optional), delivery address, the order lines, instructions, WhatsApp consent with its exact wording and time, and the submitting IP address and browser (kept for abuse investigation). The customer directory keeps the latest contact details and address.
+- **Who can see it.** Only signed-in administrators, through `/api/admin/*` (viewers read-only). Public endpoints return only the product list, and the order just submitted back to the browser that submitted it.
+- **Sharing.** Order messages pass through Brevo (email) and Meta (WhatsApp) to reach the customer and the company. Nothing else is shared.
+- **Logs.** Server logs identify orders by their order ID and administrators by their email (for the audit trail). Customer names, phone numbers, emails and addresses are not written to the logs; error messages from Brevo and Meta are logged as they are returned.
+- **Consent.** WhatsApp messages go to the customer only when they ticked the opt-in. Replying STOP opts them out; START opts them back in.
+- **Retention.** Nothing is deleted automatically. Decide how long the business keeps order records (accounting and tax rules may require a minimum), then remove older ones in the database. Deleting an order also deletes its lines, files, status history and notifications. For example, completed orders and enquiries older than three years:
+
+  ```sql
+  DELETE FROM enquiries
+   WHERE created_at < now() - interval '3 years'
+     AND (order_status IN ('DELIVERED', 'REJECTED', 'CANCELLED') OR source = 'contact');
+  DELETE FROM customers c WHERE NOT EXISTS (SELECT 1 FROM enquiries e WHERE e.customer_id = c.id);
+  ```
 
 ## Going live later (not done; costs nothing until you choose to)
 

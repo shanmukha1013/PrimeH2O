@@ -23,14 +23,22 @@ else {
     await migrate(pool);
     const { rows } = await pool.query(
       `SELECT version(), (SELECT count(*) FROM enquiries WHERE source = 'custom_bottle') AS orders,
+              (SELECT count(*) FROM enquiries WHERE source = 'product_order') AS online_orders,
               (SELECT count(*) FROM enquiries WHERE source = 'contact') AS enquiries,
               (SELECT count(*) FROM enquiries WHERE order_status = 'PENDING') AS pending,
               (SELECT count(*) FROM admin_users WHERE active) AS admins`,
     );
     const r = rows[0];
-    ok(`connected — ${r.version.split(',')[0]}; schema up to date; ${r.orders} orders (${r.pending} pending approval), ${r.enquiries} enquiries`);
+    ok(
+      `connected — ${r.version.split(',')[0]}; schema up to date; ${r.online_orders} online orders, ${r.orders} custom bottle orders ` +
+        `(${r.pending} pending approval in total), ${r.enquiries} enquiries`,
+    );
     if (Number(r.admins)) ok(`${r.admins} administrator account(s) can sign in at /admin`);
     else fail('no administrator account — run: npm run admin:create -- you@example.com "Your Name"');
+    const { rows: products } = await pool.query('SELECT name, unit_price_paise FROM products WHERE active ORDER BY sort_order');
+    const unpriced = products.filter((p) => p.unit_price_paise == null).map((p) => p.name);
+    if (!unpriced.length) ok(`prices set for all ${products.length} sizes`);
+    else warn(`no price set for ${unpriced.join(', ')}: customers see "Price confirmed by PRIME H₂O" and no total (set prices in /admin → Prices)`);
   } catch (err) {
     fail(`cannot connect: ${err.message}`);
   } finally {

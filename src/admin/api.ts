@@ -30,9 +30,16 @@ export interface Admin {
   role: 'admin' | 'viewer';
 }
 
+/** contact = Contact form enquiry; custom_bottle = custom-label order; product_order = online order (one or more sizes). */
+export type Source = 'contact' | 'custom_bottle' | 'product_order';
+
 export interface ListItem {
   public_id: string;
-  source: 'contact' | 'custom_bottle';
+  source: Source;
+  /** product orders: one entry per size ordered */
+  items: { size: string; quantity: number }[] | null;
+  delivery_city: string | null;
+  total_paise: number | null;
   order_status: OrderStatus | null;
   customer_name: string;
   company_name: string | null;
@@ -92,9 +99,52 @@ export interface HistoryEntry {
   created_at: string;
 }
 
+export interface OrderItem {
+  position: number;
+  product_code: string;
+  product_name: string;
+  bottle_size: string;
+  quantity: number;
+  /** price per bottle when the order was placed; null = no price configured then */
+  unit_price_paise: number | null;
+  line_total_paise: number | null;
+}
+
+export interface CustomerRecord {
+  id: number;
+  full_name: string;
+  company_name: string | null;
+  phone: string;
+  email: string | null;
+  whatsapp: string | null;
+  address: string | null;
+  city: string | null;
+  state: string | null;
+  pin_code: string | null;
+  created_at: string;
+  order_count: number;
+}
+
+export interface Product {
+  code: string;
+  name: string;
+  size: string;
+  unitPricePaise: number | null;
+  active: boolean;
+  priceUpdatedAt: string | null;
+  priceUpdatedBy: string | null;
+}
+
 export interface Detail {
   public_id: string;
-  source: 'contact' | 'custom_bottle';
+  source: Source;
+  items: OrderItem[];
+  total_paise: number | null;
+  delivery_address: string | null;
+  delivery_city: string | null;
+  delivery_state: string | null;
+  delivery_pin_code: string | null;
+  customer: CustomerRecord | null;
   order_status: OrderStatus | null;
   customer_name: string;
   customer_phone: string;
@@ -137,7 +187,7 @@ export class ApiError extends Error {
   }
 }
 
-async function call<T>(method: 'GET' | 'POST', path: string, body?: unknown): Promise<T> {
+async function call<T>(method: 'GET' | 'POST' | 'PUT', path: string, body?: unknown): Promise<T> {
   let res: Response;
   try {
     res = await fetch(path, {
@@ -169,6 +219,10 @@ export const api = {
   setStatus: (id: string, to: OrderStatus, expectedFrom: OrderStatus, note: string) =>
     call<Detail>('POST', `/api/admin/enquiries/${encodeURIComponent(id)}/status`, { to, expectedFrom, note }),
   retry: (notificationId: number) => call<{ requeued: number }>('POST', `/api/admin/notifications/${notificationId}/retry`, {}),
+  products: () => call<{ products: Product[] }>('GET', '/api/admin/products'),
+  /** Price per bottle in rupees ("12.50"), or null to remove the price. Applies to new orders only. */
+  setPrice: (code: string, unitPrice: string | null) =>
+    call<{ product: Product }>('PUT', `/api/admin/products/${encodeURIComponent(code)}/price`, { unitPrice }),
   fileUrl: (id: string, kind: string, download = false) =>
     `/api/admin/enquiries/${encodeURIComponent(id)}/files/${kind}${download ? '?download=1' : ''}`,
 };

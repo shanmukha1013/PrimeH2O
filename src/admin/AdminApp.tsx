@@ -15,12 +15,16 @@ import {
   Lock,
   LogOut,
   Mail,
+  MapPin,
   MessageCircle,
   Package,
   Phone,
   RefreshCw,
+  Save,
   Search,
   Send,
+  ShoppingBag,
+  Tag,
   TriangleAlert,
   User,
   X,
@@ -34,7 +38,9 @@ import {
   ListItem,
   Notification,
   OrderStatus,
+  Product,
   ProviderEvent,
+  Source,
   SystemInfo,
   api,
 } from './api';
@@ -64,13 +70,23 @@ const EVENT_LABEL: Record<string, string> = {
   order_cancelled: 'Cancelled',
 };
 
-const ACTION_COPY: Record<OrderStatus, { effect: string; noteLabel: string; placeholder: string; danger?: boolean }> = {
+const SOURCE_LABEL: Record<Source, string> = {
+  contact: 'Website enquiry',
+  custom_bottle: 'Custom bottle order',
+  product_order: 'Online order',
+};
+
+const fmtRupees = (paise: number) =>
+  `₹${(paise / 100).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+const ACTION_COPY: Record<OrderStatus, { effect: string; noteLabel: string; placeholder: string; productPlaceholder?: string; danger?: boolean }> = {
   PENDING: { effect: '', noteLabel: '', placeholder: '' },
   ACCEPTED: {
     effect:
       'The order becomes Accepted and the acceptance time is recorded. The customer receives the official order confirmation with the order details and next steps.',
     noteLabel: 'Next steps / note for the customer (optional)',
     placeholder: 'e.g. We will share the artwork proof with you by tomorrow evening.',
+    productPlaceholder: 'e.g. We will deliver on Saturday morning. Payment on delivery.',
   },
   REJECTED: {
     effect: 'The order becomes Rejected. This is final. The customer is told the request was not accepted, with your reason.',
@@ -82,6 +98,7 @@ const ACTION_COPY: Record<OrderStatus, { effect: string; noteLabel: string; plac
     effect: 'The customer is told that their order is now being prepared.',
     noteLabel: 'Update for the customer (optional)',
     placeholder: 'e.g. Labels are being printed today.',
+    productPlaceholder: 'e.g. Your order is being packed today.',
   },
   READY_FOR_DISPATCH: {
     effect: 'The customer is told that their order is ready for dispatch.',
@@ -309,6 +326,7 @@ const Dashboard: React.FC<{ admin: Admin; onSignedOut: () => void }> = ({ admin,
   const [selected, setSelected] = useState<string | null>(() => decodeURIComponent(window.location.hash.slice(1)) || null);
   const [detail, setDetail] = useState<Detail | null>(null);
   const [detailError, setDetailError] = useState('');
+  const [showPrices, setShowPrices] = useState(false);
   const pausedRef = useRef(false); // a confirmation panel is open: don't refresh underneath it
 
   const handleAuth = useCallback(
@@ -402,6 +420,14 @@ const Dashboard: React.FC<{ admin: Admin; onSignedOut: () => void }> = ({ admin,
             <span className="hidden sm:inline text-[11px] uppercase tracking-[0.28em] text-brand-bronze-light">Orders</span>
           </a>
           <div className="flex items-center gap-3 text-sm">
+            <button
+              type="button"
+              onClick={() => setShowPrices(true)}
+              className="inline-flex items-center gap-1.5 rounded-sm border border-brand-bronze/50 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.14em] hover:bg-white/10"
+            >
+              <Tag className="w-3.5 h-3.5 text-brand-bronze" />
+              Prices
+            </button>
             <span className="hidden sm:inline text-brand-cream/80 truncate max-w-[220px]" title={admin.email}>
               {admin.name}
               {admin.role === 'viewer' && <span className="ml-2 text-[10px] uppercase tracking-[0.2em] text-brand-bronze-light">read-only</span>}
@@ -419,6 +445,7 @@ const Dashboard: React.FC<{ admin: Admin; onSignedOut: () => void }> = ({ admin,
       </header>
 
       <SystemBanner system={system} />
+      {showPrices && <PricesPanel canEdit={admin.role === 'admin'} onClose={() => setShowPrices(false)} handleAuth={handleAuth} />}
 
       <main className="max-w-[1400px] mx-auto px-4 sm:px-6 py-5 lg:grid lg:grid-cols-[minmax(320px,400px)_1fr] lg:gap-6 lg:items-start">
         {/* ---- list */}
@@ -429,7 +456,7 @@ const Dashboard: React.FC<{ admin: Admin; onSignedOut: () => void }> = ({ admin,
               type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search order ID, name, phone, email"
+              placeholder="Search order ID, name, phone, WhatsApp, email"
               aria-label="Search orders"
               className="w-full rounded-sm border border-brand-cream-dark bg-brand-cream-pure pl-9 pr-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-bronze"
             />
@@ -571,7 +598,25 @@ const ListRow: React.FC<{ item: ListItem; active: boolean; onSelect: () => void 
       <StatusBadge status={item.order_status} />
     </div>
     <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-brand-brown/80">
-      {item.source === 'custom_bottle' ? (
+      {item.source === 'product_order' ? (
+        <>
+          <span className="inline-flex items-center gap-1 font-semibold text-brand-maroon">
+            <ShoppingBag className="w-3.5 h-3.5 text-brand-bronze-dark" />
+            Online
+          </span>
+          <span className="inline-flex items-center gap-1">
+            <Package className="w-3.5 h-3.5 text-brand-bronze-dark" />
+            {(item.items ?? []).map((i) => `${i.size} × ${i.quantity.toLocaleString('en-IN')}`).join(', ')}
+          </span>
+          {item.delivery_city && (
+            <span className="inline-flex items-center gap-1">
+              <MapPin className="w-3.5 h-3.5 text-brand-bronze-dark" />
+              {item.delivery_city}
+            </span>
+          )}
+          {item.total_paise != null && <span className="font-semibold">{fmtRupees(item.total_paise)}</span>}
+        </>
+      ) : item.source === 'custom_bottle' ? (
         <>
           <span className="inline-flex items-center gap-1">
             <Package className="w-3.5 h-3.5 text-brand-bronze-dark" />
@@ -624,7 +669,8 @@ const Field: React.FC<{ label: string; children: React.ReactNode }> = ({ label, 
 );
 
 const OrderDetail: React.FC<DetailProps> = ({ detail, system, canEdit, onBack, onUpdated, setPaused, handleAuth }) => {
-  const isOrder = detail.source === 'custom_bottle';
+  const isOrder = detail.source !== 'contact';
+  const isProductOrder = detail.source === 'product_order';
   const c = detail.customization ?? {};
   const swatch = /#([0-9a-f]{6})/i.exec(c.colour ?? '')?.[0];
 
@@ -634,7 +680,7 @@ const OrderDetail: React.FC<DetailProps> = ({ detail, system, canEdit, onBack, o
         <BackButton onClick={onBack} />
         <div className="mt-1 lg:mt-0 flex flex-wrap items-start justify-between gap-3">
           <div>
-            <p className="text-[11px] uppercase tracking-[0.22em] text-brand-bronze-dark font-bold">{isOrder ? 'Custom bottle order' : 'Website enquiry'}</p>
+            <p className="text-[11px] uppercase tracking-[0.22em] text-brand-bronze-dark font-bold">{SOURCE_LABEL[detail.source]}</p>
             <h1 className="mt-1 font-mono text-xl sm:text-2xl font-bold tracking-wider text-brand-maroon select-all">{detail.public_id}</h1>
             <p className="mt-1 text-xs text-brand-brown/70">Received {fmtDateTime(detail.created_at)}</p>
           </div>
@@ -686,6 +732,28 @@ const OrderDetail: React.FC<DetailProps> = ({ detail, system, canEdit, onBack, o
                 '—'
               )}
             </Field>
+            {isProductOrder && (
+              <Field label="WhatsApp number">
+                {detail.customer_whatsapp ? (
+                  <a
+                    href={`https://wa.me/${detail.customer_whatsapp.replace(/\D/g, '')}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-brand-maroon underline-offset-2 hover:underline"
+                  >
+                    <MessageCircle className="w-3.5 h-3.5" />
+                    {fmtPhone(detail.customer_whatsapp)}
+                  </a>
+                ) : (
+                  '—'
+                )}
+              </Field>
+            )}
+            {isProductOrder && detail.customer && (
+              <Field label="Customer record">
+                {detail.customer.order_count} order{detail.customer.order_count === 1 ? '' : 's'} · since {fmtDateTime(detail.customer.created_at)}
+              </Field>
+            )}
             {isOrder && (
               <div className="sm:col-span-2">
                 <Field label="WhatsApp updates">
@@ -709,8 +777,25 @@ const OrderDetail: React.FC<DetailProps> = ({ detail, system, canEdit, onBack, o
 
         <div className={`${card} p-5`}>
           <h2 className={sectionTitle}>{isOrder ? 'Order & delivery' : 'Enquiry'}</h2>
+          {isProductOrder && <ProductLines detail={detail} />}
           <dl className="mt-3 grid grid-cols-2 gap-x-6 gap-y-3">
-            {isOrder ? (
+            {isProductOrder ? (
+              <>
+                <div className="col-span-2">
+                  <Field label="Delivery address">
+                    <span className="inline-flex items-start gap-1.5">
+                      <MapPin className="w-3.5 h-3.5 mt-0.5 shrink-0 text-brand-bronze-dark" />
+                      <span className="whitespace-pre-line">
+                        {detail.delivery_address}
+                        {'\n'}
+                        {detail.delivery_city}, {detail.delivery_state} – {detail.delivery_pin_code}
+                      </span>
+                    </span>
+                  </Field>
+                </div>
+                <Field label="Status changed">{fmtDateTime(detail.status_changed_at)}</Field>
+              </>
+            ) : isOrder ? (
               <>
                 <Field label="Bottle size">{detail.bottle_size}</Field>
                 <Field label="Quantity">{detail.quantity?.toLocaleString('en-IN')} bottles</Field>
@@ -721,7 +806,7 @@ const OrderDetail: React.FC<DetailProps> = ({ detail, system, canEdit, onBack, o
               <Field label="Interested in">{detail.bottle_size || '—'}</Field>
             )}
             <div className="col-span-2">
-              <Field label={isOrder ? 'Delivery requirements / instructions' : 'Message'}>
+              <Field label={isProductOrder ? 'Additional instructions' : isOrder ? 'Delivery requirements / instructions' : 'Message'}>
                 <span className="whitespace-pre-wrap">{detail.customer_message || '—'}</span>
               </Field>
             </div>
@@ -744,7 +829,7 @@ const OrderDetail: React.FC<DetailProps> = ({ detail, system, canEdit, onBack, o
         </div>
       </div>
 
-      {isOrder && (
+      {detail.source === 'custom_bottle' && (
         <div className={`${card} p-5`}>
           <h2 className={sectionTitle}>Custom label</h2>
           <div className="mt-3 grid gap-5 md:grid-cols-[1fr_auto]">
@@ -867,7 +952,8 @@ const OrderActions: React.FC<Omit<DetailProps, 'onBack'>> = ({ detail, system, o
   };
 
   const copy = open ? ACTION_COPY[open.to] : null;
-  const customerChannels = `email${detail.whatsapp_opt_in ? ' and WhatsApp' : ''}`;
+  const placeholder = copy ? (detail.source === 'product_order' && copy.productPlaceholder) || copy.placeholder : '';
+  const customerChannels = detail.customer_email ? `email${detail.whatsapp_opt_in ? ' and WhatsApp' : ''}` : 'WhatsApp';
 
   return (
     <div className="mt-4">
@@ -902,8 +988,17 @@ const OrderActions: React.FC<Omit<DetailProps, 'onBack'>> = ({ detail, system, o
           </h3>
           <p className="mt-1 text-sm text-brand-brown">{copy.effect}</p>
           <p className="mt-2 text-xs text-brand-brown/80">
-            Notifications: the customer gets this by {customerChannels}
-            {!detail.whatsapp_opt_in && ' (not opted in to WhatsApp)'}; you get a copy by email and WhatsApp.
+            {detail.customer_email || detail.whatsapp_opt_in ? (
+              <>
+                Notifications: the customer gets this by {customerChannels}
+                {!detail.whatsapp_opt_in && ' (not opted in to WhatsApp)'}; you get a copy by email and WhatsApp.
+              </>
+            ) : (
+              <>
+                Notifications: the customer gave no email and did not agree to WhatsApp updates, so they are not notified automatically. Please
+                call them on {fmtPhone(detail.customer_phone)}. You get a copy by email and WhatsApp.
+              </>
+            )}
           </p>
           {system && !system.whatsapp.configured && (
             <p className="mt-1 text-xs font-semibold text-red-800">WhatsApp is not connected, so WhatsApp messages will be recorded as not sent.</p>
@@ -918,7 +1013,7 @@ const OrderActions: React.FC<Omit<DetailProps, 'onBack'>> = ({ detail, system, o
             maxLength={1000}
             value={note}
             onChange={(e) => setNote(e.target.value)}
-            placeholder={copy.placeholder}
+            placeholder={placeholder}
             className="mt-1.5 w-full rounded-sm border border-brand-cream-dark bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-bronze resize-y"
           />
           {error && (
@@ -949,6 +1044,184 @@ const OrderActions: React.FC<Omit<DetailProps, 'onBack'>> = ({ detail, system, o
           </div>
         </div>
       )}
+    </div>
+  );
+};
+
+// ------------------------------------------------------------------ online orders: lines & prices
+
+const ProductLines: React.FC<{ detail: Detail }> = ({ detail }) => (
+  <div className="mt-3 overflow-x-auto">
+    <table className="w-full text-sm">
+      <thead>
+        <tr className="text-left text-[11px] uppercase tracking-[0.12em] text-brand-brown/60 border-b border-brand-cream-dark">
+          <th className="py-1.5 pr-3 font-semibold">Product</th>
+          <th className="py-1.5 px-3 font-semibold text-right">Bottles</th>
+          <th className="py-1.5 px-3 font-semibold text-right">Price / bottle</th>
+          <th className="py-1.5 pl-3 font-semibold text-right">Amount</th>
+        </tr>
+      </thead>
+      <tbody className="divide-y divide-brand-cream-dark">
+        {detail.items.map((i) => (
+          <tr key={i.product_code}>
+            <td className="py-2 pr-3 font-semibold text-brand-brown-deep whitespace-nowrap">{i.product_name}</td>
+            <td className="py-2 px-3 text-right tabular-nums">{i.quantity.toLocaleString('en-IN')}</td>
+            <td className="py-2 px-3 text-right tabular-nums">{i.unit_price_paise != null ? fmtRupees(i.unit_price_paise) : <span className="text-amber-800">Not set</span>}</td>
+            <td className="py-2 pl-3 text-right tabular-nums font-semibold">{i.line_total_paise != null ? fmtRupees(i.line_total_paise) : '—'}</td>
+          </tr>
+        ))}
+      </tbody>
+      <tfoot>
+        <tr className="border-t-2 border-brand-cream-dark">
+          <td className="pt-2 pr-3 text-[11px] uppercase tracking-[0.14em] font-bold text-brand-maroon">Total</td>
+          <td className="pt-2 px-3 text-right tabular-nums font-semibold">{detail.items.reduce((s, i) => s + i.quantity, 0).toLocaleString('en-IN')}</td>
+          <td />
+          <td className="pt-2 pl-3 text-right tabular-nums font-bold text-brand-maroon">
+            {detail.total_paise != null ? fmtRupees(detail.total_paise) : <span className="text-amber-800 font-semibold">To be confirmed</span>}
+          </td>
+        </tr>
+      </tfoot>
+    </table>
+    {detail.total_paise == null && (
+      <p className="mt-2 text-xs text-amber-900">
+        No price was set for at least one size when this order was placed, so the customer was told the amount will be confirmed. Agree the amount
+        with them when you confirm the order (you can add it to the note).
+      </p>
+    )}
+  </div>
+);
+
+const PricesPanel: React.FC<{ canEdit: boolean; onClose: () => void; handleAuth: (e: unknown) => boolean }> = ({ canEdit, onClose, handleAuth }) => {
+  const [products, setProducts] = useState<Product[] | null>(null);
+  const [drafts, setDrafts] = useState<Record<string, string>>({});
+  const [busy, setBusy] = useState<string | null>(null);
+  const [error, setError] = useState('');
+  const [saved, setSaved] = useState('');
+
+  useEffect(() => {
+    api
+      .products()
+      .then((r) => {
+        setProducts(r.products);
+        setDrafts(Object.fromEntries(r.products.map((p) => [p.code, p.unitPricePaise != null ? (p.unitPricePaise / 100).toFixed(2) : ''])));
+      })
+      .catch((err) => {
+        if (!handleAuth(err)) setError(errorText(err));
+      });
+  }, [handleAuth]);
+
+  const save = async (code: string, value: string | null) => {
+    setBusy(code);
+    setError('');
+    setSaved('');
+    try {
+      const { product } = await api.setPrice(code, value);
+      setProducts((list) => list?.map((p) => (p.code === code ? product : p)) ?? null);
+      setDrafts((d) => ({ ...d, [code]: product.unitPricePaise != null ? (product.unitPricePaise / 100).toFixed(2) : '' }));
+      setSaved(product.unitPricePaise != null ? `${product.name}: ${fmtRupees(product.unitPricePaise)} per bottle saved.` : `${product.name}: price removed.`);
+    } catch (err) {
+      if (!handleAuth(err)) setError(errorText(err));
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-4 overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="prices-title">
+      <div className="fixed inset-0 bg-brand-maroon-deep/60" onClick={onClose} />
+      <div className={`${card} relative w-full max-w-xl my-8`}>
+        <div className="flex items-center justify-between gap-3 bg-maroon-gradient px-5 py-4 text-brand-cream">
+          <h2 id="prices-title" className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-[0.18em]">
+            <Tag className="w-4 h-4 text-brand-bronze" /> Product prices
+          </h2>
+          <button type="button" onClick={onClose} aria-label="Close" className="p-1 rounded-sm hover:bg-white/10">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+        <div className="p-5 space-y-4">
+          <p className="text-sm text-brand-brown/80">
+            Price per bottle, in rupees, as customers should see it on the website and in their order confirmation. Leave a price empty to show
+            “Price confirmed by PRIME H₂O” instead. Changes apply to new orders only; placed orders keep their price.
+          </p>
+          {!canEdit && (
+            <p className="inline-flex items-center gap-2 text-sm text-brand-brown/80">
+              <Lock className="w-4 h-4 text-brand-bronze-dark" /> Your account is read-only. Ask an administrator to change prices.
+            </p>
+          )}
+          {error && (
+            <p role="alert" className="text-sm text-red-800 bg-red-50 border border-red-200 rounded-sm px-3 py-2">
+              {error}
+            </p>
+          )}
+          {saved && (
+            <p role="status" className="text-sm text-emerald-900 bg-emerald-50 border border-emerald-200 rounded-sm px-3 py-2">
+              {saved}
+            </p>
+          )}
+          {!products && !error && (
+            <div className="py-6 grid place-items-center text-brand-maroon">
+              <LoaderCircle className="w-6 h-6 animate-spin" />
+            </div>
+          )}
+          {products?.map((p) => {
+            const draft = drafts[p.code] ?? '';
+            const current = p.unitPricePaise != null ? (p.unitPricePaise / 100).toFixed(2) : '';
+            const changed = draft.trim() !== current;
+            return (
+              <div key={p.code} className="rounded-sm border border-brand-cream-dark bg-white/70 p-4">
+                <div className="flex flex-wrap items-end gap-3">
+                  <div className="flex-1 min-w-[10rem]">
+                    <label htmlFor={`price-${p.code}`} className="block text-xs font-bold uppercase tracking-[0.14em] text-brand-maroon">
+                      {p.name}
+                    </label>
+                    <div className="mt-1.5 flex items-center rounded-sm border border-brand-cream-dark bg-white focus-within:ring-2 focus-within:ring-brand-bronze">
+                      <span className="pl-3 text-sm text-brand-brown/70">₹</span>
+                      <input
+                        id={`price-${p.code}`}
+                        type="text"
+                        inputMode="decimal"
+                        disabled={!canEdit || busy === p.code}
+                        value={draft}
+                        onChange={(e) => setDrafts((d) => ({ ...d, [p.code]: e.target.value.replace(/[^\d.]/g, '') }))}
+                        placeholder="Not set"
+                        className="w-full bg-transparent px-2 py-2 text-sm focus:outline-none disabled:text-brand-brown/60"
+                      />
+                      <span className="pr-3 text-xs text-brand-brown/60 whitespace-nowrap">per bottle</span>
+                    </div>
+                  </div>
+                  {canEdit && (
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        disabled={!changed || !draft.trim() || busy === p.code}
+                        onClick={() => save(p.code, draft.trim())}
+                        className="inline-flex items-center gap-1.5 rounded-sm bg-brand-maroon px-3 py-2 text-xs font-bold uppercase tracking-[0.12em] text-brand-cream hover:bg-brand-maroon-rich disabled:opacity-50"
+                      >
+                        {busy === p.code ? <LoaderCircle className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5 text-brand-bronze" />}
+                        Save
+                      </button>
+                      {p.unitPricePaise != null && (
+                        <button
+                          type="button"
+                          disabled={busy === p.code}
+                          onClick={() => save(p.code, null)}
+                          className="rounded-sm border border-brand-cream-dark bg-white px-3 py-2 text-xs font-bold uppercase tracking-[0.12em] text-brand-brown hover:border-brand-bronze disabled:opacity-50"
+                        >
+                          Remove
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
+                <p className="mt-2 text-[11px] text-brand-brown/60">
+                  {p.unitPricePaise != null ? `Customers see ${fmtRupees(p.unitPricePaise)} per bottle.` : 'No price set: customers see “Price confirmed by PRIME H₂O”.'}
+                  {p.priceUpdatedAt && ` Last changed ${fmtDateTime(p.priceUpdatedAt)}${p.priceUpdatedBy ? ` by ${p.priceUpdatedBy}` : ''}.`}
+                </p>
+              </div>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 };
@@ -1130,7 +1403,7 @@ const Notifications: React.FC<{
             </div>
             <div className="mt-2 grid gap-2 sm:grid-cols-2">
               {cells
-                .filter(([a, ch]) => detail.source === 'custom_bottle' || !(a === 'customer' && ch === 'whatsapp'))
+                .filter(([a, ch]) => detail.source !== 'contact' || !(a === 'customer' && ch === 'whatsapp'))
                 .map(([a, ch]) => (
                   <NotificationCell
                     key={`${a}-${ch}`}

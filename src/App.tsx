@@ -10,10 +10,12 @@ import { Footer } from './components/Footer';
 import { ProductModal } from './components/ProductModal';
 import { LabelStudio } from './components/LabelStudio';
 import { LocationOrder } from './components/LocationOrder';
+import { ProductOrder } from './components/ProductOrder';
 
 export const App: React.FC = () => {
   const [selectedProduct, setSelectedProduct] = useState<ProductItem | null>(null);
   const [prefilledInquirySize, setPrefilledInquirySize] = useState<string>('');
+  const [orderPreselect, setOrderPreselect] = useState<{ size: string; nonce: number } | null>(null);
 
   React.useEffect(() => {
     const hash = window.location.hash;
@@ -39,6 +41,17 @@ export const App: React.FC = () => {
       contactEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
       if (window.history.pushState) {
         window.history.pushState(null, '', '#contact');
+      }
+    }
+  };
+
+  const handleOrderSize = (size: string) => {
+    setOrderPreselect({ size, nonce: Date.now() });
+    const orderEl = document.getElementById('order');
+    if (orderEl) {
+      orderEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (window.history.pushState) {
+        window.history.pushState(null, '', '#order');
       }
     }
   };
@@ -69,6 +82,9 @@ export const App: React.FC = () => {
           onInquireSize={handleInquireSize}
         />
 
+        {/* Section D1: Online ordering — multiple sizes, delivery address, WhatsApp confirmation */}
+        <ProductOrder preselect={orderPreselect} />
+
         {/* Section D2: Create Your Own PRIME — custom label designer */}
         <LabelStudio />
 
@@ -93,6 +109,7 @@ export const App: React.FC = () => {
         product={selectedProduct}
         onClose={() => setSelectedProduct(null)}
         onInquire={handleInquireSize}
+        onOrder={handleOrderSize}
       />
     </div>
   );

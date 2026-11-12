@@ -1,6 +1,6 @@
 # PrimeH2O
 
-Website for **PRIME H₂O** packaged drinking water ("I Trust PRIME"). It has a product showcase, a custom-label bottle studio with order requests, a contact form, and an admin dashboard where the owner approves orders.
+Website for **PRIME H₂O** packaged drinking water ("I Trust PRIME"). It has a product showcase, **online ordering** (any mix of 250 / 500 / 1000 mL bottles with a delivery address, WhatsApp and email confirmations), a custom-label bottle studio with order requests, a contact form, and an admin dashboard where the owner confirms orders, updates their status and sets prices.
 
 ## Tech stack
 
@@ -71,7 +71,7 @@ Production environment variables to set in Vercel (Project → Settings → Envi
 
 - **Required for the API:** `DATABASE_URL` (hosted PostgreSQL, such as Neon), `DATABASE_SSL=true`, `APP_ENV=production`, `TRUST_PROXY=true`, `JWT_SECRET_KEY`, `ADMIN_EMAIL`, `ADMIN_PASSWORD_HASH`
 - **Email:** `BREVO_API_KEY`, `BREVO_SENDER_EMAIL`, `BREVO_SENDER_NAME`, `BREVO_SANDBOX`, `BREVO_WEBHOOK_TOKEN`, `BUSINESS_EMAIL`
-- **WhatsApp (optional):** `WHATSAPP_ACCESS_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID`, `WHATSAPP_BUSINESS_ACCOUNT_ID`, `META_APP_SECRET`, `WHATSAPP_WEBHOOK_VERIFY_TOKEN`, `WHATSAPP_OWNER_NUMBER`
+- **WhatsApp:** `WHATSAPP_ACCESS_TOKEN` (permanent System User token), `WHATSAPP_PHONE_NUMBER_ID`, `WHATSAPP_BUSINESS_ACCOUNT_ID`, `PRIME_H2O_BUSINESS_WHATSAPP` (company number for order alerts), `WHATSAPP_API_VERSION`, `META_APP_SECRET`, `WHATSAPP_WEBHOOK_VERIFY_TOKEN`. See [server/README.md](server/README.md#whatsapp-messages-for-online-orders) for the templates Meta must approve.
 - **Links:** `FRONTEND_URL` / `PUBLIC_SITE_URL` set to the live site address
 
 Serverless limits to be aware of:

@@ -84,7 +84,7 @@ export function createNotifier({ pool, config, email, whatsapp, log }) {
       provider: channel === 'email' ? 'brevo' : 'meta_whatsapp',
       recipient,
       skip,
-      templateName: channel === 'whatsapp' ? whatsappTemplateFor(event, audience) : null,
+      templateName: channel === 'whatsapp' ? whatsappTemplateFor(event, audience, enquiry.source) : null,
     };
   }
 
@@ -155,6 +155,14 @@ export function createNotifier({ pool, config, email, whatsapp, log }) {
       `SELECT kind, filename, content_type, size_bytes${withFiles ? ', data' : ''} FROM enquiry_files WHERE enquiry_id = $1 ORDER BY kind`,
       [n.enquiry_id],
     );
+    // online product orders: the order lines as stored (prices as they were when the order was placed)
+    const { rows: items } =
+      enquiry.source === 'product_order'
+        ? await pool.query(
+            `SELECT product_name, bottle_size, quantity, unit_price_paise, line_total_paise FROM order_items WHERE enquiry_id = $1 ORDER BY position`,
+            [n.enquiry_id],
+          )
+        : { rows: [] };
 
     if (n.channel === 'email') {
       const attachments = [];
@@ -167,7 +175,7 @@ export function createNotifier({ pool, config, email, whatsapp, log }) {
         }
       }
       const link = adminUrl ? `${adminUrl}#${enquiry.public_id}` : ''; // opens this order in the dashboard
-      const msg = buildEmail({ event: n.event, audience: n.audience, enquiry, files, history, adminUrl: link, attached: attachments.length > 0 });
+      const msg = buildEmail({ event: n.event, audience: n.audience, enquiry, files, history, adminUrl: link, attached: attachments.length > 0, items });
       const toOwner = n.audience === 'owner';
       return email.sendEmail({
         to: { email: n.recipient, name: toOwner ? 'PRIME H₂O' : enquiry.customer_name },
@@ -181,7 +189,7 @@ export function createNotifier({ pool, config, email, whatsapp, log }) {
         tags: [n.event, `to-${n.audience}`],
       });
     }
-    const { template, params } = buildWhatsApp({ event: n.event, audience: n.audience, enquiry, files, history });
+    const { template, params } = buildWhatsApp({ event: n.event, audience: n.audience, enquiry, files, history, items });
     return whatsapp.sendTemplate({ to: n.recipient.replace(/\D/g, ''), template, params });
   }
 

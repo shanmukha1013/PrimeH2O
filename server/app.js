@@ -4,8 +4,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import express from 'express';
 import { OrderError } from './enquiries.js';
-import { ORDER_STATUSES } from './orderStatus.js';
-import { ValidationError, validateEnquiry } from './validation.js';
+import { ORDER_SOURCES, ORDER_STATUSES, isOrderSource } from './orderStatus.js';
+import { ValidationError, validateEnquiry, validateProductOrder } from './validation.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const DIST = path.join(here, '..', 'dist');
@@ -46,12 +46,12 @@ export function createApp({ config, store, notifier, log, pool, auth }) {
   });
 
   // CORS only for explicitly allowed origins (FRONTEND_URL / ALLOWED_ORIGINS; same-origin needs none)
-  app.use(['/api/enquiries', '/api/orders'], (req, res, next) => {
+  app.use(['/api/enquiries', '/api/orders', '/api/product-orders', '/api/products'], (req, res, next) => {
     const origin = req.get('origin');
     if (origin && config.allowedOrigins.includes(origin)) {
       res.set('Access-Control-Allow-Origin', origin);
       res.set('Vary', 'Origin');
-      res.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
+      res.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
       res.set('Access-Control-Allow-Headers', 'Content-Type');
     }
     if (req.method === 'OPTIONS') return res.sendStatus(204);
@@ -144,6 +144,37 @@ export function createApp({ config, store, notifier, log, pool, auth }) {
   app.post('/api/enquiries', submissionLimit, submit(null));
   app.post('/api/orders', submissionLimit, submit('custom_bottle'));
 
+  // ---- online product orders. Public catalogue (prices are null until the owner configures them)…
+  app.get('/api/products', async (req, res) => {
+    res.set('Cache-Control', 'no-store'); // the owner can change prices at any time
+    res.json({ products: await store.products(), currency: 'INR', unit: 'bottle' });
+  });
+
+  // …and the order itself: saved first (with server-side prices), then the first notification
+  // attempt, then the confirmation. The response only echoes the submitter's own order.
+  app.post('/api/product-orders', submissionLimit, async (req, res) => {
+    const body = req.body ?? {};
+    if (typeof body.website === 'string' && body.website.trim()) return res.status(400).json({ error: 'Submission rejected.' }); // honeypot
+    const v = validateProductOrder(body);
+    const { enquiry, duplicate, notificationIds } = await store.create(v, { ip: req.ip, userAgent: req.get('user-agent') });
+    if (duplicate && enquiry.source !== 'product_order') {
+      return res.status(409).json({ error: 'This request was already used for a different form. Please reload the page and place your order again.' });
+    }
+    log.info(duplicate ? 'duplicate submission ignored' : 'online order saved', { id: enquiry.public_id, source: enquiry.source });
+    if (!duplicate) await sendNow(notificationIds);
+    const summary = await store.publicSummary(enquiry.id).catch((e) => {
+      log.error('could not read notification status', { error: e.message });
+      return { orderStatus: enquiry.order_status, customerEmail: null, customerWhatsApp: null, teamNotified: false };
+    });
+    res.status(duplicate ? 200 : 201).json({
+      orderId: enquiry.public_id,
+      enquiryId: enquiry.public_id,
+      duplicate,
+      ...summary,
+      order: await store.orderConfirmation(enquiry.id),
+    });
+  });
+
   // ---- Brevo delivery webhook: https://<your-domain>/api/webhooks/brevo?token=<BREVO_WEBHOOK_TOKEN>
   app.post('/api/webhooks/brevo', async (req, res) => {
     if (!config.brevo.webhookToken) return res.sendStatus(503);
@@ -200,7 +231,7 @@ export function createApp({ config, store, notifier, log, pool, auth }) {
   );
 
   app.get('/api/admin/enquiries', async (req, res) => {
-    const type = ['order', 'enquiry', 'all'].includes(req.query.type) ? req.query.type : 'order';
+    const type = ['order', 'enquiry', 'all', ...ORDER_SOURCES].includes(req.query.type) ? req.query.type : 'order';
     const [items, counts] = await Promise.all([
       store.list({ type, status: req.query.status || null, q: req.query.q, limit: req.query.limit, before: req.query.before || null }),
       store.counts(),
@@ -255,7 +286,18 @@ export function createApp({ config, store, notifier, log, pool, auth }) {
   });
   app.get('/api/admin/orders/:orderId', async (req, res) => {
     const d = await store.detail(req.params.orderId);
-    return d && d.source === 'custom_bottle' ? res.json(d) : res.status(404).json({ error: 'Order not found.' });
+    return d && isOrderSource(d.source) ? res.json(d) : res.status(404).json({ error: 'Order not found.' });
+  });
+
+  // ---- product prices (per bottle, in rupees). Viewers can see them; only admins can change them.
+  app.get('/api/admin/products', async (req, res) => res.json({ products: await store.adminProducts() }));
+  app.put('/api/admin/products/:code/price', canChange, async (req, res) => {
+    const unitPrice = req.body?.unitPrice ?? null;
+    if (unitPrice !== null && typeof unitPrice !== 'string' && typeof unitPrice !== 'number') {
+      return res.status(422).json({ error: 'Invalid price.', fields: { unitPrice: 'Invalid price' } });
+    }
+    const product = await store.setProductPrice({ code: req.params.code, unitPrice, admin: req.admin });
+    res.json({ product });
   });
   // Body: { note? } (shown to the customer as next steps)
   app.post('/api/admin/orders/:orderId/accept', canChange, (req, res) =>

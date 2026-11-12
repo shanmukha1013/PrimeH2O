@@ -22,7 +22,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenContact }) => {
     { label: 'Home', href: '#home' },
     { label: 'About Us', href: '#about' },
     { label: 'Our Products', href: '#products' },
-    // mobile drawer only — the desktop bar has no room for a sixth link
+    // mobile drawer only — the desktop bar has no room for more links
+    { label: 'Order Online', href: '#order', mobileOnly: true },
     { label: 'Customize', href: '#customize', mobileOnly: true },
     { label: 'Our Promise', href: '#promise' },
     { label: 'Contact', href: '#contact' },

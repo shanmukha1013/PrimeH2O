@@ -103,11 +103,47 @@ export const formatDateTime = (ts) =>
     ? `${new Date(ts).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true })} IST`
     : '—';
 
+/** ₹1,234.50 (Indian digit grouping). */
+export const formatRupees = (paise) =>
+  `₹${(Number(paise) / 100).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+const PRICE_TBC = 'price to be confirmed';
+const bottles = (n) => `${Number(n).toLocaleString('en-IN')} bottle${Number(n) === 1 ? '' : 's'}`;
+
+/** "24 bottles × ₹10.00 = ₹240.00", or "24 bottles (price to be confirmed)" when no price was configured. */
+const itemDetail = (it) =>
+  it.unit_price_paise != null
+    ? `${bottles(it.quantity)} × ${formatRupees(it.unit_price_paise)} = ${formatRupees(it.line_total_paise)}`
+    : `${bottles(it.quantity)} (${PRICE_TBC})`;
+
+/** Variables that only online product orders have: their order lines, total and delivery address. */
+function productOrderVariables(e, items) {
+  const vars = {
+    product_summary: items.map((it) => `${it.product_name} × ${bottles(it.quantity)}`).join(', ') || 'your PRIME H₂O order',
+    products_inline: items.map((it) => `${it.product_name} × ${itemDetail(it)}`).join('; ') || '—',
+    order_total: e.total_paise != null ? formatRupees(e.total_paise) : 'To be confirmed by PRIME H₂O',
+    delivery_address_full: [e.delivery_address, e.delivery_city, e.delivery_state].filter(Boolean).join(', ') + (e.delivery_pin_code ? ` – ${e.delivery_pin_code}` : ''),
+    customer_whatsapp_display: e.customer_whatsapp ? formatPhone(e.customer_whatsapp) : 'Not provided',
+    whatsapp_contact: e.customer_whatsapp
+      ? `${formatPhone(e.customer_whatsapp)} (${e.whatsapp_opt_in ? 'agreed to WhatsApp updates' : 'no WhatsApp updates'})`
+      : 'Not provided',
+    instructions: e.customer_message || 'None',
+    bottle_size: [...new Set(items.map((it) => it.bottle_size))].join(', ') || 'Not specified',
+    quantity: bottles(items.reduce((sum, it) => sum + Number(it.quantity), 0)),
+  };
+  items.forEach((it, i) => {
+    vars[`item_${i + 1}_label`] = it.product_name;
+    vars[`item_${i + 1}_detail`] = itemDetail(it);
+  });
+  return vars;
+}
+
 /**
  * Values for every {{variable}} used by the templates.
- * `history` is the order_status_history row of the status change being announced.
+ * `history` is the order_status_history row of the status change being announced;
+ * `items` are the order_items rows of an online product order.
  */
-export function enquiryVariables(e, files = [], { history = null, adminUrl = '' } = {}) {
+export function enquiryVariables(e, files = [], { history = null, adminUrl = '', items = [] } = {}) {
   const c = e.customization;
   const logo = files.find((f) => f.kind === 'logo');
   let customization = 'Not applicable (general enquiry)';
@@ -138,7 +174,7 @@ export function enquiryVariables(e, files = [], { history = null, adminUrl = '' 
       .join(', ');
   }
   const status = history?.to_status ?? e.order_status;
-  return {
+  const base = {
     customer_name: e.customer_name,
     customer_phone: formatPhone(e.customer_phone),
     customer_email: e.customer_email || 'Not provided',
@@ -169,7 +205,9 @@ export function enquiryVariables(e, files = [], { history = null, adminUrl = '' 
     whatsapp_also: e.whatsapp_opt_in ? ' and a WhatsApp message' : '',
     whatsapp_also_short: e.whatsapp_opt_in ? ' and WhatsApp' : '',
     admin_url: adminUrl || 'the /admin page of the PRIME H₂O website',
+    order_datetime: formatDateTime(e.created_at),
   };
+  return e.source === 'product_order' ? { ...base, ...productOrderVariables(e, items) } : base;
 }
 
 const fill = (tpl, vars, transform = (v) => v) =>
@@ -314,7 +352,78 @@ const ownerNewOrderTemplate = (attached) => `A new custom bottle order request h
 ${attached ? '\nThe uploaded logo and label preview are attached to this email.\n' : ''}
 PRIME H₂O — I Trust PRIME.`;
 
-const ownerStatusTemplate = (hasNote) => `Order {{order_id}} for {{customer_name}} is now **{{status_label}}**.
+/** "- {{item_1_label}}: {{item_1_detail}}" rows for the lines of an online order. */
+const itemRows = (count) => Array.from({ length: count }, (_, i) => `- {{item_${i + 1}_label}}: {{item_${i + 1}_detail}}`).join('\n');
+
+/** Customer acknowledgement for a new online order. Deliberately NOT a confirmation: the team confirms it separately. */
+const customerProductOrderTemplate = (itemCount) => `Dear {{customer_name}},
+
+Thank you for choosing PRIME H₂O!
+
+Your order has been received successfully. **It is now awaiting confirmation from our team.** This email is an acknowledgement; we will confirm your order separately.
+
+**YOUR ORDER**
+
+- Order ID: {{order_id}}
+- Order Date: {{order_datetime}}
+- Status: Received — awaiting confirmation
+
+**PRODUCTS**
+
+${itemRows(itemCount)}
+- Total: {{order_total}}
+
+**DELIVERY ADDRESS**
+
+{{delivery_address_full}}
+
+**ADDITIONAL INSTRUCTIONS**
+
+{{instructions}}
+
+**WHAT HAPPENS NEXT**
+
+Our team will review your order and confirm it with you by email{{whatsapp_also}}. The delivery schedule and payment will be arranged with you directly.
+
+Please quote your Order ID {{order_id}} in all communication.
+
+${ASSISTANCE}
+
+${SIGN_OFF}`;
+
+/** Owner alert for a new online order: everything needed to process it without opening the website. */
+const ownerProductOrderTemplate = (itemCount) => `A new order has been placed on the PRIME H₂O website. **It is waiting for your confirmation.** The customer has been told that the order was received and is awaiting confirmation.
+
+**ORDER**
+- Order ID: {{order_id}}
+- Placed: {{order_datetime}}
+- Status: Received — awaiting confirmation
+
+**PRODUCTS**
+${itemRows(itemCount)}
+- Total: {{order_total}}
+
+**CUSTOMER**
+- Name: {{customer_name}}
+- Mobile: {{customer_phone}}
+- WhatsApp: {{customer_whatsapp_display}}
+- Email: {{customer_email}}
+- WhatsApp updates: {{whatsapp_updates}}
+
+**DELIVERY ADDRESS**
+
+{{delivery_address_full}}
+
+**ADDITIONAL INSTRUCTIONS**
+
+{{instructions}}
+
+**ACTION REQUIRED:** Review this order, then confirm or decline it in the admin dashboard: {{admin_url}}
+
+PRIME H₂O — I Trust PRIME.`;
+
+/** `itemCount` is set for online product orders (their lines and address replace size / quantity / date). */
+const ownerStatusTemplate = (hasNote, itemCount = null) => `Order {{order_id}} for {{customer_name}} is now **{{status_label}}**.
 
 **ORDER UPDATE**
 - Order ID: {{order_id}}
@@ -328,9 +437,15 @@ const ownerStatusTemplate = (hasNote) => `Order {{order_id}} for {{customer_name
 - Phone: {{customer_phone}}
 - Email: {{customer_email}}
 - WhatsApp updates: {{whatsapp_updates}}
-- Bottle Size: {{bottle_size}}
+${
+  itemCount == null
+    ? `- Bottle Size: {{bottle_size}}
 - Quantity: {{quantity}}
-- Preferred Delivery: {{delivery_date}}
+- Preferred Delivery: {{delivery_date}}`
+    : `${itemRows(itemCount)}
+- Total: {{order_total}}
+- Delivery Address: {{delivery_address_full}}`
+}
 
 The customer's email{{whatsapp_also_short}} notification for this change has been queued. The delivery status of every notification is shown in the admin dashboard: {{admin_url}}
 
@@ -350,6 +465,10 @@ export const CUSTOMER_UPDATES = {
 
 - Artwork & pricing: Our team will contact you to finalise the label artwork, pricing and payment.
 - Delivery: The delivery schedule will be agreed with you directly.
+- Updates: You will receive email{{whatsapp_also_short}} updates when your order is being prepared, is ready for dispatch, is dispatched and is delivered.`,
+    nextProduct: `**NEXT STEPS**
+
+- Delivery & payment: Our team will contact you to confirm the delivery schedule and payment.
 - Updates: You will receive email{{whatsapp_also_short}} updates when your order is being prepared, is ready for dispatch, is dispatched and is delivered.`,
   },
   order_rejected: {
@@ -404,14 +523,19 @@ export const CUSTOMER_UPDATES = {
   },
 };
 
-function customerUpdateTemplate(spec, hasNote) {
+/** `itemCount` is set for online product orders (their lines and address replace size / quantity / label). */
+function customerUpdateTemplate(spec, hasNote, itemCount = null) {
   const rows = [
     '- Order ID: {{order_id}}',
     ...spec.rows,
-    '- Bottle Size: {{bottle_size}}',
-    '- Quantity: {{quantity}}',
-    '- Preferred Delivery: {{delivery_date}}',
-    ...(spec.customization ? ['- Customization: {{customization_details}}'] : []),
+    ...(itemCount == null
+      ? [
+          '- Bottle Size: {{bottle_size}}',
+          '- Quantity: {{quantity}}',
+          '- Preferred Delivery: {{delivery_date}}',
+          ...(spec.customization ? ['- Customization: {{customization_details}}'] : []),
+        ]
+      : [itemRows(itemCount), '- Total: {{order_total}}', '- Delivery Address: {{delivery_address_full}}']),
   ];
   return [
     'Dear {{customer_name}},',
@@ -419,7 +543,7 @@ function customerUpdateTemplate(spec, hasNote) {
     `**${spec.heading ?? 'ORDER DETAILS'}**`,
     rows.join('\n'),
     ...(hasNote ? [`**${spec.noteHeading}**`, '{{note}}'] : []),
-    spec.next,
+    (itemCount != null && spec.nextProduct) || spec.next,
     'Please quote your Order ID {{order_id}} in all communication.',
     ASSISTANCE,
     spec.signOff ? `${spec.signOff}\n\n**I TRUST PRIME.**\n\nPRIME H₂O\nPackaged Drinking Water` : SIGN_OFF,
@@ -454,10 +578,28 @@ export function businessEmail(enquiry, files) {
  * The email for one (event, audience).
  * `history` is the status change being announced; `attached` says whether files are attached.
  */
-export function buildEmail({ event, audience, enquiry, files = [], history = null, adminUrl = '', attached = false }) {
+export function buildEmail({ event, audience, enquiry, files = [], history = null, adminUrl = '', attached = false, items = [] }) {
   if (event === 'enquiry_received') return audience === 'customer' ? customerEmail(enquiry, files) : businessEmail(enquiry, files);
-  const vars = enquiryVariables(enquiry, files, { history, adminUrl });
+  const vars = enquiryVariables(enquiry, files, { history, adminUrl, items });
   const id = enquiry.public_id;
+  const itemCount = enquiry.source === 'product_order' ? items.length : null;
+  if (event === 'order_received' && itemCount != null) {
+    if (audience === 'customer') {
+      return message(
+        customerProductOrderTemplate(itemCount),
+        vars,
+        `Your PRIME H₂O order ${id} has been received (awaiting confirmation)`,
+        `Order ${id}: ${vars.product_summary}. Total: ${vars.order_total}.`,
+      );
+    }
+    const sizes = items.map((it) => `${it.bottle_size} × ${Number(it.quantity).toLocaleString('en-IN')}`).join(', ');
+    return message(
+      ownerProductOrderTemplate(itemCount),
+      vars,
+      `New order ${id}: ${enquiry.customer_name} (${sizes}) awaiting your confirmation`,
+      `${enquiry.customer_name} · ${vars.customer_phone} · ${enquiry.delivery_city ?? ''} · Total ${vars.order_total}`,
+    );
+  }
   if (event === 'order_received') {
     if (audience === 'customer') {
       return message(
@@ -475,11 +617,11 @@ export function buildEmail({ event, audience, enquiry, files = [], history = nul
     );
   }
   if (audience === 'owner') {
-    return message(ownerStatusTemplate(!!vars.note), vars, `Order ${id} is now ${vars.status_label}: ${enquiry.customer_name}`, `${vars.status_label} by ${vars.actor}`);
+    return message(ownerStatusTemplate(!!vars.note, itemCount), vars, `Order ${id} is now ${vars.status_label}: ${enquiry.customer_name}`, `${vars.status_label} by ${vars.actor}`);
   }
   const spec = CUSTOMER_UPDATES[event];
   if (!spec) throw new Error(`No customer email defined for ${event}`);
-  return message(customerUpdateTemplate(spec, !!vars.note), vars, renderText(spec.subject, vars), spec.preheader);
+  return message(customerUpdateTemplate(spec, !!vars.note, itemCount), vars, renderText(spec.subject, vars), spec.preheader);
 }
 
 // ------------------------------------------------------------------ WhatsApp templates
@@ -519,6 +661,65 @@ Please review the order and accept or reject it in the PRIME H₂O admin dashboa
 
 *PRIME H₂O — I TRUST PRIME.*`,
     params: ['order_id', 'customer_name', 'customer_phone', 'customer_email', 'whatsapp_updates', 'bottle_size', 'quantity', 'delivery_date', 'customization_summary'],
+  },
+  prime_product_order_new: {
+    audience: 'owner',
+    purpose: 'Owner: new online order with every detail needed to process it',
+    body: `🛒 *NEW PRIME H₂O ORDER*
+
+Order ID: {{1}}
+Placed: {{2}}
+Status: Received — awaiting your confirmation
+
+👤 Customer: {{3}}
+📞 Mobile: {{4}}
+💬 WhatsApp: {{5}}
+📧 Email: {{6}}
+
+📦 Products: {{7}}
+💰 Total: {{8}}
+
+📍 Delivery address: {{9}}
+
+📝 Instructions: {{10}}
+
+Please confirm this order in the PRIME H₂O admin dashboard.
+
+*PRIME H₂O — I TRUST PRIME.*`,
+    params: [
+      'order_id',
+      'order_datetime',
+      'customer_name',
+      'customer_phone',
+      'whatsapp_contact',
+      'customer_email',
+      'products_inline',
+      'order_total',
+      'delivery_address_full',
+      'instructions',
+    ],
+  },
+  prime_product_order_received: {
+    audience: 'customer',
+    purpose: 'Customer: online order received, awaiting confirmation',
+    body: `Thank you for choosing PRIME H₂O!
+
+Your order has been received successfully.
+
+Order ID: {{1}}
+Customer: {{2}}
+
+Products: {{3}}
+Total: {{4}}
+
+Delivery Address: {{5}}
+
+Status: Received — Awaiting Confirmation. We will message you again once our team confirms your order.
+
+${HELP}
+
+I Trust PRIME.`,
+    params: ['order_id', 'customer_name', 'products_inline', 'order_total', 'delivery_address_full'],
   },
   prime_order_update_owner: {
     audience: 'owner',
@@ -636,9 +837,20 @@ const UPDATE_NOTE_DEFAULT = {
   order_ready_for_dispatch: 'Your order has been prepared and is ready to leave our facility.',
   order_dispatched: 'Our team will contact you if any delivery details are needed.',
 };
+const PRODUCT_UPDATE_NOTE_DEFAULT = {
+  order_processing: 'Your order is being prepared.',
+  order_ready_for_dispatch: 'Your order is packed and ready to leave our facility.',
+  order_dispatched: 'Our team will contact you if any delivery details are needed.',
+};
 
-/** Which approved template carries a given (event, audience). */
-export function whatsappTemplateFor(event, audience) {
+/**
+ * Which approved template carries a given (event, audience). Online product orders have their
+ * own "order received" templates (with products, total and address); status updates are shared.
+ */
+export function whatsappTemplateFor(event, audience, source = null) {
+  if (source === 'product_order' && event === 'order_received') {
+    return audience === 'owner' ? 'prime_product_order_new' : 'prime_product_order_received';
+  }
   if (audience === 'owner') {
     if (event === 'enquiry_received') return 'prime_new_enquiry';
     return event === 'order_received' ? 'prime_new_order' : 'prime_order_update_owner';
@@ -646,34 +858,63 @@ export function whatsappTemplateFor(event, audience) {
   return CUSTOMER_WHATSAPP[event] ?? null;
 }
 
-const PARAM_MAX = { customization_summary: 200 };
+const PARAM_MAX = { customization_summary: 200, products_inline: 400, delivery_address_full: 350, instructions: 400 };
+
+/** Shortens by whole characters (never splits an emoji) and marks the cut with "…". */
+const clipChars = (s, max) => {
+  const chars = [...s];
+  return chars.length <= max ? s : `${chars.slice(0, Math.max(max - 1, 1)).join('').trimEnd()}…`;
+};
 
 /** Meta template parameters: no newlines/tabs, no runs of >4 spaces, never empty, bounded length. */
 export function whatsappParams(keys, vars) {
   return keys.map((k) => {
-    const max = PARAM_MAX[k] ?? 300;
-    let v = String(vars[k] ?? '')
+    const v = String(vars[k] ?? '')
       .replace(/\s*[\r\n]+\s*/g, ' | ')
       .replace(/\t/g, ' ')
       .replace(/ {2,}/g, ' ')
       .trim();
-    if (v.length > max) v = `${v.slice(0, max - 3)}...`;
-    return v || '—';
+    return clipChars(v, PARAM_MAX[k] ?? 300) || '—';
   });
 }
 
+/** Meta refuses a template message whose body, once the parameters are filled in, exceeds this. */
+export const WHATSAPP_BODY_MAX = 1024;
+
+export const renderWhatsAppBody = (body, params) => body.replace(/\{\{(\d+)\}\}/g, (_, n) => params[Number(n) - 1] ?? '');
+
+/** Shortens the longest parameters until the filled-in body fits WHATSAPP_BODY_MAX. */
+export function fitWhatsAppParams(body, params, max = WHATSAPP_BODY_MAX) {
+  const out = [...params];
+  for (let guard = 0; guard < 50; guard++) {
+    const over = renderWhatsAppBody(body, out).length - max;
+    if (over <= 0) break;
+    let i = 0;
+    for (let k = 1; k < out.length; k++) if (out[k].length > out[i].length) i = k;
+    const target = Math.max([...out[i]].length - over - 1, 12);
+    if (target >= [...out[i]].length) break; // nothing left to shorten
+    out[i] = clipChars(out[i], target);
+  }
+  return out;
+}
+
 /** Template name + parameters for one (event, audience). */
-export function buildWhatsApp({ event, audience, enquiry, files = [], history = null }) {
-  const template = whatsappTemplateFor(event, audience);
+export function buildWhatsApp({ event, audience, enquiry, files = [], history = null, items = [] }) {
+  const template = whatsappTemplateFor(event, audience, enquiry.source);
   const t = WHATSAPP_TEMPLATES[template];
   if (!t) throw new Error(`No WhatsApp template defined for ${audience} ${event}`);
-  const vars = enquiryVariables(enquiry, files, { history });
+  const vars = enquiryVariables(enquiry, files, { history, items });
+  const product = enquiry.source === 'product_order';
   const extra = {
     note_or_none: vars.note || 'None',
-    next_steps: vars.note || 'Our team will contact you to finalise the label artwork, pricing, payment and delivery schedule.',
-    update_note: vars.note || UPDATE_NOTE_DEFAULT[event] || 'None',
+    next_steps:
+      vars.note ||
+      (product
+        ? 'Our team will contact you to confirm the delivery schedule and payment.'
+        : 'Our team will contact you to finalise the label artwork, pricing, payment and delivery schedule.'),
+    update_note: vars.note || (product ? PRODUCT_UPDATE_NOTE_DEFAULT : UPDATE_NOTE_DEFAULT)[event] || 'None',
   };
-  return { template, params: whatsappParams(t.params, { ...vars, ...extra }) };
+  return { template, params: fitWhatsAppParams(t.body, whatsappParams(t.params, { ...vars, ...extra })) };
 }
 
 // Sample data used for template examples (Meta requires an example value for every variable).
@@ -694,9 +935,33 @@ const SAMPLE_ORDER = {
   customer_whatsapp: '+919876543210',
   created_at: '2026-11-07T10:30:00Z',
 };
+// Online order sample: shows "price to be confirmed" rather than any made-up price.
+const SAMPLE_PRODUCT_ORDER = {
+  public_id: 'PRM-261112-4HQ7WD',
+  source: 'product_order',
+  order_status: 'PENDING',
+  customer_name: 'Ravi Kumar',
+  customer_phone: '+919876543210',
+  customer_email: 'ravi@example.com',
+  customer_whatsapp: '+919876543210',
+  whatsapp_opt_in: true,
+  delivery_address: 'Flat 12, Sai Residency, Road No. 3',
+  delivery_city: 'Hyderabad',
+  delivery_state: 'Telangana',
+  delivery_pin_code: '500068',
+  total_paise: null,
+  customer_message: 'Please call before delivery.',
+  created_at: '2026-11-12T05:30:00Z',
+};
+const SAMPLE_ITEMS = [
+  { product_name: 'PRIME H₂O 500 mL', bottle_size: '500 mL', quantity: 24, unit_price_paise: null, line_total_paise: null },
+  { product_name: 'PRIME H₂O 1000 mL', bottle_size: '1000 mL', quantity: 12, unit_price_paise: null, line_total_paise: null },
+];
 const SAMPLE_FOR = {
   prime_new_enquiry: ['enquiry_received', 'owner', null, null],
   prime_new_order: ['order_received', 'owner', 'PENDING', null],
+  prime_product_order_new: ['order_received', 'owner', 'PENDING', null, 'product'],
+  prime_product_order_received: ['order_received', 'customer', 'PENDING', null, 'product'],
   prime_order_update_owner: ['order_accepted', 'owner', 'ACCEPTED', 'Artwork proof will be shared tomorrow.'],
   prime_order_received: ['order_received', 'customer', 'PENDING', null],
   prime_order_accepted: ['order_accepted', 'customer', 'ACCEPTED', 'We will share the artwork proof with you tomorrow.'],
@@ -710,8 +975,11 @@ const SAMPLE_FOR = {
 
 /** Example parameter values for a template (used when submitting it to Meta for approval). */
 export function whatsappTemplateExample(name) {
-  const [event, audience, status, note] = SAMPLE_FOR[name];
-  const enquiry = event === 'enquiry_received' ? { ...SAMPLE_ORDER, source: 'contact', order_status: null, customization: null, bottle_size: 'All Sizes', quantity: null } : { ...SAMPLE_ORDER, order_status: status };
+  const [event, audience, status, note, kind] = SAMPLE_FOR[name];
   const history = status ? { to_status: status, from_status: status === 'PENDING' ? null : 'PENDING', note, actor_label: 'Owner', created_at: SAMPLE_ORDER.created_at } : null;
+  if (kind === 'product') {
+    return buildWhatsApp({ event, audience, enquiry: { ...SAMPLE_PRODUCT_ORDER, order_status: status }, history, items: SAMPLE_ITEMS }).params;
+  }
+  const enquiry = event === 'enquiry_received' ? { ...SAMPLE_ORDER, source: 'contact', order_status: null, customization: null, bottle_size: 'All Sizes', quantity: null } : { ...SAMPLE_ORDER, order_status: status };
   return buildWhatsApp({ event, audience, enquiry, files: [{ kind: 'logo', filename: 'acme-logo.png' }], history }).params;
 }
