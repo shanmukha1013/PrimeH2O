@@ -132,7 +132,7 @@ export function createApp({ config, store, notifier, log, pool, auth }) {
     if (!duplicate) await sendNow(notificationIds);
     const summary = await store.publicSummary(enquiry.id).catch((e) => {
       log.error('could not read notification status', { error: e.message });
-      return { orderStatus: enquiry.order_status, customerEmail: null, customerWhatsApp: null, teamNotified: false };
+      return { orderStatus: enquiry.order_status, teamWhatsApp: null, customerEmail: null, customerWhatsApp: null, teamNotified: false };
     });
     res.status(duplicate ? 200 : 201).json({
       ...(enquiry.source === 'custom_bottle' ? { orderId: enquiry.public_id } : {}),
@@ -145,9 +145,18 @@ export function createApp({ config, store, notifier, log, pool, auth }) {
   app.post('/api/orders', submissionLimit, submit('custom_bottle'));
 
   // ---- online product orders. Public catalogue (prices are null until the owner configures them)…
+  // When the database is unavailable this answers { available: false } (the website then offers WhatsApp
+  // ordering) instead of an error on every page view; /api/health reports the outage for monitoring.
   app.get('/api/products', async (req, res) => {
     res.set('Cache-Control', 'no-store'); // the owner can change prices at any time
-    res.json({ products: await store.products(), currency: 'INR', unit: 'bottle' });
+    let products;
+    try {
+      products = await store.products();
+    } catch (err) {
+      log.error('product list unavailable', { error: err.message });
+      return res.json({ available: false, products: [], currency: 'INR', unit: 'bottle' });
+    }
+    res.json({ available: true, products, currency: 'INR', unit: 'bottle' });
   });
 
   // …and the order itself: saved first (with server-side prices), then the first notification
@@ -164,7 +173,7 @@ export function createApp({ config, store, notifier, log, pool, auth }) {
     if (!duplicate) await sendNow(notificationIds);
     const summary = await store.publicSummary(enquiry.id).catch((e) => {
       log.error('could not read notification status', { error: e.message });
-      return { orderStatus: enquiry.order_status, customerEmail: null, customerWhatsApp: null, teamNotified: false };
+      return { orderStatus: enquiry.order_status, teamWhatsApp: null, customerEmail: null, customerWhatsApp: null, teamNotified: false };
     });
     res.status(duplicate ? 200 : 201).json({
       orderId: enquiry.public_id,

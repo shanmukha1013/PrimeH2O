@@ -317,8 +317,11 @@ export function createEnquiryStore({ pool, notifier, log = SILENT, idGenerator =
       const r = rows.find((x) => x.audience === audience && x.channel === channel);
       return r && r.status !== 'skipped' ? { status: toPublic(r), to: r.recipient } : null;
     };
+    // the company's WhatsApp copy: lets the website offer click-to-chat when the Cloud API did not send it
+    const ownerWhatsApp = rows.find((x) => x.audience === 'owner' && x.channel === 'whatsapp');
     return {
       orderStatus: e?.order_status ?? null,
+      teamWhatsApp: !ownerWhatsApp ? null : ownerWhatsApp.status === 'skipped' ? 'not_sent' : toPublic(ownerWhatsApp),
       customerEmail: pick('customer', 'email'),
       customerWhatsApp: pick('customer', 'whatsapp'),
       teamNotified: rows.some(

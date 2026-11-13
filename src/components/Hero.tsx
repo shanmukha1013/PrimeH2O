@@ -74,7 +74,7 @@ const HeroSlideshow: React.FC<{ active: number; previous: number }> = ({ active,
     {/* Studio Radial Glow */}
     <div className="absolute -inset-6 rounded-full bg-brand-bronze/20 blur-[70px] pointer-events-none" />
 
-    <div className="relative aspect-video lg:aspect-[4/3] overflow-hidden rounded-sm border border-brand-bronze/40 bg-brand-maroon-deep shadow-[0_30px_60px_-20px_rgba(0,0,0,0.6)]">
+    <div className="relative aspect-video lg:aspect-[4/3] overflow-hidden rounded-frame border border-brand-bronze/40 bg-brand-maroon-deep shadow-[0_30px_60px_-20px_rgba(0,0,0,0.6)] [transform:translateZ(0)]">
       {HERO_SLIDES.map((slide, i) => (
         <img
           key={slide.src}
@@ -94,7 +94,7 @@ const HeroSlideshow: React.FC<{ active: number; previous: number }> = ({ active,
           }`}
         />
       ))}
-      <div className="absolute inset-0 ring-1 ring-inset ring-brand-bronze/25 pointer-events-none z-30" />
+      <div className="absolute inset-0 rounded-frame ring-1 ring-inset ring-brand-bronze/25 pointer-events-none z-30" />
     </div>
   </div>
 );

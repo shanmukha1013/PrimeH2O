@@ -74,11 +74,11 @@ export const WhyPrime: React.FC = () => {
             transition={{ duration: 0.7 }}
             className="lg:col-span-5 relative"
           >
-            <div className="relative mx-auto max-w-sm rounded-sm p-4 bg-brand-cream border border-brand-bronze/40 shadow-luxury">
+            <div className="relative mx-auto max-w-sm rounded-frame p-4 bg-brand-cream border border-brand-bronze/40 shadow-luxury">
               {/* Bronze Outer Frame lines */}
-              <div className="absolute inset-2 border border-brand-bronze/20 pointer-events-none" />
+              <div className="absolute inset-2 rounded-tile border border-brand-bronze/20 pointer-events-none" />
 
-              <div className="relative bg-brand-maroon/5 py-10 px-6 rounded flex flex-col items-center justify-center overflow-hidden">
+              <div className="relative bg-brand-maroon/5 py-10 px-6 rounded-tile flex flex-col items-center justify-center overflow-hidden">
                 <span className="text-[10px] uppercase tracking-[0.24em] font-bold text-brand-bronze mb-2">
                   THE GREATNESS OF PRIME-H₂O
                 </span>

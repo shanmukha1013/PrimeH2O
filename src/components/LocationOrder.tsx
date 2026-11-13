@@ -44,9 +44,9 @@ export const LocationOrder: React.FC = () => (
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="lg:col-span-7 flex flex-col bg-brand-cream p-3 sm:p-4 rounded-sm border border-brand-bronze/40 shadow-luxury"
+          className="lg:col-span-7 flex flex-col bg-brand-cream p-3 sm:p-4 rounded-frame border border-brand-bronze/40 shadow-luxury"
         >
-          <div className="relative flex-1 min-h-[320px] sm:min-h-[400px] overflow-hidden rounded-sm border border-brand-bronze/30 bg-brand-cream-tint">
+          <div className="relative flex-1 min-h-[320px] sm:min-h-[400px] overflow-hidden rounded-tile border border-brand-bronze/30 bg-brand-cream-tint [transform:translateZ(0)]">
             <iframe
               title="PRIME H₂O location on Google Maps — Nagole, Bandlaguda, Hyderabad"
               src={MAP_EMBED_URL}
@@ -89,7 +89,7 @@ export const LocationOrder: React.FC = () => (
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="lg:col-span-5 bg-brand-cream p-6 sm:p-8 rounded-sm border border-brand-bronze/40 shadow-luxury flex flex-col items-center text-center"
+          className="lg:col-span-5 bg-brand-cream p-6 sm:p-8 rounded-frame border border-brand-bronze/40 shadow-luxury flex flex-col items-center text-center"
         >
           <span className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.24em] font-bold text-brand-bronze-dark">
             <QrCode className="w-3.5 h-3.5" /> Instant Ordering
@@ -107,7 +107,7 @@ export const LocationOrder: React.FC = () => (
               width={1200}
               height={1500}
               loading="lazy"
-              className="block w-full h-auto rounded-sm shadow-luxury bg-white"
+              className="block w-full h-auto rounded-tile shadow-luxury bg-white"
             />
           </div>
 

@@ -37,7 +37,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
           transition={{ duration: 0.3 }}
-          className="relative w-full max-w-3xl bg-brand-cream border border-brand-bronze rounded-sm shadow-2xl z-10 overflow-hidden my-8"
+          className="relative w-full max-w-3xl bg-brand-cream border border-brand-bronze rounded-frame shadow-2xl z-10 overflow-hidden my-8"
         >
           {/* Top Decorative Maroon Bar */}
           <div className="bg-brand-maroon px-6 py-4 flex items-center justify-between border-b border-brand-bronze/40">
@@ -63,7 +63,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
           <div className="p-6 sm:p-10 grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
             
             {/* Left: Realistic Bottle Showcase */}
-            <div className="md:col-span-5 bg-brand-cream-light p-6 rounded border border-brand-bronze/30 flex flex-col items-center justify-center relative">
+            <div className="md:col-span-5 bg-brand-cream-light p-6 rounded-tile border border-brand-bronze/30 flex flex-col items-center justify-center relative overflow-hidden">
               <div className="absolute w-36 h-36 rounded-full bg-brand-bronze/10 blur-xl pointer-events-none" />
               <img
                 src={product.image}

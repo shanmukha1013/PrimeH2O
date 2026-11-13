@@ -39,6 +39,12 @@ export default {
         serif: ['"Cormorant Garamond"', 'Playfair Display', 'Georgia', 'serif'],
         sans: ['Manrope', 'system-ui', '-apple-system', 'sans-serif'],
       },
+      // Image corners: one subtle scale used site-wide (frames = large image panels and cards,
+      // tiles = smaller images and thumbnails inside them).
+      borderRadius: {
+        frame: '0.875rem',
+        tile: '0.625rem',
+      },
       boxShadow: {
         'luxury': '0 20px 40px -15px rgba(80, 13, 24, 0.15)',
         'luxury-lg': '0 30px 60px -20px rgba(80, 13, 24, 0.25)',

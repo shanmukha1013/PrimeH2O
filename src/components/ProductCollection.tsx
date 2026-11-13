@@ -161,7 +161,7 @@ export const ProductCollection: React.FC<ProductCollectionProps> = ({
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-50px' }}
                 transition={{ duration: 0.6, delay: idx * 0.15 }}
-                className="group relative bg-brand-cream-light rounded-sm border border-brand-bronze/35 hover:border-brand-bronze p-5 sm:p-6 lg:p-8 flex flex-col justify-between shadow-sm hover:shadow-luxury-lg transition-all duration-300"
+                className="group relative bg-brand-cream-light rounded-frame border border-brand-bronze/35 hover:border-brand-bronze p-5 sm:p-6 lg:p-8 flex flex-col justify-between shadow-sm hover:shadow-luxury-lg transition-all duration-300"
               >
                 {/* Size Pill Tag */}
                 <div className="flex items-center justify-between gap-2 border-b border-brand-bronze/20 pb-3">
@@ -246,7 +246,7 @@ export const ProductCollection: React.FC<ProductCollectionProps> = ({
             initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5 }}
-            className="mt-16 bg-brand-cream-light border border-brand-bronze/40 rounded-sm p-8 sm:p-12 shadow-luxury text-center"
+            className="mt-16 bg-brand-cream-light border border-brand-bronze/40 rounded-frame p-8 sm:p-12 shadow-luxury text-center"
           >
             <div className="max-w-2xl mx-auto space-y-2 mb-8">
               <span className="text-xs uppercase tracking-[0.24em] font-bold text-brand-maroon">
@@ -269,15 +269,15 @@ export const ProductCollection: React.FC<ProductCollectionProps> = ({
             </div>
 
             <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl mx-auto pt-6 border-t border-brand-bronze/25 text-left">
-              <div className="p-4 bg-brand-cream rounded border border-brand-bronze/20">
+              <div className="p-4 bg-brand-cream rounded-tile border border-brand-bronze/20">
                 <span className="text-xs font-bold uppercase text-brand-maroon">250 mL</span>
                 <p className="text-xs text-brand-brown/85 mt-1">Single-serve convenience for brief outings and hospitality.</p>
               </div>
-              <div className="p-4 bg-brand-cream rounded border border-brand-bronze/20">
+              <div className="p-4 bg-brand-cream rounded-tile border border-brand-bronze/20">
                 <span className="text-xs font-bold uppercase text-brand-maroon">500 mL</span>
                 <p className="text-xs text-brand-brown/85 mt-1">The universal companion for desk, gym, and daily commutes.</p>
               </div>
-              <div className="p-4 bg-brand-cream rounded border border-brand-bronze/20">
+              <div className="p-4 bg-brand-cream rounded-tile border border-brand-bronze/20">
                 <span className="text-xs font-bold uppercase text-brand-maroon">1000 mL</span>
                 <p className="text-xs text-brand-brown/85 mt-1">Full-day hydration and shared family moments.</p>
               </div>

@@ -13,6 +13,11 @@ export interface EnquiryResult {
   duplicate: boolean;
   /** 'PENDING' for custom bottle orders: they always wait for the owner's approval. */
   orderStatus: string | null;
+  /**
+   * The company's WhatsApp copy, sent by the server through the WhatsApp Cloud API.
+   * 'accepted' / 'delivered' = WhatsApp took it; 'not_sent' = the Cloud API is not configured.
+   */
+  teamWhatsApp?: EmailStatus | null;
   customerEmail: { status: EmailStatus; to: string } | null;
   customerWhatsApp: { status: EmailStatus; to: string } | null;
   teamNotified: boolean;
@@ -100,14 +105,20 @@ export function submitProductOrder(payload: Record<string, unknown>): Promise<Pr
 
 async function post<T extends EnquiryResult = EnquiryResult>(path: string, payload: Record<string, unknown>): Promise<T> {
   let res: Response;
+  // never leave the customer waiting on a spinner: give up after 25 s (the server answers within ~15 s)
+  const controller = new AbortController();
+  const timer = window.setTimeout(() => controller.abort(), 25_000);
   try {
     res = await fetch(`${API_BASE}${path}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
+      signal: controller.signal,
     });
   } catch {
     throw new EnquiryError("We couldn't reach our server. Please check your connection and try again, or message us on WhatsApp.");
+  } finally {
+    window.clearTimeout(timer);
   }
   const data = await res.json().catch(() => null);
   if (!res.ok || !data?.enquiryId) {

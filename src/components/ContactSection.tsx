@@ -1,11 +1,30 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Phone, Mail, MapPin, Send, CheckCircle2, ExternalLink, Clock, Building, Info } from 'lucide-react';
+import { Phone, Mail, MapPin, Send, CheckCircle2, ExternalLink, Clock, Building, Info, MessageCircle, RotateCcw } from 'lucide-react';
+import { WHATSAPP_DISPLAY, whatsappUrlWithText } from '../lib/business';
 import { EnquiryError, EnquiryResult, emailStatusText, newRequestId, submitEnquiry } from '../lib/enquiryApi';
 
 interface ContactSectionProps {
   prefilledSize?: string;
 }
+
+const SIZE_OPTIONS = [
+  { value: 'All Sizes', label: 'All Sizes (General / Institutional Enquiry)' },
+  { value: '250 mL', label: '250 mL (Small Bottle • Single-Serve)' },
+  { value: '500 mL', label: '500 mL (Everyday Hydration Partner)' },
+  { value: '1000 mL', label: '1000 mL (Family & Shared Format)' },
+  { value: 'Distribution', label: 'Dealership / Commercial Supply' },
+];
+const sizeLabel = (value: string) => SIZE_OPTIONS.find((o) => o.value === value)?.label ?? value;
+
+/**
+ * What happened to a submitted enquiry. Only `sent` means the company's WhatsApp copy was handed to
+ * WhatsApp by our server (Cloud API). Otherwise the customer sends it themselves with click-to-chat.
+ */
+type Outcome =
+  | { kind: 'sent'; result: EnquiryResult }
+  | { kind: 'saved'; result: EnquiryResult }
+  | { kind: 'offline' };
 
 export const ContactSection: React.FC<ContactSectionProps> = ({ prefilledSize = '' }) => {
   const [formData, setFormData] = useState({
@@ -18,11 +37,12 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ prefilledSize = 
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [result, setResult] = useState<EnquiryResult | null>(null);
+  const [outcome, setOutcome] = useState<Outcome | null>(null);
+  const [waOpened, setWaOpened] = useState(false);
   const [submitError, setSubmitError] = useState('');
   // reused for retries of the same submission, so a retry never creates a second enquiry
   const requestIdRef = React.useRef(newRequestId());
+  const inFlightRef = React.useRef(false);
 
   // Update prefilledSize when prop changes
   React.useEffect(() => {
@@ -33,7 +53,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ prefilledSize = 
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
-    if (!formData.fullName.trim()) {
+    if (formData.fullName.trim().length < 2) {
       newErrors.fullName = 'Please enter your full name.';
     }
     if (!formData.phoneNumber.trim()) {
@@ -48,17 +68,48 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ prefilledSize = 
     }
     if (!formData.message.trim()) {
       newErrors.message = 'Please provide details of your enquiry.';
+    } else if (formData.message.trim().length > 2000) {
+      newErrors.message = 'Please keep your message under 2,000 characters.';
     }
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    const first = ['fullName', 'phoneNumber', 'email', 'message'].find((k) => newErrors[k]);
+    if (first) {
+      const el = document.getElementById(first);
+      el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      (el as HTMLInputElement | null)?.focus({ preventScroll: true });
+      return false;
+    }
+    return true;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (isSubmitting || !validate()) return;
+  /** The enquiry exactly as entered, for WhatsApp click-to-chat (wa.me, URL-encoded). */
+  const whatsappText = (enquiryId?: string) =>
+    [
+      "Hi PRIME H₂O! I'd like to make an enquiry.",
+      '',
+      `*Name:* ${formData.fullName.trim()}`,
+      `*Phone:* ${formData.phoneNumber.trim()}`,
+      `*Email:* ${formData.email.trim()}`,
+      `*Product / requirement:* ${sizeLabel(formData.sizeInterest)}`,
+      ...(enquiryId ? [`*Enquiry ID:* ${enquiryId}`] : []),
+      '',
+      '*Message:*',
+      formData.message.trim(),
+    ].join('\n');
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    void send();
+  };
+
+  /** Validates, then saves the enquiry; the same request ID is reused, so retries never duplicate it. */
+  const send = async () => {
+    // a ref, not state: two clicks in the same instant must not send two requests
+    if (inFlightRef.current || !validate()) return;
+    inFlightRef.current = true;
     setIsSubmitting(true);
     setSubmitError('');
+    setWaOpened(false);
     try {
       const res = await submitEnquiry({
         source: 'contact',
@@ -70,8 +121,9 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ prefilledSize = 
         message: formData.message.trim(),
         website: honeypotRef.current?.value ?? '',
       });
-      setResult(res);
-      setIsSubmitted(true);
+      // "sent" only when our server handed the company's copy to WhatsApp (Cloud API)
+      const handedToWhatsApp = res.teamWhatsApp === 'accepted' || res.teamWhatsApp === 'delivered';
+      setOutcome({ kind: handedToWhatsApp ? 'sent' : 'saved', result: res });
     } catch (err) {
       const fields = err instanceof EnquiryError ? err.fields : {};
       const mapped: Record<string, string> = {};
@@ -79,9 +131,16 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ prefilledSize = 
       if (fields.phone) mapped.phoneNumber = fields.phone;
       if (fields.email) mapped.email = fields.email;
       if (fields.message) mapped.message = fields.message;
-      if (Object.keys(mapped).length) setErrors(mapped);
-      setSubmitError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
+      if (Object.keys(mapped).length) {
+        // the details need correcting: stay on the form
+        setErrors(mapped);
+        setSubmitError(err instanceof Error ? err.message : 'Please correct the highlighted fields.');
+      } else {
+        // the website could not save it (server unavailable, network, rate limit): send it on WhatsApp instead
+        setOutcome({ kind: 'offline' });
+      }
     } finally {
+      inFlightRef.current = false;
       setIsSubmitting(false);
     }
   };
@@ -97,11 +156,14 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ prefilledSize = 
       message: '',
     });
     setErrors({});
-    setIsSubmitted(false);
-    setResult(null);
+    setOutcome(null);
+    setWaOpened(false);
     setSubmitError('');
     requestIdRef.current = newRequestId();
   };
+
+  const enquiryId = outcome && outcome.kind !== 'offline' ? outcome.result.enquiryId : undefined;
+  const waUrl = outcome ? whatsappUrlWithText(whatsappText(enquiryId)) : '';
 
   const mapUrl =
     'https://www.google.com/maps/search/?api=1&query=Nagole,+Bandlaguda,+Hyderabad,+Telangana+500068';
@@ -289,31 +351,92 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ prefilledSize = 
                 </p>
               </div>
 
-              {isSubmitted ? (
-                <div className="py-10 px-6 text-center space-y-5 bg-brand-cream rounded-sm border border-brand-bronze/40">
+              {outcome ? (
+                <div role="status" aria-live="polite" className="py-10 px-6 text-center space-y-5 bg-brand-cream rounded-frame border border-brand-bronze/40">
                   <div className="w-14 h-14 rounded-full bg-brand-maroon/10 border border-brand-bronze/50 flex items-center justify-center mx-auto text-brand-maroon">
-                    <CheckCircle2 className="w-8 h-8 text-brand-maroon" />
+                    {outcome.kind === 'sent' ? (
+                      <CheckCircle2 className="w-8 h-8 text-brand-maroon" />
+                    ) : (
+                      <MessageCircle className="w-7 h-7 text-brand-maroon" />
+                    )}
                   </div>
 
                   <div className="space-y-2">
                     <h4 className="font-editorial text-2xl text-brand-maroon font-semibold">
-                      Enquiry Received
+                      {outcome.kind === 'sent'
+                        ? 'Enquiry Sent to PRIME H₂O'
+                        : outcome.kind === 'saved'
+                          ? 'One More Step: Send It on WhatsApp'
+                          : 'Send Your Enquiry on WhatsApp'}
                     </h4>
                     <p className="text-sm text-brand-brown max-w-md mx-auto leading-relaxed">
-                      Thank you, <strong className="font-semibold text-brand-maroon">{formData.fullName}</strong>. Your enquiry regarding <strong className="font-semibold text-brand-maroon">{formData.sizeInterest}</strong> has been received by PRIME H₂O.
+                      {outcome.kind === 'sent' ? (
+                        <>
+                          Thank you, <strong className="font-semibold text-brand-maroon">{formData.fullName}</strong>. Your enquiry about{' '}
+                          <strong className="font-semibold text-brand-maroon">{formData.sizeInterest}</strong> has been saved and passed to
+                          WhatsApp for delivery to our team.
+                        </>
+                      ) : outcome.kind === 'saved' ? (
+                        <>
+                          Thank you, <strong className="font-semibold text-brand-maroon">{formData.fullName}</strong>. Your enquiry has been
+                          saved, but it has <strong className="font-semibold">not reached our WhatsApp yet</strong>. Tap the button below to open
+                          WhatsApp with your enquiry ready, then press <strong className="font-semibold">Send</strong>.
+                        </>
+                      ) : (
+                        <>
+                          Our online enquiry service is not available right now, so your enquiry has <strong className="font-semibold">not been
+                          sent yet</strong>. Tap the button below to open WhatsApp with all your details ready, then press{' '}
+                          <strong className="font-semibold">Send</strong>.
+                        </>
+                      )}
                     </p>
-                    {result && (
+                    {outcome.kind !== 'offline' && (
                       <p className="text-xs uppercase tracking-[0.18em] text-brand-brown/80">
                         Enquiry ID{' '}
-                        <span className="font-bold text-brand-maroon tracking-[0.12em] select-all">{result.enquiryId}</span>
+                        <span className="font-bold text-brand-maroon tracking-[0.12em] select-all">{outcome.result.enquiryId}</span>
                       </p>
                     )}
-                    {result && emailStatusText(result.customerEmail) && (
-                      <p className="text-sm text-brand-brown/90 max-w-md mx-auto">{emailStatusText(result.customerEmail)}</p>
+                    {outcome.kind !== 'offline' && outcome.result.duplicate && (
+                      <p className="text-sm text-brand-brown/90 max-w-md mx-auto">We had already received this enquiry, so it was not saved twice.</p>
+                    )}
+                    {outcome.kind !== 'offline' && emailStatusText(outcome.result.customerEmail) && (
+                      <p className="text-sm text-brand-brown/90 max-w-md mx-auto">{emailStatusText(outcome.result.customerEmail)}</p>
                     )}
                   </div>
 
-                  <div className="p-4 bg-brand-cream-light rounded border border-brand-bronze/30 text-xs text-brand-brown/85 max-w-md mx-auto text-left space-y-1.5">
+                  {outcome.kind !== 'sent' && (
+                    <div className="space-y-3">
+                      <a
+                        href={waUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={() => setWaOpened(true)}
+                        className="w-full max-w-md mx-auto inline-flex items-center justify-center gap-2 py-4 px-6 text-xs sm:text-sm font-bold uppercase tracking-[0.18em] bg-brand-maroon text-brand-cream hover:bg-brand-maroon-rich transition-colors rounded-sm shadow-luxury border border-brand-bronze/40"
+                      >
+                        <MessageCircle className="w-4 h-4 text-brand-bronze" />
+                        Send Enquiry on WhatsApp
+                      </a>
+                      <p className="text-xs text-brand-brown/75 max-w-md mx-auto">
+                        {waOpened
+                          ? 'WhatsApp opened with your enquiry. It reaches us only after you press Send in WhatsApp.'
+                          : `Opens a chat with PRIME H₂O (${WHATSAPP_DISPLAY}) with your name, phone, email, requirement and message filled in.`}
+                      </p>
+                      {outcome.kind === 'offline' && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setOutcome(null);
+                            void send();
+                          }}
+                          className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-brand-bronze-dark hover:text-brand-maroon transition-colors"
+                        >
+                          <RotateCcw className="w-3.5 h-3.5" /> Try the website again
+                        </button>
+                      )}
+                    </div>
+                  )}
+
+                  <div className="p-4 bg-brand-cream-light rounded-tile border border-brand-bronze/30 text-xs text-brand-brown/85 max-w-md mx-auto text-left space-y-1.5">
                     <div className="font-semibold text-brand-maroon uppercase tracking-wider text-[11px]">
                       Immediate Assistance:
                     </div>
@@ -447,11 +570,11 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ prefilledSize = 
                       }
                       className="w-full px-4 py-3 bg-brand-cream border border-brand-bronze/40 text-sm text-brand-brown focus:outline-none focus:border-brand-maroon focus:ring-1 focus:ring-brand-maroon transition-all rounded-sm"
                     >
-                      <option value="All Sizes">All Sizes (General / Institutional Enquiry)</option>
-                      <option value="250 mL">250 mL (Small Bottle &bull; Single-Serve)</option>
-                      <option value="500 mL">500 mL (Everyday Hydration Partner)</option>
-                      <option value="1000 mL">1000 mL (Family &amp; Shared Format)</option>
-                      <option value="Distribution">Dealership / Commercial Supply</option>
+                      {SIZE_OPTIONS.map((o) => (
+                        <option key={o.value} value={o.value}>
+                          {o.label}
+                        </option>
+                      ))}
                     </select>
                   </div>
 
@@ -466,6 +589,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ prefilledSize = 
                     <textarea
                       id="message"
                       rows={4}
+                      maxLength={2000}
                       value={formData.message}
                       onChange={(e) => {
                         setFormData({ ...formData, message: e.target.value });
@@ -510,7 +634,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ prefilledSize = 
                       )}
                     </button>
                     <p className="mt-2 text-center text-[11px] text-brand-brown/70 font-medium">
-                      You'll receive an enquiry ID once your message reaches us.
+                      Your enquiry goes to PRIME H₂O on WhatsApp ({WHATSAPP_DISPLAY}).
                     </p>
                   </div>
 

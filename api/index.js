@@ -57,6 +57,10 @@ export default async function handler(req, res) {
     }));
   } catch (err) {
     log.error('API start-up failed', { error: err.message });
+    // the public product list degrades gracefully (the website then offers WhatsApp ordering)
+    if (req.method === 'GET' && (req.url ?? '').split('?')[0] === '/api/products') {
+      return json(res, 200, { available: false, products: [], currency: 'INR', unit: 'bottle' });
+    }
     return json(res, 503, {
       error: 'Our server is not available right now. Please try again shortly, or contact us on WhatsApp at +91 81434 89222.',
     });

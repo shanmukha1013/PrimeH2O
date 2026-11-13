@@ -63,7 +63,7 @@ const FieldError: React.FC<{ id?: string; msg?: string }> = ({ id, msg }) =>
   ) : null;
 
 const Step: React.FC<{ n: string; title: string; hint?: string; children: React.ReactNode }> = ({ n, title, hint, children }) => (
-  <div className="bg-brand-cream-pure/80 border border-brand-bronze/30 rounded-sm p-5 sm:p-7 shadow-luxury">
+  <div className="bg-brand-cream-pure/80 border border-brand-bronze/30 rounded-frame p-5 sm:p-7 shadow-luxury">
     <div className="flex items-start gap-4 mb-5">
       <span className="font-editorial text-3xl sm:text-4xl leading-none text-brand-bronze">{n}</span>
       <div className="pt-0.5">
@@ -215,9 +215,11 @@ export const ProductOrder: React.FC<ProductOrderProps> = ({ preselect }) => {
     return true;
   };
 
+  const inFlightRef = useRef(false); // a ref, not state: two clicks in the same instant must not send two orders
   const submit = async (ev: React.FormEvent) => {
     ev.preventDefault();
-    if (submitting || !validate()) return;
+    if (inFlightRef.current || submitting || !validate()) return;
+    inFlightRef.current = true;
     const details = {
       name: form.name.trim(),
       phone: form.phone.trim(),
@@ -244,6 +246,8 @@ export const ProductOrder: React.FC<ProductOrderProps> = ({ preselect }) => {
         focusField(Object.keys(err.fields)[0]);
       }
       setServer({ phase: 'error', error: err instanceof Error ? err.message : 'Your order could not be placed. Please try again.' });
+    } finally {
+      inFlightRef.current = false;
     }
   };
 
@@ -323,11 +327,11 @@ export const ProductOrder: React.FC<ProductOrderProps> = ({ preselect }) => {
                     return (
                       <div
                         key={p.code}
-                        className={`flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-sm border transition-all duration-200 ${
+                        className={`flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-tile border transition-all duration-200 ${
                           err ? 'border-red-600 bg-brand-cream-pure' : qty > 0 ? 'border-brand-maroon/60 bg-brand-cream-pure shadow-luxury' : 'border-brand-bronze/30 bg-brand-cream/60'
                         }`}
                       >
-                        <div className="w-12 h-20 sm:w-16 sm:h-24 shrink-0 flex items-end justify-center rounded-sm bg-brand-cream-dark/40 border border-brand-bronze/20 overflow-hidden">
+                        <div className="w-12 h-20 sm:w-16 sm:h-24 shrink-0 flex items-end justify-center rounded-tile bg-brand-cream-dark/40 border border-brand-bronze/20 overflow-hidden">
                           <img src={imageFor(p.code)} alt="" className="h-[90%] w-auto object-contain drop-shadow-[0_6px_8px_rgba(80,13,24,0.18)]" loading="lazy" />
                         </div>
                         <div className="flex-1 min-w-0">
@@ -602,7 +606,7 @@ export const ProductOrder: React.FC<ProductOrderProps> = ({ preselect }) => {
 
             {/* Summary + place order */}
             <aside className="lg:col-span-5 lg:sticky lg:top-24">
-              <div className="rounded-sm border border-brand-bronze/40 shadow-luxury-lg overflow-hidden bg-brand-cream-pure">
+              <div className="rounded-frame border border-brand-bronze/40 shadow-luxury-lg overflow-hidden bg-brand-cream-pure">
                 <div className="flex items-center justify-between gap-3 px-5 py-3 bg-maroon-gradient">
                   <span className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.24em] font-bold text-brand-cream">
                     <ShoppingBag className="w-4 h-4 text-brand-bronze" aria-hidden="true" />
@@ -731,7 +735,7 @@ const OrderConfirmation: React.FC<{ result: ProductOrderResult; onNewOrder: () =
       transition={{ duration: 0.45 }}
       role="status"
       aria-live="polite"
-      className="mt-12 md:mt-16 max-w-5xl mx-auto rounded-sm border border-brand-bronze/50 bg-brand-cream-pure shadow-luxury-lg overflow-hidden"
+      className="mt-12 md:mt-16 max-w-5xl mx-auto rounded-frame border border-brand-bronze/50 bg-brand-cream-pure shadow-luxury-lg overflow-hidden"
     >
       <div className="bg-maroon-gradient px-6 py-8 sm:px-10 sm:py-10 text-center text-brand-cream">
         <CircleCheck className="w-12 h-12 mx-auto text-brand-bronze" aria-hidden="true" />
@@ -878,7 +882,7 @@ const OrderConfirmation: React.FC<{ result: ProductOrderResult; onNewOrder: () =
 // ------------------------------------------------------------------ fallback
 
 const OrderingUnavailable: React.FC<{ onRetry: () => void }> = ({ onRetry }) => (
-  <div className="mt-12 md:mt-16 max-w-2xl mx-auto text-center rounded-sm border border-brand-bronze/40 bg-brand-cream-pure p-8 sm:p-10 shadow-luxury">
+  <div className="mt-12 md:mt-16 max-w-2xl mx-auto text-center rounded-frame border border-brand-bronze/40 bg-brand-cream-pure p-8 sm:p-10 shadow-luxury">
     <MessageCircle className="w-9 h-9 mx-auto text-brand-bronze-dark" aria-hidden="true" />
     <h3 className="mt-3 font-editorial text-2xl sm:text-3xl text-brand-maroon">Online ordering is not available right now</h3>
     <p className="mt-2 text-sm text-brand-brown/80">You can still order straight away on WhatsApp or by phone.</p>

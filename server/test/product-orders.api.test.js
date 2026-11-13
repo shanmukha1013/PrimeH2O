@@ -156,6 +156,7 @@ beforeEach(() => {
 test('GET /api/products lists the three sizes; prices stay empty until the owner sets them', { skip }, async () => {
   const r = await main.call('GET', '/api/products');
   assert.equal(r.status, 200);
+  assert.equal(r.body.available, true);
   assert.equal(r.headers.get('cache-control'), 'no-store');
   assert.deepEqual(
     r.body.products.map((p) => [p.code, p.name, p.size, p.unitPricePaise]),
@@ -370,7 +371,10 @@ test('7. database failure: the customer gets a clear error and nothing is half-s
     const r2 = await down.call('POST', '/api/product-orders', orderBody());
     assert.equal(r2.status, 500);
     assert.match(r2.body.error, /Something went wrong on our side/);
-    assert.equal((await down.call('GET', '/api/products')).status, 500);
+    const catalogue = await down.call('GET', '/api/products');
+    assert.equal(catalogue.status, 200, 'the product list degrades gracefully instead of erroring on every page view');
+    assert.deepEqual([catalogue.body.available, catalogue.body.products], [false, []]);
+    assert.equal((await down.call('GET', '/api/health')).status, 200, 'health uses the main pool here');
     assert.equal(emailCalls.length + waCalls.length, 0);
   } finally {
     await midway.close();
@@ -558,6 +562,49 @@ test('12. admin updates the status: confirmed → processing → dispatched → 
   const cancel = await main.call('PATCH', `/api/admin/orders/${id2}/status`, { status: 'CANCELLED', reason: 'Customer asked to cancel.' }, bearer(t));
   assert.equal(cancel.status, 200);
   assert.equal(cancel.body.cancellation_reason, 'Customer asked to cancel.');
+});
+
+// ------------------------------------------------------------------ Contact enquiries → company WhatsApp
+
+test('enquiries report truthfully whether the company WhatsApp copy was handed to WhatsApp', { skip }, async () => {
+  const enquiry = () => ({
+    source: 'contact',
+    clientRequestId: crypto.randomUUID(),
+    name: 'Ravi Teja',
+    phone: '98765 43210',
+    email: 'ravi@example.com',
+    bottleSize: '500 mL',
+    message: `Need 50 cases for our office every month ${crypto.randomUUID().slice(0, 6)}`,
+  });
+
+  // Cloud API configured and working: the owner gets the enquiry template with every detail
+  const ok = await main.call('POST', '/api/enquiries', enquiry());
+  assert.equal(ok.status, 201, JSON.stringify(ok.body));
+  assert.equal(ok.body.teamWhatsApp, 'accepted');
+  const wa = waCalls.find((w) => w.to === OWNER_WHATSAPP);
+  assert.equal(wa.template, 'prime_new_enquiry');
+  assert.deepEqual(wa.params.slice(0, 5), ['Ravi Teja', '+91 98765 43210', 'ravi@example.com', '500 mL', 'Not specified']);
+  assert.equal(wa.params[6], ok.body.enquiryId);
+  assert.equal(JSON.stringify(ok.body).includes(OWNER_WHATSAPP), false, 'the response does not echo the company number');
+
+  // Cloud API not configured: saved, nothing sent, and the website is told so (it then offers click-to-chat)
+  const off = await startApp({ whatsapp: { name: 'meta_whatsapp', configured: false, missing: ['WHATSAPP_ACCESS_TOKEN'], sendTemplate: () => assert.fail('must not send') } });
+  // Cloud API configured but refusing (e.g. an expired access token)
+  const refusing = await startApp({
+    whatsapp: fakeWhatsApp(() => new ProviderError('WhatsApp 401: Error validating access token: Session has expired (code 190)', { retryable: false, status: 401 })),
+  });
+  try {
+    const r1 = await off.call('POST', '/api/enquiries', enquiry());
+    assert.equal(r1.status, 201);
+    assert.equal(r1.body.teamWhatsApp, 'not_sent');
+    const r2 = await refusing.call('POST', '/api/enquiries', enquiry());
+    assert.equal(r2.status, 201);
+    assert.equal(r2.body.teamWhatsApp, 'failed');
+    assert.equal(r2.body.teamNotified, true, 'the owner email still went out');
+  } finally {
+    await off.close();
+    await refusing.close();
+  }
 });
 
 // ------------------------------------------------------------------ prices, rate limits, spam

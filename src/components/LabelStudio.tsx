@@ -9,9 +9,6 @@ import {
   Check,
   ImagePlus,
   Trash2,
-  PanelTop,
-  PanelLeft,
-  Type,
   RotateCcw,
   MessageCircle,
   Download,
@@ -34,7 +31,6 @@ import {
 } from '../lib/enquiryApi';
 import {
   BOTTLES,
-  LABEL_COLOURS,
   LABEL_H,
   LABEL_W,
   TEMPLATES,
@@ -43,9 +39,7 @@ import {
   renderBottle,
   renderLabel,
   templateMeta,
-  type FontId,
   type LabelDesign,
-  type LayoutId,
   type SizeId,
   type TemplateId,
 } from '../lib/labelRenderer';
@@ -58,15 +52,6 @@ const TEMPLATE_ICONS: Record<TemplateId, React.ElementType> = {
   birthday: Cake,
   promo: Megaphone,
 };
-const LAYOUTS: { id: LayoutId; label: string; icon: React.ElementType }[] = [
-  { id: 'stacked', label: 'Logo Above', icon: PanelTop },
-  { id: 'inline', label: 'Logo Beside', icon: PanelLeft },
-  { id: 'text', label: 'Text Only', icon: Type },
-];
-const FONTS: { id: FontId; label: string; sample: string; className: string }[] = [
-  { id: 'sans', label: 'Modern Sans', sample: 'Aa', className: 'font-sans font-extrabold' },
-  { id: 'serif', label: 'Editorial Serif', sample: 'Aa', className: 'font-editorial italic font-semibold' },
-];
 // tallest bottle (1000 mL) fills the stage; smaller sizes keep their true proportion
 const MAX_CROP_H = BOTTLES['1000 mL'].cropBottom - BOTTLES['1000 mL'].cropTop;
 
@@ -85,7 +70,7 @@ const inputClass = (error?: string) =>
 const fieldLabel = 'block text-xs uppercase tracking-[0.16em] font-bold text-brand-maroon';
 
 const Step: React.FC<{ n: string; title: string; hint?: string; children: React.ReactNode }> = ({ n, title, hint, children }) => (
-  <div className="bg-brand-cream-pure/80 border border-brand-bronze/30 rounded-sm p-5 sm:p-7 shadow-luxury">
+  <div className="bg-brand-cream-pure/80 border border-brand-bronze/30 rounded-frame p-5 sm:p-7 shadow-luxury">
     <div className="flex items-start gap-4 mb-5">
       <span className="font-editorial text-3xl sm:text-4xl leading-none text-brand-bronze">{n}</span>
       <div className="pt-0.5">
@@ -120,19 +105,14 @@ const EMPTY_ORDER = {
 
 export const LabelStudio: React.FC = () => {
   // ---- design state -------------------------------------------------------
+  // Colour, typeface and text placement are not customer options: each label uses its
+  // template's own colour and typeface, with the logo above the text when one is uploaded.
   const [size, setSize] = useState<SizeId>('500 mL');
   const [template, setTemplate] = useState<TemplateId>('corporate');
-  const [color, setColor] = useState(templateMeta('corporate').color);
-  const [colorTouched, setColorTouched] = useState(false);
   const [title, setTitle] = useState('');
   const [message, setMessage] = useState('');
   const [logo, setLogo] = useState<LogoState | null>(null);
   const [logoError, setLogoError] = useState('');
-  const [logoBacking, setLogoBacking] = useState(true);
-  const [layout, setLayout] = useState<LayoutId>('stacked');
-  const [font, setFont] = useState<FontId>('sans');
-  const [textScale, setTextScale] = useState(1);
-  const [offsetY, setOffsetY] = useState(0);
   const [dragOver, setDragOver] = useState(false);
 
   // ---- order state --------------------------------------------------------
@@ -159,20 +139,21 @@ export const LabelStudio: React.FC = () => {
   const previewRef = useRef<HTMLDivElement>(null);
   const logoUrlRef = useRef<string | null>(null);
 
-  const design: LabelDesign = useMemo(
+  const meta = templateMeta(template);
+  const design = useMemo<LabelDesign>(
     () => ({
       template,
-      color,
+      color: meta.color,
       title,
       message,
       logo: logo?.img ?? null,
-      logoBacking,
-      layout,
-      font,
-      textScale,
-      offsetY,
+      logoBacking: true,
+      layout: logo ? 'stacked' : 'text',
+      font: meta.font,
+      textScale: 1,
+      offsetY: 0,
     }),
-    [template, color, title, message, logo, logoBacking, layout, font, textScale, offsetY],
+    [template, meta.color, meta.font, title, message, logo],
   );
 
   // preload the three product photos
@@ -218,12 +199,7 @@ export const LabelStudio: React.FC = () => {
       TEMPLATES.forEach((m) => {
         const thumb = thumbRefs.current[m.id];
         if (!thumb) return;
-        renderLabel(scratch, {
-          ...design,
-          template: m.id,
-          color: colorTouched ? color : m.color,
-          font: m.id === template ? font : m.font,
-        });
+        renderLabel(scratch, { ...design, template: m.id, color: m.color, font: m.font });
         const ctx = thumb.getContext('2d');
         if (!ctx) return;
         ctx.clearRect(0, 0, thumb.width, thumb.height);
@@ -232,7 +208,7 @@ export const LabelStudio: React.FC = () => {
       });
     }, 120);
     return () => window.clearTimeout(t);
-  }, [design, colorTouched, color, template, font, fontsTick]);
+  }, [design, fontsTick]);
 
   // floating "Preview" shortcut on small screens when the preview is off-screen
   useEffect(() => {
@@ -259,17 +235,7 @@ export const LabelStudio: React.FC = () => {
   }, []);
 
   // ---- handlers -----------------------------------------------------------
-  const chooseTemplate = (id: TemplateId) => {
-    const m = templateMeta(id);
-    setTemplate(id);
-    setFont(m.font);
-    if (!colorTouched) setColor(m.color);
-  };
-
-  const chooseColour = (hex: string) => {
-    setColor(hex);
-    setColorTouched(true);
-  };
+  const chooseTemplate = (id: TemplateId) => setTemplate(id);
 
   const handleLogoFile = (file?: File | null) => {
     setLogoError('');
@@ -288,7 +254,6 @@ export const LabelStudio: React.FC = () => {
       if (logoUrlRef.current) URL.revokeObjectURL(logoUrlRef.current);
       logoUrlRef.current = url;
       setLogo({ file, url, img });
-      setLayout((l) => (l === 'text' ? 'stacked' : l));
     };
     img.onerror = () => {
       URL.revokeObjectURL(url);
@@ -303,39 +268,21 @@ export const LabelStudio: React.FC = () => {
     setLogo(null);
   };
 
-  const resetPlacement = () => {
-    setTextScale(1);
-    setOffsetY(0);
-    setLayout('stacked');
-    setFont(templateMeta(template).font);
-  };
-
   const updateOrder = (key: keyof typeof EMPTY_ORDER, value: string) => {
     setOrder((o) => ({ ...o, [key]: value }));
     if (errors[key]) setErrors((e) => ({ ...e, [key]: '' }));
   };
 
-  const logoUsed = !!logo && layout !== 'text';
-  const meta = templateMeta(template);
+  const logoUsed = !!logo;
   const bottlePct = ((BOTTLES[size].cropBottom - BOTTLES[size].cropTop) / MAX_CROP_H) * 92;
-  const summaryLines = [
-    `Bottle: ${size}   ·   Template: ${meta.name}`,
-    `Label colour: ${colourName(color)}`,
-  ];
-
-  const layoutText = { stacked: 'Logo above text', inline: 'Logo beside text', text: 'Text only' }[logo ? layout : 'text'];
-  const pos = offsetY < -0.15 ? 'raised' : offsetY > 0.15 ? 'lowered' : 'centred';
-  const fontText = font === 'serif' ? 'Editorial serif' : 'Modern sans';
+  const summaryLines = [`Bottle: ${size}   ·   Template: ${meta.name}`, `Label colour: ${colourName(meta.color)}`];
+  const layoutText = logo ? 'Logo above text' : 'Text only';
 
   const buildMessage = () => {
     const dateText = order.date
       ? new Date(`${order.date}T00:00:00`).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
       : 'Flexible / to be discussed';
-    const logoText = !logo
-      ? 'None'
-      : logoUsed
-        ? `Uploaded on the website (${logo.file.name}); not included in this WhatsApp message.`
-        : `Not used (text-only layout chosen)`;
+    const logoText = logo ? `Uploaded on the website (${logo.file.name}); not included in this WhatsApp message.` : 'None';
     const lines = [
       'Hi PRIME H₂O! I would like to request a custom-label bottle order.',
       '',
@@ -352,10 +299,10 @@ export const LabelStudio: React.FC = () => {
       '',
       '*LABEL DESIGN*',
       `Template: ${meta.name}`,
-      `Label colour: ${colourName(color)}`,
+      `Label colour: ${colourName(meta.color)}`,
       `Name on label: ${title.trim()}`,
       `Message / tagline: ${message.trim() || '—'}`,
-      `Layout: ${layoutText} · ${fontText} font · text size ${Math.round(textScale * 100)}% · text ${pos}`,
+      `Layout: ${layoutText}`,
       `Logo / image: ${logoText}`,
     ];
     if (order.details.trim()) lines.push('', '*CUSTOMISATION DETAILS*', order.details.trim());
@@ -411,13 +358,10 @@ export const LabelStudio: React.FC = () => {
         message: order.instructions.trim() || undefined,
         customization: {
           template: meta.name,
-          colour: colourName(color),
+          colour: colourName(meta.color),
           labelName: title.trim(),
           tagline: message.trim(),
           layout: layoutText,
-          font: fontText,
-          textSize: `${Math.round(textScale * 100)}%`,
-          position: pos,
           details: order.details.trim(),
         },
       };
@@ -520,7 +464,7 @@ export const LabelStudio: React.FC = () => {
           {/* ================= PREVIEW (right on desktop, first on mobile) ================= */}
           <aside className="lg:col-span-5 lg:order-2">
             <div ref={previewRef} className="lg:sticky lg:top-24 scroll-mt-24">
-              <div className="rounded-sm border border-brand-bronze/40 shadow-luxury-lg overflow-hidden bg-brand-cream-pure">
+              <div className="rounded-frame border border-brand-bronze/40 shadow-luxury-lg overflow-hidden bg-brand-cream-pure">
                 <div className="flex items-center justify-between px-5 py-3 bg-maroon-gradient">
                   <span className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.24em] font-bold text-brand-cream">
                     <span className="relative flex w-2 h-2">
@@ -564,7 +508,7 @@ export const LabelStudio: React.FC = () => {
                       height={LABEL_H}
                       role="img"
                       aria-label="Flat view of your label artwork"
-                      className="w-full h-auto rounded-sm border border-brand-bronze/40 shadow-sm"
+                      className="w-full h-auto rounded-tile border border-brand-bronze/40 shadow-sm"
                     />
                   </div>
                   <div className="col-span-2 flex flex-col justify-between gap-3 text-xs text-brand-brown">
@@ -576,8 +520,8 @@ export const LabelStudio: React.FC = () => {
                       <div>
                         <dt className="text-[10px] uppercase tracking-[0.18em] text-brand-brown/60">Colour</dt>
                         <dd className="flex items-center gap-1.5 font-semibold text-brand-maroon">
-                          <span className="w-3 h-3 rounded-full border border-brand-bronze/60" style={{ background: color }} />
-                          {colourName(color).replace(/ \(.*\)$/, '')}
+                          <span className="w-3 h-3 rounded-full border border-brand-bronze/60" style={{ background: meta.color }} />
+                          {colourName(meta.color).replace(/ \(.*\)$/, '')}
                         </dd>
                       </div>
                     </dl>
@@ -613,7 +557,7 @@ export const LabelStudio: React.FC = () => {
                       role="radio"
                       aria-checked={active}
                       onClick={() => setSize(s)}
-                      className={`group relative flex flex-col items-center gap-2 pt-4 pb-3 px-2 rounded-sm border transition-all duration-300 hover:-translate-y-0.5 ${
+                      className={`group relative flex flex-col items-center gap-2 pt-4 pb-3 px-2 rounded-tile border transition-all duration-300 hover:-translate-y-0.5 ${
                         active
                           ? 'border-brand-maroon ring-1 ring-brand-maroon bg-brand-cream-light shadow-luxury'
                           : 'border-brand-bronze/35 bg-brand-cream hover:border-brand-bronze'
@@ -645,7 +589,7 @@ export const LabelStudio: React.FC = () => {
             </Step>
 
             {/* 02 — Template */}
-            <Step n="02" title="Select a Label Template" hint="Each design updates live with your name, logo and colour.">
+            <Step n="02" title="Select a Label Template" hint="Each design updates live with your name and logo.">
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4" role="radiogroup" aria-label="Label template">
                 {TEMPLATES.map((m) => {
                   const Icon = TEMPLATE_ICONS[m.id];
@@ -657,7 +601,7 @@ export const LabelStudio: React.FC = () => {
                       role="radio"
                       aria-checked={active}
                       onClick={() => chooseTemplate(m.id)}
-                      className={`group text-left rounded-sm border overflow-hidden transition-all duration-300 hover:-translate-y-0.5 ${
+                      className={`group text-left rounded-tile border overflow-hidden transition-all duration-300 hover:-translate-y-0.5 ${
                         active
                           ? 'border-brand-maroon ring-1 ring-brand-maroon shadow-luxury bg-brand-cream-light'
                           : 'border-brand-bronze/35 bg-brand-cream hover:border-brand-bronze hover:shadow-luxury'
@@ -721,7 +665,7 @@ export const LabelStudio: React.FC = () => {
                   <span className={fieldLabel}>Logo or Personal Image</span>
                   {logo ? (
                     <div className="mt-1.5 flex items-center gap-4 p-3 border border-brand-bronze/40 rounded-sm bg-brand-cream">
-                      <div className="w-16 h-16 rounded-sm bg-white border border-brand-bronze/30 flex items-center justify-center overflow-hidden shrink-0">
+                      <div className="w-16 h-16 rounded-tile bg-white border border-brand-bronze/30 flex items-center justify-center overflow-hidden shrink-0">
                         <img src={logo.url} alt="Your uploaded logo" className="max-w-full max-h-full object-contain" />
                       </div>
                       <div className="min-w-0 flex-1">
@@ -805,189 +749,8 @@ export const LabelStudio: React.FC = () => {
               </div>
             </Step>
 
-            {/* 04 — Colour */}
-            <Step n="04" title="Label Colour" hint="Choose a PRIME signature shade, or match your own brand colour.">
-              <div className="flex flex-wrap items-center gap-3" role="radiogroup" aria-label="Label colour">
-                {LABEL_COLOURS.map((c) => {
-                  const active = c.hex.toLowerCase() === color.toLowerCase();
-                  return (
-                    <button
-                      key={c.hex}
-                      type="button"
-                      role="radio"
-                      aria-checked={active}
-                      title={c.name}
-                      aria-label={c.name}
-                      onClick={() => chooseColour(c.hex)}
-                      className={`relative w-10 h-10 sm:w-11 sm:h-11 rounded-full border transition-all duration-200 hover:scale-110 ${
-                        active ? 'ring-2 ring-offset-2 ring-offset-brand-cream-pure ring-brand-maroon border-transparent' : 'border-brand-bronze/50'
-                      }`}
-                      style={{ background: c.hex }}
-                    >
-                      {active && (
-                        <Check
-                          className={`absolute inset-0 m-auto w-4 h-4 ${['#F8EFE5', '#FFFFFF', '#C69A70'].includes(c.hex) ? 'text-brand-maroon' : 'text-brand-cream'}`}
-                        />
-                      )}
-                    </button>
-                  );
-                })}
-                <label
-                  className={`relative inline-flex items-center gap-2 h-10 sm:h-11 pl-1 pr-3 rounded-full border cursor-pointer transition-colors ${
-                    LABEL_COLOURS.some((c) => c.hex.toLowerCase() === color.toLowerCase())
-                      ? 'border-brand-bronze/50 hover:border-brand-maroon'
-                      : 'border-brand-maroon ring-1 ring-brand-maroon'
-                  }`}
-                  title="Pick a custom colour"
-                >
-                  <span
-                    className="w-8 h-8 sm:w-9 sm:h-9 rounded-full border border-brand-bronze/50"
-                    style={{ background: 'conic-gradient(from 0deg, #500D18, #C69A70, #F8EFE5, #49302B, #6E1624, #500D18)' }}
-                  />
-                  <span className="text-xs font-semibold uppercase tracking-[0.12em] text-brand-maroon">Custom</span>
-                  <input
-                    type="color"
-                    value={color}
-                    onChange={(e) => chooseColour(e.target.value)}
-                    className="absolute inset-0 opacity-0 cursor-pointer"
-                    aria-label="Custom label colour"
-                  />
-                </label>
-              </div>
-              <p className="mt-3 text-xs text-brand-brown/70">
-                Selected: <span className="font-semibold text-brand-maroon">{colourName(color)}</span>
-              </p>
-            </Step>
-
-            {/* 05 — Text & placement */}
-            <Step n="05" title="Text & Placement" hint="Fine-tune the layout, typeface and position of your text.">
-              <div className="space-y-5">
-                <div>
-                  <span className={fieldLabel}>Layout</span>
-                  <div className="mt-2 grid grid-cols-3 gap-2" role="radiogroup" aria-label="Label layout">
-                    {LAYOUTS.map((l) => {
-                      const Icon = l.icon;
-                      const active = (logo ? layout : 'text') === l.id;
-                      const disabled = !logo && l.id !== 'text';
-                      return (
-                        <button
-                          key={l.id}
-                          type="button"
-                          role="radio"
-                          aria-checked={active}
-                          disabled={disabled}
-                          onClick={() => setLayout(l.id)}
-                          title={disabled ? 'Upload a logo to use this layout' : l.label}
-                          className={`flex flex-col sm:flex-row items-center justify-center gap-1.5 py-2.5 px-2 text-[11px] sm:text-xs font-semibold uppercase tracking-[0.1em] rounded-sm border transition-all ${
-                            active
-                              ? 'bg-brand-maroon text-brand-cream border-brand-maroon'
-                              : 'bg-brand-cream text-brand-maroon border-brand-bronze/40 hover:border-brand-maroon'
-                          } disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-brand-bronze/40`}
-                        >
-                          <Icon className={`w-4 h-4 ${active ? 'text-brand-bronze-light' : 'text-brand-bronze-dark'}`} />
-                          {l.label}
-                        </button>
-                      );
-                    })}
-                  </div>
-                  {!logo && <p className="mt-1.5 text-[11px] text-brand-brown/60">Upload a logo in step 03 to unlock logo layouts.</p>}
-                </div>
-
-                <div>
-                  <span className={fieldLabel}>Typeface</span>
-                  <div className="mt-2 grid grid-cols-2 gap-2" role="radiogroup" aria-label="Typeface">
-                    {FONTS.map((f) => {
-                      const active = f.id === font;
-                      return (
-                        <button
-                          key={f.id}
-                          type="button"
-                          role="radio"
-                          aria-checked={active}
-                          onClick={() => setFont(f.id)}
-                          className={`flex items-center justify-center gap-2.5 py-2.5 px-3 rounded-sm border transition-all ${
-                            active
-                              ? 'bg-brand-maroon text-brand-cream border-brand-maroon'
-                              : 'bg-brand-cream text-brand-maroon border-brand-bronze/40 hover:border-brand-maroon'
-                          }`}
-                        >
-                          <span className={`text-xl leading-none ${f.className}`}>{f.sample}</span>
-                          <span className="text-[11px] sm:text-xs font-semibold uppercase tracking-[0.1em]">{f.label}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  <div>
-                    <div className="flex items-baseline justify-between">
-                      <label htmlFor="cl-scale" className={fieldLabel}>
-                        Text Size
-                      </label>
-                      <span className="text-xs font-semibold text-brand-bronze-dark">{Math.round(textScale * 100)}%</span>
-                    </div>
-                    <input
-                      id="cl-scale"
-                      type="range"
-                      min={0.75}
-                      max={1.3}
-                      step={0.05}
-                      value={textScale}
-                      onChange={(e) => setTextScale(parseFloat(e.target.value))}
-                      className="mt-2 w-full accent-brand-maroon cursor-pointer"
-                    />
-                  </div>
-                  <div>
-                    <div className="flex items-baseline justify-between">
-                      <label htmlFor="cl-offset" className={fieldLabel}>
-                        Vertical Position
-                      </label>
-                      <span className="text-xs font-semibold text-brand-bronze-dark">
-                        {offsetY < -0.15 ? 'Higher' : offsetY > 0.15 ? 'Lower' : 'Centred'}
-                      </span>
-                    </div>
-                    <input
-                      id="cl-offset"
-                      type="range"
-                      min={-1}
-                      max={1}
-                      step={0.05}
-                      value={offsetY}
-                      onChange={(e) => setOffsetY(parseFloat(e.target.value))}
-                      className="mt-2 w-full accent-brand-maroon cursor-pointer"
-                    />
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  {logoUsed ? (
-                    <label className="inline-flex items-center gap-2.5 cursor-pointer text-sm text-brand-brown">
-                      <input
-                        type="checkbox"
-                        checked={logoBacking}
-                        onChange={(e) => setLogoBacking(e.target.checked)}
-                        className="w-4 h-4 accent-brand-maroon"
-                      />
-                      Place logo on a white badge
-                      <span className="text-[11px] text-brand-brown/55">(turn off for photos)</span>
-                    </label>
-                  ) : (
-                    <span />
-                  )}
-                  <button
-                    type="button"
-                    onClick={resetPlacement}
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-brand-bronze-dark hover:text-brand-maroon transition-colors"
-                  >
-                    <RotateCcw className="w-3.5 h-3.5" /> Reset placement
-                  </button>
-                </div>
-              </div>
-            </Step>
-
-            {/* 06 — Order details */}
-            <Step n="06" title="Your Order Details" hint="Tell us how many bottles you need. We'll confirm pricing and availability.">
+            {/* 04 — Order details */}
+            <Step n="04" title="Your Order Details" hint="Tell us how many bottles you need. We'll confirm pricing and availability.">
               <div className="space-y-5">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div>

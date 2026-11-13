@@ -78,10 +78,10 @@ Public (rate-limited per IP; CORS only for `FRONTEND_URL` / `ALLOWED_ORIGINS`):
 | Method | Path | Notes |
 | --- | --- | --- |
 | GET | `/api/health` | Database and provider configuration status. |
-| GET | `/api/products` | The sizes on sale: `{ products: [{ code, name, size, unitPricePaise }] }`. `unitPricePaise` is `null` until the owner sets a price. Not cached. |
+| GET | `/api/products` | The sizes on sale: `{ products: [{ code, name, size, unitPricePaise }] }`. `unitPricePaise` is `null` until the owner sets a price. Not cached. When the database is unavailable it answers `{ available: false, products: [] }` (the website then offers WhatsApp ordering). |
 | POST | `/api/product-orders` | Online order (see below). Returns `201 { orderId, orderStatus: "PENDING", customerEmail, customerWhatsApp, teamNotified, order }`, where `order` is the saved order with server-side prices. Duplicates behave as for `/api/orders`. |
 | POST | `/api/orders` | Custom bottle order. Returns `201 { orderId, orderStatus: "PENDING", customerEmail, customerWhatsApp, teamNotified }`. Same `clientRequestId` or identical content within 15 minutes → `200` with the same order (`duplicate: true`). |
-| POST | `/api/enquiries` | Contact-form enquiry (`source: "contact"`). Still accepts `source: "custom_bottle"` for compatibility. |
+| POST | `/api/enquiries` | Contact-form enquiry (`source: "contact"`). Returns `{ enquiryId, teamWhatsApp, customerEmail, teamNotified }`; `teamWhatsApp` is `accepted` / `delivered` once WhatsApp took the company copy, `not_sent` when the Cloud API is not configured, `failed` or `sending` otherwise. Still accepts `source: "custom_bottle"` for compatibility. |
 | GET/POST | `/api/webhooks/whatsapp` | Meta verification handshake; delivery statuses and STOP/START replies. Signature-checked with `META_APP_SECRET`. |
 | POST | `/api/webhooks/brevo?token=…` | Brevo delivery events (token-checked). |
 
@@ -145,7 +145,7 @@ JWTs are HS256 with issuer `prime-h2o` and audience `prime-h2o-admin`, signed wi
 | --- | --- |
 | Online order form (`src/components/ProductOrder.tsx`, section `#order`) | `fetchProducts()` → `GET /api/products`, then `submitProductOrder()` → `POST /api/product-orders`. Shows the confirmation from the saved order. If the API cannot be reached it offers WhatsApp and phone ordering instead of a broken form. |
 | Custom bottle form (`src/components/LabelStudio.tsx`) | `submitOrder()` → `POST /api/orders`. Sends name, company, phone, email, bottle size, quantity, delivery date, instructions, label design, logo, preview and the WhatsApp opt-in checkbox (unticked by default) with an optional WhatsApp number. |
-| Contact form (`src/components/ContactSection.tsx`) | `submitEnquiry()` → `POST /api/enquiries` |
+| Contact form (`src/components/ContactSection.tsx`) | `submitEnquiry()` → `POST /api/enquiries`, which saves the enquiry and sends the company a WhatsApp message (template `prime_new_enquiry`) when the Cloud API is configured. The response field `teamWhatsApp` says whether WhatsApp accepted that message. If it did not (Cloud API not configured or failing), or the server cannot be reached, the form offers a WhatsApp click-to-chat link (`wa.me/918143489222`) with every detail URL-encoded, and says clearly that the enquiry is sent only when the customer presses Send in WhatsApp. |
 | Admin dashboard (`admin.html`, `src/admin/`) | `/api/admin/*` with the session cookie |
 
 Same origin by default. If the website is hosted on a different domain from the API, set `VITE_API_BASE` when building the website and `FRONTEND_URL` on the server.
