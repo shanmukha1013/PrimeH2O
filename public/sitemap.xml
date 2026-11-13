@@ -2,17 +2,17 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
-    <loc>https://primeh2o.in/</loc>
-    <lastmod>2026-11-12</lastmod>
-    <image:image><image:loc>https://primeh2o.in/og-image.jpg</image:loc></image:image>
-    <image:image><image:loc>https://primeh2o.in/assets/bottle_trio.png</image:loc></image:image>
-    <image:image><image:loc>https://primeh2o.in/assets/bottle_250ml.png</image:loc></image:image>
-    <image:image><image:loc>https://primeh2o.in/assets/bottle_500ml.png</image:loc></image:image>
-    <image:image><image:loc>https://primeh2o.in/assets/bottle_1000ml.png</image:loc></image:image>
-    <image:image><image:loc>https://primeh2o.in/assets/hero_bottle.png</image:loc></image:image>
+    <loc>https://primeh2o.vercel.app/</loc>
+    <lastmod>2026-11-13</lastmod>
+    <image:image><image:loc>https://primeh2o.vercel.app/og-image.jpg</image:loc></image:image>
+    <image:image><image:loc>https://primeh2o.vercel.app/assets/bottle_trio.png</image:loc></image:image>
+    <image:image><image:loc>https://primeh2o.vercel.app/assets/bottle_250ml.png</image:loc></image:image>
+    <image:image><image:loc>https://primeh2o.vercel.app/assets/bottle_500ml.png</image:loc></image:image>
+    <image:image><image:loc>https://primeh2o.vercel.app/assets/bottle_1000ml.png</image:loc></image:image>
+    <image:image><image:loc>https://primeh2o.vercel.app/assets/hero_bottle.png</image:loc></image:image>
   </url>
   <url>
-    <loc>https://primeh2o.in/PRIME_H2O_Catalogue.pdf</loc>
+    <loc>https://primeh2o.vercel.app/PRIME_H2O_Catalogue.pdf</loc>
     <lastmod>2026-11-06</lastmod>
   </url>
 </urlset>

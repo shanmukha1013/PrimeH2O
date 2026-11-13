@@ -1,5 +1,7 @@
 # PrimeH2O
 
+**Live website: [primeh2o.vercel.app](https://primeh2o.vercel.app/)** — PRIME H₂O packaged drinking water, Nagole, Bandlaguda, Hyderabad.
+
 Website for **PRIME H₂O** packaged drinking water ("I Trust PRIME"). It has a product showcase, **online ordering** (any mix of 250 / 500 / 1000 mL bottles with a delivery address, WhatsApp and email confirmations), a custom-label bottle studio with order requests, a contact form, and an admin dashboard where the owner confirms orders, updates their status and sets prices.
 
 ## Tech stack

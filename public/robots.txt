@@ -3,4 +3,4 @@ Allow: /
 Disallow: /admin
 Disallow: /api/
 
-Sitemap: https://primeh2o.in/sitemap.xml
+Sitemap: https://primeh2o.vercel.app/sitemap.xml
