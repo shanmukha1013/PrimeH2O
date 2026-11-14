@@ -1,0 +1,12 @@
+{
+  "name": "PRIME H2O — Packaged Drinking Water",
+  "short_name": "PRIME H2O",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F8EFE5",
+  "theme_color": "#500D18",
+  "icons": [
+    { "src": "/favicon-192x192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/favicon-512x512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
