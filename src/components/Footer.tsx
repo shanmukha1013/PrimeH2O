@@ -69,7 +69,7 @@ export const Footer: React.FC = () => {
               About PRIME H₂O
             </h4>
             <p className="text-xs sm:text-sm text-brand-cream/80 leading-relaxed font-light">
-              At PRIME-H₂O, we are committed to delivering pure, safe and refreshing drinking water, because your well-being is our priority.
+              PRIME H₂O (PRIME H2O / PrimeH2O) delivers pure, mineral-balanced packaged drinking water in Hyderabad across Nagole, Bandlaguda, and surrounding regions.
             </p>
             <div className="pt-2">
               <span className="font-editorial italic text-lg text-brand-bronze-light">
@@ -109,6 +109,24 @@ export const Footer: React.FC = () => {
                   className="hover:text-brand-bronze transition-colors"
                 >
                   The PRIME Range
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#order"
+                  onClick={(e) => handleNavClick(e, '#order')}
+                  className="hover:text-brand-bronze transition-colors"
+                >
+                  Order Online
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#customize"
+                  onClick={(e) => handleNavClick(e, '#customize')}
+                  className="hover:text-brand-bronze transition-colors"
+                >
+                  Custom Branding
                 </a>
               </li>
               <li>

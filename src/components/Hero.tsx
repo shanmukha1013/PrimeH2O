@@ -181,12 +181,13 @@ export const Hero: React.FC = () => {
                 <span className="block italic text-brand-bronze-light font-light">
                   A Promise of Greatness.
                 </span>
+                <span className="sr-only"> — PRIME H₂O (Prime H2O) Packaged Drinking Water in Hyderabad</span>
               </h1>
             </div>
 
             {/* Supporting Text */}
             <p className="text-sm sm:text-base md:text-xl text-brand-cream/85 font-light leading-relaxed max-w-xl text-balance">
-              Discover <strong className="font-semibold text-brand-cream">PRIME H₂O</strong> — refreshing packaged drinking water, designed for everyday moments.
+              Discover <strong className="font-semibold text-brand-cream">PRIME H₂O</strong> (PRIME H2O / PrimeH2O) — refreshing packaged drinking water crafted for everyday hydration, events, and bulk supply across Hyderabad from Nagole and Bandlaguda.
             </p>
 
             {/* Brand Statement Badge */}

@@ -332,7 +332,7 @@ export const ProductOrder: React.FC<ProductOrderProps> = ({ preselect }) => {
                         }`}
                       >
                         <div className="w-12 h-20 sm:w-16 sm:h-24 shrink-0 flex items-end justify-center rounded-tile bg-brand-cream-dark/40 border border-brand-bronze/20 overflow-hidden">
-                          <img src={imageFor(p.code)} alt="" className="h-[90%] w-auto object-contain drop-shadow-[0_6px_8px_rgba(80,13,24,0.18)]" loading="lazy" />
+                          <img src={imageFor(p.code)} alt={`${p.name} packaged drinking water bottle`} className="h-[90%] w-auto object-contain drop-shadow-[0_6px_8px_rgba(80,13,24,0.18)]" loading="lazy" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="font-semibold text-brand-maroon text-sm sm:text-base">{p.name}</div>

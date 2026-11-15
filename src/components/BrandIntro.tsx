@@ -55,10 +55,10 @@ export const BrandIntro: React.FC = () => {
             className="lg:col-span-7 border-l-2 border-brand-bronze/50 pl-5 sm:pl-8 space-y-6 text-base sm:text-lg text-brand-brown/90 leading-relaxed"
           >
             <p className="text-lg sm:text-xl text-brand-brown">
-              <strong className="font-semibold text-brand-maroon">PRIME H₂O</strong> is not just a brand; it is a name built on people's trust and belief. Born as a startup after overcoming numerous hurdles, PRIME H₂O entered the market with one simple mission: to provide the best-quality drinking water to everyone.
+              <strong className="font-semibold text-brand-maroon">PRIME H₂O</strong> (also known as PRIME H2O or PrimeH2O) is not just a brand; it is a name built on people's trust and belief. Born as a startup after overcoming numerous hurdles, PRIME H₂O entered the market with one simple mission: to provide the best-quality packaged drinking water across Hyderabad.
             </p>
             <p>
-              Our water undergoes multiple filtration processes, with carefully balanced TDS, appropriate pH levels and essential minerals, to deliver quality hydration.
+              Operating from Nagole and Bandlaguda, Hyderabad, our water undergoes multi-stage filtration processes, with carefully balanced TDS, appropriate pH levels and essential minerals, delivering pure, safe hydration in 250 mL, 500 mL, and 1000 mL bottles.
             </p>
           </motion.div>
 

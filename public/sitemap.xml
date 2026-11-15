@@ -3,16 +3,42 @@
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://primeh2o.vercel.app/</loc>
-    <lastmod>2026-11-13</lastmod>
-    <image:image><image:loc>https://primeh2o.vercel.app/og-image.jpg</image:loc></image:image>
-    <image:image><image:loc>https://primeh2o.vercel.app/assets/bottle_trio.png</image:loc></image:image>
-    <image:image><image:loc>https://primeh2o.vercel.app/assets/bottle_250ml.png</image:loc></image:image>
-    <image:image><image:loc>https://primeh2o.vercel.app/assets/bottle_500ml.png</image:loc></image:image>
-    <image:image><image:loc>https://primeh2o.vercel.app/assets/bottle_1000ml.png</image:loc></image:image>
-    <image:image><image:loc>https://primeh2o.vercel.app/assets/hero_bottle.png</image:loc></image:image>
+    <lastmod>2026-11-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://primeh2o.vercel.app/logo-512.png</image:loc>
+      <image:title>PRIME H₂O Official Brand Logo</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://primeh2o.vercel.app/og-image.jpg</image:loc>
+      <image:title>PRIME H₂O Packaged Drinking Water</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://primeh2o.vercel.app/assets/bottle_trio.png</image:loc>
+      <image:title>PRIME H₂O Bottle Range 250mL 500mL 1000mL</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://primeh2o.vercel.app/assets/bottle_250ml.png</image:loc>
+      <image:title>PRIME H₂O 250 mL Single-Serve Bottle</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://primeh2o.vercel.app/assets/bottle_500ml.png</image:loc>
+      <image:title>PRIME H₂O 500 mL Everyday Hydration Bottle</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://primeh2o.vercel.app/assets/bottle_1000ml.png</image:loc>
+      <image:title>PRIME H₂O 1000 mL Sharing Bottle</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://primeh2o.vercel.app/assets/hero_bottle.png</image:loc>
+      <image:title>PRIME H₂O Signature Bottle</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://primeh2o.vercel.app/PRIME_H2O_Catalogue.pdf</loc>
     <lastmod>2026-11-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
   </url>
 </urlset>
