@@ -70,7 +70,7 @@ export const BrandStoryModal: React.FC<BrandStoryModalProps> = ({
                 Our Solemn Commitment
               </span>
               <p className="text-sm sm:text-base italic font-serif text-brand-brown leading-relaxed">
-                &ldquo;At PRIME-H₂O, we are committed to delivering pure, safe and refreshing drinking water, because your well-being is our priority.&rdquo;
+                &ldquo;At PRIME H₂O, we are committed to delivering pure, safe and refreshing drinking water, because your well-being is our priority.&rdquo;
               </p>
             </div>
 

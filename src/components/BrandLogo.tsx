@@ -37,7 +37,7 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
           } ${isLight ? 'text-brand-cream' : 'text-brand-maroon'}`}
         >
           PRIME
-        </span>
+        </span>{' '}
         <span
           className={`font-sans font-semibold tracking-wider ${
             h2oSizes[size]

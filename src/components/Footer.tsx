@@ -41,7 +41,7 @@ export const Footer: React.FC = () => {
         <div className="border-b border-brand-bronze/25 pb-10 flex items-center justify-between gap-6">
           <div>
             <span className="text-xs uppercase tracking-[0.28em] font-semibold text-brand-bronze block mb-2">
-              THE GREATNESS OF PRIME-H₂O
+              THE GREATNESS OF PRIME H₂O
             </span>
             <BrandLogo variant="light" size="md" showTagline={true} />
           </div>
@@ -228,7 +228,7 @@ export const Footer: React.FC = () => {
           </p>
 
           <p className="font-editorial italic text-sm text-brand-bronze">
-            THE GREATNESS OF PRIME-H₂O &bull; I Trust PRIME
+            THE GREATNESS OF PRIME H₂O &bull; I Trust PRIME
           </p>
 
           <div className="flex items-center gap-4 text-[11px] uppercase tracking-wider">

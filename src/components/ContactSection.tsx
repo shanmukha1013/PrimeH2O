@@ -214,7 +214,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ prefilledSize = 
                   Official Contact Desk
                 </span>
                 <h3 className="font-sans text-2xl font-extrabold uppercase tracking-widest text-brand-maroon mt-1">
-                  PRIME-H₂O
+                  PRIME H₂O
                 </h3>
                 <p className="text-xs uppercase tracking-[0.2em] font-medium text-brand-brown mt-0.5">
                   PACKAGED DRINKING WATER

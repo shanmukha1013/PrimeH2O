@@ -51,7 +51,10 @@
     />
     <meta name="twitter:image" content="https://primeh2o.vercel.app/og-image.jpg" />
 
-    <!-- Google Search Site Name & Organization Structured Data (Schema.org JSON-LD) -->
+    <!-- Site name for Google Search: the single WebSite entity below. alternateName is in order of
+         preference; the lowercase domain is Google's recommended last fallback, so Google never
+         falls back to the hosting platform's name. -->
+
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -60,14 +63,7 @@
             "@type": "WebSite",
             "@id": "https://primeh2o.vercel.app/#website",
             "name": "PRIME H₂O",
-            "alternateName": [
-              "PRIME H2O",
-              "PrimeH2O",
-              "primeh2o",
-              "primeh20",
-              "PRIME-H2O",
-              "PRIME H20"
-            ],
+            "alternateName": ["PRIME H2O", "PrimeH2O", "primeh2o.vercel.app"],
             "url": "https://primeh2o.vercel.app/",
             "inLanguage": "en-IN",
             "publisher": { "@id": "https://primeh2o.vercel.app/#organization" }

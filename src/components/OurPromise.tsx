@@ -59,7 +59,7 @@ export const OurPromise: React.FC = () => {
             >
               <div className="space-y-3">
                 <span className="text-xs uppercase tracking-[0.28em] font-semibold text-brand-bronze block">
-                  The Greatness of PRIME-H₂O
+                  The Greatness of PRIME H₂O
                 </span>
 
                 {/* Heading with Script Style Flourish */}
@@ -73,7 +73,7 @@ export const OurPromise: React.FC = () => {
 
               {/* Exact Catalogue Message */}
               <blockquote className="font-sans text-xl sm:text-2xl md:text-3xl text-brand-cream font-light leading-relaxed">
-                &ldquo;At <strong className="font-semibold text-brand-cream">PRIME-H₂O</strong>, we are committed to delivering pure, safe and refreshing drinking water, because your well-being is our priority.&rdquo;
+                &ldquo;At <strong className="font-semibold text-brand-cream">PRIME H₂O</strong>, we are committed to delivering pure, safe and refreshing drinking water, because your well-being is our priority.&rdquo;
               </blockquote>
 
               {/* Three Value Pillars in Bronze/Cream styling */}

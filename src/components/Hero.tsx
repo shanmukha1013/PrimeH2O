@@ -170,18 +170,18 @@ export const Hero: React.FC = () => {
             <div className="inline-flex items-center gap-2.5">
               <span className="w-6 sm:w-8 h-[1px] bg-brand-bronze" />
               <span className="text-[11px] sm:text-xs uppercase tracking-[0.28em] font-semibold text-brand-bronze">
-                THE GREATNESS OF PRIME-H₂O
+                THE GREATNESS OF PRIME H₂O
               </span>
             </div>
 
             {/* Main Editorial Headline */}
             <div className="space-y-1">
               <h1 className="font-editorial text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-normal text-brand-cream leading-[1.05] tracking-tight text-balance">
-                Every Drop.
+                Every Drop.{' '}
                 <span className="block italic text-brand-bronze-light font-light">
                   A Promise of Greatness.
                 </span>
-                <span className="sr-only"> — PRIME H₂O (Prime H2O) Packaged Drinking Water in Hyderabad</span>
+                <span className="sr-only"> — PRIME H₂O, premium packaged drinking water in Hyderabad</span>
               </h1>
             </div>
 

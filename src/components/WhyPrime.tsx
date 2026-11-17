@@ -14,7 +14,7 @@ export const WhyPrime: React.FC = () => {
     {
       title: 'HEALTHY FOR LIFE',
       tagline: 'Your Well-Being is Our Priority',
-      desc: 'At PRIME-H₂O, safety is never an afterthought. Every bottle is sealed with a tamper-evident champagne bronze closure and packaged under stringent sanitary discipline, ensuring safe hydration you and your family can trust daily.',
+      desc: 'At PRIME H₂O, safety is never an afterthought. Every bottle is sealed with a tamper-evident champagne bronze closure and packaged under stringent sanitary discipline, ensuring safe hydration you and your family can trust daily.',
       icon: Shield,
       editorialQuote: 'Every bottle sealed for total safety.',
     },
@@ -80,7 +80,7 @@ export const WhyPrime: React.FC = () => {
 
               <div className="relative bg-brand-maroon/5 py-10 px-6 rounded-tile flex flex-col items-center justify-center overflow-hidden">
                 <span className="text-[10px] uppercase tracking-[0.24em] font-bold text-brand-bronze mb-2">
-                  THE GREATNESS OF PRIME-H₂O
+                  THE GREATNESS OF PRIME H₂O
                 </span>
                 
                 <img
