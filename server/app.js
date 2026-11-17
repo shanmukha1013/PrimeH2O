@@ -346,7 +346,10 @@ export function createApp({ config, store, notifier, log, pool, auth }) {
     };
     app.get(['/admin', '/admin/', '/admin.html'], adminPage);
     app.use(express.static(DIST, { index: 'index.html', maxAge: '1h' }));
-    app.use((req, res, next) => (req.method === 'GET' ? res.sendFile(path.join(DIST, 'index.html')) : next()));
+    // Page routes fall back to the app; a missing file (/favicon.png, /x.jpg) is a real 404, not the homepage.
+    app.use((req, res, next) =>
+      req.method === 'GET' && !/\.[A-Za-z0-9]+$/.test(req.path) ? res.sendFile(path.join(DIST, 'index.html')) : next(),
+    );
   }
 
   // eslint-disable-next-line no-unused-vars

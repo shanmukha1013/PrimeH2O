@@ -1,142 +1,120 @@
-"""Generates the official PRIME H2O site icons and favicons for browser tabs,
-Google Search results, Apple Touch devices, and PWA web app manifests.
+"""Generates the PRIME H2O site icon in every size browsers, Google Search,
+Apple devices and the web app manifest ask for.
 
-Google Search Favicon Guidelines:
-- Square image, multiple of 48px (48x48, 96x96, 192x192, 512x512).
-- Google rescales to 16x16 in search results next to the site name.
-- Safe zone: Google displays the icon inside a circular crop in mobile and desktop search,
-  so all essential elements (PRIME H2O typography and bronze circular frame) must stay
-  within r <= 0.46 * size.
+Design: the real PRIME / H2O lettering from public/assets/logo_header.png,
+cream PRIME over bronze H2O, on a solid PRIME burgundy (#500D18) square.
+The lettering is as large as it can be while every corner of it stays inside
+the inscribed circle (Google and Android may show the icon round-cropped).
+
+Google Search favicon rules: square, a multiple of 48px (48, 96, 192...),
+publicly crawlable, and stable at its URL.
 
 Run from project root: python generate_favicons.py
-Writes:
-  public/favicon.ico (16, 32, 48)
-  public/favicon-16x16.png
-  public/favicon-32x32.png
-  public/favicon-48x48.png   (Primary Google Search Favicon)
-  public/favicon-96x96.png
-  public/apple-touch-icon.png (180x180)
-  public/favicon-192x192.png
-  public/favicon-512x512.png
-  public/logo-512.png        (Schema.org Organization logo)
+Writes into public/:
+  favicon.ico (16, 32, 48)          favicon-16x16.png  favicon-32x32.png
+  favicon-48x48.png (Google)        favicon-96x96.png  favicon-192x192.png
+  favicon-512x512.png               favicon.png (192)  apple-touch-icon.png (180)
+  logo-512.png (Organization logo)  favicon.svg (same icon, for old links)
 """
-from PIL import Image, ImageDraw
+import base64
+import io
+
 import numpy as np
+from PIL import Image, ImageFilter
 
-SOURCE_HEADER = 'public/assets/logo_header.png'
-MAROON_TOP = (84, 13, 24)
-MAROON_BOTTOM = (56, 8, 16)
-BRONZE = (198, 154, 112)
-CREAM = (251, 247, 242)
+SOURCE = 'public/assets/logo_header.png'
+SOURCE_BG = np.array([83, 11, 22])        # burgundy behind the lettering in the source
+PRIME_BOX = (38, 28, 565, 142)            # PRIME lettering in the source (l, t, r, b)
+H2O_BOX = (236, 239, 366, 290)            # H2O lettering in the source
+
+BURGUNDY = (0x50, 0x0D, 0x18)             # #500D18
+CREAM = (254, 250, 238)
+BRONZE = (238, 175, 109)
+
+PRIME_WIDTH = 0.80                        # share of the icon width
+H2O_WIDTH = 0.42
+GAP = 0.055
 
 
-def build_master_icon(size=1024):
-    header = Image.open(SOURCE_HEADER).convert('RGBA')
+def lettering_mask(box, width_px):
+    """Alpha mask of one lettering block, scaled to width_px with crisp edges."""
+    crop = np.array(Image.open(SOURCE).convert('RGB').crop(box)).astype(float)
+    distance = np.sqrt(((crop - SOURCE_BG) ** 2).sum(axis=2))
+    coverage = np.clip(distance / distance.max(), 0, 1)
+    mask = Image.fromarray((coverage * 255).astype(np.uint8), 'L')
+    height_px = round(width_px * mask.height / mask.width)
+    mask = mask.resize((width_px, height_px), Image.Resampling.LANCZOS)
+    # Re-sharpen the edges that upscaling softened: steep ramp around 50% coverage.
+    a = np.asarray(mask, dtype=float) / 255.0
+    a = np.clip((a - 0.5) * 3.0 + 0.5, 0, 1)
+    a = a * a * (3 - 2 * a)
+    return Image.fromarray((a * 255).astype(np.uint8), 'L')
 
-    # Extract PRIME text
-    prime_crop = header.crop((36, 28, 564, 142))
 
-    # Extract H2O text
-    arr = np.array(header)
-    bg = arr[0, 0]
-    diff = np.abs(arr[:, :, :3].astype(int) - bg[:3].astype(int)).sum(axis=2)
-    h2o_mask = (diff > 40)
-    h2o_mask[:200, :] = False
-    h2o_rows = np.where(h2o_mask.any(axis=1))[0]
-    h2o_cols = np.where(h2o_mask.any(axis=0))[0]
-    h2o_crop = header.crop((h2o_cols[0], h2o_rows[0], h2o_cols[-1] + 1, h2o_rows[-1] + 1))
+def build_master(size=1024):
+    icon = Image.new('RGB', (size, size), BURGUNDY)
+    prime = lettering_mask(PRIME_BOX, round(size * PRIME_WIDTH))
+    h2o = lettering_mask(H2O_BOX, round(size * H2O_WIDTH))
+    gap = round(size * GAP)
 
-    # Clean transparency for crisp compositing
-    def clean_alpha(crop_img):
-        c_arr = np.array(crop_img).astype(float)
-        bg_col = np.array([83.0, 11.0, 22.0])
-        dist = np.sqrt(np.sum((c_arr[:, :, :3] - bg_col) ** 2, axis=2))
-        alpha = np.clip((dist - 8.0) / 18.0 * 255.0, 0, 255).astype(np.uint8)
-        res = np.zeros((crop_img.height, crop_img.width, 4), dtype=np.uint8)
-        res[:, :, :3] = crop_img.convert('RGB')
-        res[:, :, 3] = alpha
-        return Image.fromarray(res)
+    top = (size - (prime.height + gap + h2o.height)) // 2
+    icon.paste(Image.new('RGB', prime.size, CREAM), ((size - prime.width) // 2, top), prime)
+    icon.paste(Image.new('RGB', h2o.size, BRONZE), ((size - h2o.width) // 2, top + prime.height + gap), h2o)
 
-    prime_clean = clean_alpha(prime_crop)
-    h2o_clean = clean_alpha(h2o_crop)
+    # Every lettering corner must sit inside the inscribed circle.
+    half = size / 2
+    corners = [
+        (prime.width / 2, half - top),
+        (h2o.width / 2, top + prime.height + gap + h2o.height - half),
+    ]
+    reach = max(np.hypot(x, y) for x, y in corners) / half
+    assert reach <= 0.92, f'lettering reaches {reach:.2f} of the radius'
+    return icon
 
-    # Create master canvas with rich luxury maroon gradient
-    master = Image.new('RGBA', (size, size), (0, 0, 0, 0))
-    grad = Image.new('RGBA', (size, size))
-    for y in range(size):
-        t = y / (size - 1)
-        r = int(MAROON_TOP[0] * (1 - t) + MAROON_BOTTOM[0] * t)
-        g = int(MAROON_TOP[1] * (1 - t) + MAROON_BOTTOM[1] * t)
-        b = int(MAROON_TOP[2] * (1 - t) + MAROON_BOTTOM[2] * t)
-        for x in range(size):
-            grad.putpixel((x, y), (r, g, b, 255))
-    master.paste(grad)
 
-    # Draw refined bronze circular accent ring (safe zone for circular search display)
-    d = ImageDraw.Draw(master)
-    c = size / 2.0
-    r_circle = size * 0.465
-    ring_w = max(2, int(size * 0.022))
-    d.ellipse(
-        [c - r_circle, c - r_circle, c + r_circle, c + r_circle],
-        outline=BRONZE + (255,),
-        width=ring_w,
-    )
-
-    # Scale and center PRIME
-    prime_w = int(size * 0.72)
-    prime_h = int(prime_w * prime_clean.height / prime_clean.width)
-    p_resized = prime_clean.resize((prime_w, prime_h), Image.Resampling.LANCZOS)
-
-    # Scale and center H2O
-    h2o_w = int(size * 0.28)
-    h2o_h = int(h2o_w * h2o_clean.height / h2o_clean.width)
-    h_resized = h2o_clean.resize((h2o_w, h2o_h), Image.Resampling.LANCZOS)
-
-    # Vertical stack placement inside the ring
-    gap = int(size * 0.05)
-    total_h = prime_h + gap + h2o_h
-
-    p_x = int((size - prime_w) / 2)
-    p_y = int((size - total_h) / 2)
-    h_x = int((size - h2o_w) / 2)
-    h_y = p_y + prime_h + gap
-
-    master.alpha_composite(p_resized, (p_x, p_y))
-    master.alpha_composite(h_resized, (h_x, h_y))
-
-    return master
+def scaled(master, size):
+    out = master.resize((size, size), Image.Resampling.LANCZOS)
+    if size <= 48:
+        out = out.filter(ImageFilter.UnsharpMask(radius=0.6, percent=60, threshold=0))
+    return out
 
 
 def main():
-    master = build_master_icon(1024)
-    rgb_master = master.convert('RGB')
+    master = build_master(1024)
 
-    outputs = {
-        16: 'public/favicon-16x16.png',
-        32: 'public/favicon-32x32.png',
-        48: 'public/favicon-48x48.png',
-        96: 'public/favicon-96x96.png',
-        180: 'public/apple-touch-icon.png',
-        192: 'public/favicon-192x192.png',
-        512: 'public/favicon-512x512.png',
+    pngs = {
+        16: ['favicon-16x16.png'],
+        32: ['favicon-32x32.png'],
+        48: ['favicon-48x48.png'],
+        96: ['favicon-96x96.png'],
+        180: ['apple-touch-icon.png'],
+        192: ['favicon-192x192.png', 'favicon.png'],
+        512: ['favicon-512x512.png', 'logo-512.png'],
     }
+    for size, names in pngs.items():
+        img = scaled(master, size)
+        for name in names:
+            img.save(f'public/{name}', 'PNG', optimize=True)
+            print(f'wrote public/{name} ({size}x{size})')
 
-    for size, path in outputs.items():
-        rgb_master.resize((size, size), Image.Resampling.LANCZOS).save(path, 'PNG', optimize=True)
-        print(f'wrote {path} ({size}x{size})')
-
-    # Schema.org Organization logo
-    rgb_master.resize((512, 512), Image.Resampling.LANCZOS).save('public/logo-512.png', 'PNG', optimize=True)
-    print('wrote public/logo-512.png (512x512)')
-
-    # Multi-resolution favicon.ico containing 16x16, 32x32, 48x48
-    rgb_master.save(
-        'public/favicon.ico',
-        format='ICO',
-        sizes=[(16, 16), (32, 32), (48, 48)],
-    )
+    ico_frames = [scaled(master, s) for s in (48, 32, 16)]
+    ico_frames[0].save('public/favicon.ico', format='ICO', sizes=[(48, 48), (32, 32), (16, 16)],
+                       append_images=ico_frames[1:])
     print('wrote public/favicon.ico (16, 32, 48)')
+
+    # SVG wrapper around the 192px icon: the page Google indexed first linked
+    # /favicon.svg, so that URL must keep returning this icon, not a web page.
+    buf = io.BytesIO()
+    scaled(master, 192).save(buf, 'PNG', optimize=True)
+    data = base64.b64encode(buf.getvalue()).decode('ascii')
+    with open('public/favicon.svg', 'w', encoding='utf-8', newline='\n') as f:
+        f.write(
+            '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" '
+            'width="192" height="192" viewBox="0 0 192 192">'
+            '<title>PRIME H2O</title>'
+            f'<image width="192" height="192" xlink:href="data:image/png;base64,{data}"/></svg>\n'
+        )
+    print('wrote public/favicon.svg (192x192 icon)')
 
 
 if __name__ == '__main__':

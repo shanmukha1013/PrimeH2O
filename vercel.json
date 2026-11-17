@@ -25,7 +25,7 @@
     { "source": "/api/(.*)", "destination": "/api" },
     { "source": "/admin", "destination": "/admin.html" },
     { "source": "/admin/", "destination": "/admin.html" },
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "source": "/((?!.*\\.[A-Za-z0-9]+$).*)", "destination": "/index.html" }
   ],
   "headers": [
     {
