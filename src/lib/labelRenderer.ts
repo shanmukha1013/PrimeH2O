@@ -123,16 +123,16 @@ export const BOTTLES: Record<SizeId, BottleSpec> = {
     w: 175,
     h: 820,
     cropTop: 215,
-    cropBottom: 775,
-    label: { left: 5, right: 168, top: 436, bottom: 613 },
+    cropBottom: 767,
+    label: { left: 11, right: 164, top: 416, bottom: 552 },
   },
   '500 mL': {
     src: '/assets/bottle_500ml.png',
     w: 210,
     h: 920,
     cropTop: 233,
-    cropBottom: 920,
-    label: { left: 3, right: 207, top: 507, bottom: 727 },
+    cropBottom: 918,
+    label: { left: 10, right: 201, top: 485, bottom: 651 },
   },
   '1000 mL': {
     src: '/assets/bottle_1000ml.png',
@@ -140,7 +140,7 @@ export const BOTTLES: Record<SizeId, BottleSpec> = {
     h: 1000,
     cropTop: 213,
     cropBottom: 1000,
-    label: { left: 6, right: 252, top: 540, bottom: 804 },
+    label: { left: 17, right: 242, top: 502, bottom: 699 },
   },
 };
 
