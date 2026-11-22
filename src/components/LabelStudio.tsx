@@ -16,7 +16,6 @@ import {
   Eye,
   Info,
   ExternalLink,
-  Palette,
 } from 'lucide-react';
 import { productsData } from './ProductCollection';
 import { WHATSAPP_DISPLAY, whatsappUrlWithText } from '../lib/business';
@@ -32,13 +31,11 @@ import {
 } from '../lib/enquiryApi';
 import {
   BOTTLES,
-  LABEL_COLOURS,
   LABEL_H,
   LABEL_W,
   TEMPLATES,
   colourName,
   composePreview,
-  isDarkColour,
   renderBottle,
   renderLabel,
   templateMeta,
@@ -112,7 +109,6 @@ export const LabelStudio: React.FC = () => {
   // template's own colour and typeface, with the logo above the text when one is uploaded.
   const [size, setSize] = useState<SizeId>('500 mL');
   const [template, setTemplate] = useState<TemplateId>('corporate');
-  const [selectedColor, setSelectedColor] = useState<string>('#500D18');
   const [title, setTitle] = useState('');
   const [message, setMessage] = useState('');
   const [logo, setLogo] = useState<LogoState | null>(null);
@@ -147,7 +143,7 @@ export const LabelStudio: React.FC = () => {
   const design = useMemo<LabelDesign>(
     () => ({
       template,
-      color: selectedColor,
+      color: meta.color,
       title,
       message,
       logo: logo?.img ?? null,
@@ -157,7 +153,7 @@ export const LabelStudio: React.FC = () => {
       textScale: 1,
       offsetY: 0,
     }),
-    [template, selectedColor, meta.font, title, message, logo],
+    [template, meta.color, meta.font, title, message, logo],
   );
 
   // preload the three product photos
@@ -203,7 +199,7 @@ export const LabelStudio: React.FC = () => {
       TEMPLATES.forEach((m) => {
         const thumb = thumbRefs.current[m.id];
         if (!thumb) return;
-        renderLabel(scratch, { ...design, template: m.id, color: selectedColor, font: m.font });
+        renderLabel(scratch, { ...design, template: m.id, color: m.color, font: m.font });
         const ctx = thumb.getContext('2d');
         if (!ctx) return;
         ctx.clearRect(0, 0, thumb.width, thumb.height);
@@ -212,7 +208,7 @@ export const LabelStudio: React.FC = () => {
       });
     }, 120);
     return () => window.clearTimeout(t);
-  }, [design, selectedColor, fontsTick]);
+  }, [design, fontsTick]);
 
   // floating "Preview" shortcut on small screens when the preview is off-screen
   useEffect(() => {
@@ -279,7 +275,7 @@ export const LabelStudio: React.FC = () => {
 
   const logoUsed = !!logo;
   const bottlePct = ((BOTTLES[size].cropBottom - BOTTLES[size].cropTop) / MAX_CROP_H) * 92;
-  const summaryLines = [`Bottle: ${size}   ·   Template: ${meta.name}`, `Label colour: ${colourName(selectedColor)}`];
+  const summaryLines = [`Bottle: ${size}   ·   Template: ${meta.name}`, `Label colour: ${colourName(meta.color)}`];
   const layoutText = logo ? 'Logo above text' : 'Text only';
 
   const buildMessage = () => {
@@ -303,7 +299,7 @@ export const LabelStudio: React.FC = () => {
       '',
       '*LABEL DESIGN*',
       `Template: ${meta.name}`,
-      `Label colour: ${colourName(selectedColor)}`,
+      `Label colour: ${colourName(meta.color)}`,
       `Name on label: ${title.trim()}`,
       `Message / tagline: ${message.trim() || '—'}`,
       `Layout: ${layoutText}`,
@@ -362,7 +358,7 @@ export const LabelStudio: React.FC = () => {
         message: order.instructions.trim() || undefined,
         customization: {
           template: meta.name,
-          colour: colourName(selectedColor),
+          colour: colourName(meta.color),
           labelName: title.trim(),
           tagline: message.trim(),
           layout: layoutText,
@@ -524,8 +520,8 @@ export const LabelStudio: React.FC = () => {
                       <div>
                         <dt className="text-[10px] uppercase tracking-[0.18em] text-brand-brown/60">Colour</dt>
                         <dd className="flex items-center gap-1.5 font-semibold text-brand-maroon">
-                          <span className="w-3.5 h-3.5 rounded-full border border-brand-bronze/60 shadow-xs shrink-0" style={{ background: selectedColor }} />
-                          {colourName(selectedColor).replace(/ \(.*\)$/, '')}
+                          <span className="w-3 h-3 rounded-full border border-brand-bronze/60" style={{ background: meta.color }} />
+                          {colourName(meta.color).replace(/ \(.*\)$/, '')}
                         </dd>
                       </div>
                     </dl>
@@ -593,93 +589,7 @@ export const LabelStudio: React.FC = () => {
             </Step>
 
             {/* 02 — Template */}
-            <Step n="02" title="Select a Label Template & Colour" hint="Choose a label colour and style. Templates and bottle mockup adapt live.">
-              {/* Colour Palette */}
-              <div className="mb-6 pb-6 border-b border-brand-bronze/25">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <Palette className="w-4 h-4 text-brand-bronze-dark" />
-                    <span className={fieldLabel}>Label Colour</span>
-                  </div>
-                  <span className="text-xs font-semibold text-brand-maroon flex items-center gap-1.5 bg-brand-cream-light px-2.5 py-1 rounded-sm border border-brand-bronze/30 shadow-xs">
-                    <span className="w-3.5 h-3.5 rounded-full border border-brand-bronze/60 shadow-xs shrink-0" style={{ background: selectedColor }} />
-                    {colourName(selectedColor)}
-                  </span>
-                </div>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2.5" role="radiogroup" aria-label="Label colour">
-                  {LABEL_COLOURS.map((c) => {
-                    const isSelected = selectedColor.toLowerCase() === c.hex.toLowerCase();
-                    return (
-                      <button
-                        key={c.hex}
-                        type="button"
-                        role="radio"
-                        aria-checked={isSelected}
-                        onClick={() => setSelectedColor(c.hex)}
-                        className={`flex items-center gap-2.5 p-2.5 rounded-tile border text-left transition-all duration-200 ${
-                          isSelected
-                            ? 'border-brand-maroon bg-brand-cream-light shadow-luxury ring-1 ring-brand-maroon'
-                            : 'border-brand-bronze/35 bg-brand-cream hover:border-brand-bronze hover:bg-brand-cream-light'
-                        }`}
-                      >
-                        <span
-                          className="w-4 h-4 rounded-full border border-brand-bronze/50 shrink-0 shadow-xs flex items-center justify-center"
-                          style={{ backgroundColor: c.hex }}
-                        >
-                          {isSelected && (
-                            <Check className={`w-2.5 h-2.5 ${isDarkColour(c.hex) ? 'text-brand-cream' : 'text-brand-maroon'}`} />
-                          )}
-                        </span>
-                        <span className="text-xs font-semibold text-brand-maroon truncate leading-tight">{c.name}</span>
-                      </button>
-                    );
-                  })}
-                  {/* Custom Colour Picker */}
-                  {(() => {
-                    const isPreset = LABEL_COLOURS.some((c) => c.hex.toLowerCase() === selectedColor.toLowerCase());
-                    return (
-                      <label
-                        className={`relative flex items-center gap-2.5 p-2.5 rounded-tile border text-left transition-all duration-200 cursor-pointer ${
-                          !isPreset
-                            ? 'border-brand-maroon bg-brand-cream-light shadow-luxury ring-1 ring-brand-maroon'
-                            : 'border-brand-bronze/35 bg-brand-cream hover:border-brand-bronze hover:bg-brand-cream-light'
-                        }`}
-                      >
-                        <span
-                          className="w-4 h-4 rounded-full border border-brand-bronze/50 shrink-0 shadow-xs flex items-center justify-center overflow-hidden"
-                          style={{
-                            background: !isPreset
-                              ? selectedColor
-                              : 'conic-gradient(from 180deg at 50% 50%, #FF0000 0deg, #FFFF00 60deg, #00FF00 120deg, #00FFFF 180deg, #0000FF 240deg, #FF00FF 300deg, #FF0000 360deg)',
-                          }}
-                        >
-                          {!isPreset && (
-                            <Check className={`w-2.5 h-2.5 ${isDarkColour(selectedColor) ? 'text-brand-cream' : 'text-brand-maroon'}`} />
-                          )}
-                        </span>
-                        <span className="text-xs font-semibold text-brand-maroon truncate leading-tight">
-                          {!isPreset ? selectedColor.toUpperCase() : 'Custom Colour…'}
-                        </span>
-                        <input
-                          type="color"
-                          value={selectedColor.startsWith('#') && selectedColor.length === 7 ? selectedColor : '#500D18'}
-                          onChange={(e) => setSelectedColor(e.target.value)}
-                          className="sr-only"
-                          aria-label="Pick custom label colour"
-                        />
-                      </label>
-                    );
-                  })()}
-                </div>
-              </div>
-
-              {/* Template Style Grid */}
-              <div className="mb-3">
-                <span className={fieldLabel}>Choose Template Style</span>
-                <span className="text-xs text-brand-brown/70 block mt-0.5">
-                  Click a template to apply it. All styles adapt to your selected colour.
-                </span>
-              </div>
+            <Step n="02" title="Select a Label Template" hint="Each design updates live with your name and logo.">
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4" role="radiogroup" aria-label="Label template">
                 {TEMPLATES.map((m) => {
                   const Icon = TEMPLATE_ICONS[m.id];
@@ -729,68 +639,6 @@ export const LabelStudio: React.FC = () => {
             {/* 03 — Personalise */}
             <Step n="03" title="Personalize Your Label" hint="Your name, logo and message appear on the bottle instantly.">
               <div className="space-y-5">
-                {/* Quick Colour Bar in Step 03 */}
-                <div className="pb-5 border-b border-brand-bronze/25">
-                  <div className="flex items-center justify-between mb-2.5">
-                    <div className="flex items-center gap-2">
-                      <Palette className="w-4 h-4 text-brand-bronze-dark" />
-                      <label className={fieldLabel}>Label Colour</label>
-                    </div>
-                    <span className="text-xs font-semibold text-brand-maroon flex items-center gap-1.5">
-                      <span className="w-3 h-3 rounded-full border border-brand-bronze/60 shadow-xs shrink-0" style={{ background: selectedColor }} />
-                      {colourName(selectedColor)}
-                    </span>
-                  </div>
-                  <div className="flex flex-wrap items-center gap-2">
-                    {LABEL_COLOURS.map((c) => {
-                      const isSelected = selectedColor.toLowerCase() === c.hex.toLowerCase();
-                      return (
-                        <button
-                          key={c.hex}
-                          type="button"
-                          onClick={() => setSelectedColor(c.hex)}
-                          className={`flex items-center gap-1.5 py-1.5 px-2.5 rounded-sm border text-xs font-semibold transition-all ${
-                            isSelected
-                              ? 'border-brand-maroon bg-brand-cream-light shadow-xs ring-1 ring-brand-maroon text-brand-maroon'
-                              : 'border-brand-bronze/35 bg-brand-cream hover:border-brand-bronze text-brand-brown'
-                          }`}
-                        >
-                          <span className="w-3 h-3 rounded-full border border-brand-bronze/40 shrink-0" style={{ backgroundColor: c.hex }} />
-                          <span>{c.name}</span>
-                        </button>
-                      );
-                    })}
-                    {(() => {
-                      const isPreset = LABEL_COLOURS.some((c) => c.hex.toLowerCase() === selectedColor.toLowerCase());
-                      return (
-                        <label
-                          className={`relative flex items-center gap-1.5 py-1.5 px-2.5 rounded-sm border text-xs font-semibold transition-all cursor-pointer ${
-                            !isPreset
-                              ? 'border-brand-maroon bg-brand-cream-light shadow-xs ring-1 ring-brand-maroon text-brand-maroon'
-                              : 'border-brand-bronze/35 bg-brand-cream hover:border-brand-bronze text-brand-brown'
-                          }`}
-                        >
-                          <span
-                            className="w-3 h-3 rounded-full border border-brand-bronze/40 shrink-0 overflow-hidden"
-                            style={{
-                              background: !isPreset
-                                ? selectedColor
-                                : 'conic-gradient(from 180deg at 50% 50%, #FF0000 0deg, #FFFF00 60deg, #00FF00 120deg, #00FFFF 180deg, #0000FF 240deg, #FF00FF 300deg, #FF0000 360deg)',
-                            }}
-                          />
-                          <span>{!isPreset ? selectedColor.toUpperCase() : 'Custom…'}</span>
-                          <input
-                            type="color"
-                            value={selectedColor.startsWith('#') && selectedColor.length === 7 ? selectedColor : '#500D18'}
-                            onChange={(e) => setSelectedColor(e.target.value)}
-                            className="sr-only"
-                            aria-label="Pick custom label colour"
-                          />
-                        </label>
-                      );
-                    })()}
-                  </div>
-                </div>
                 <div>
                   <div className="flex items-baseline justify-between">
                     <label htmlFor="cl-title" className={fieldLabel}>
