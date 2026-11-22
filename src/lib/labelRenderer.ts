@@ -43,8 +43,8 @@ export const TEMPLATES: TemplateMeta[] = [
   {
     id: 'corporate',
     name: 'Corporate Branding',
-    blurb: 'Clean, confident and boardroom-ready.',
-    color: '#500D18',
+    blurb: 'Clean, confident and boardroom-ready in PRIME purple.',
+    color: '#4C1D95',
     font: 'sans',
     sampleTitle: 'Your Company',
     sampleMessage: 'Annual Leadership Summit 2026',
@@ -52,8 +52,8 @@ export const TEMPLATES: TemplateMeta[] = [
   {
     id: 'personal',
     name: 'Personal Branding',
-    blurb: 'A refined monogram look for your name.',
-    color: '#49302B',
+    blurb: 'A refined monogram frame for your name.',
+    color: '#581C87',
     font: 'serif',
     sampleTitle: 'Your Name',
     sampleMessage: 'Stay refreshed, stay inspired',
@@ -61,8 +61,8 @@ export const TEMPLATES: TemplateMeta[] = [
   {
     id: 'wedding',
     name: 'Wedding & Celebrations',
-    blurb: 'Ornate ivory frame with gold detailing.',
-    color: '#F8EFE5',
+    blurb: 'Ornate white & royal purple celebrations frame.',
+    color: '#6B21A8',
     font: 'serif',
     sampleTitle: 'Aarav & Diya',
     sampleMessage: 'Together Forever · 12.12.2026',
@@ -70,8 +70,8 @@ export const TEMPLATES: TemplateMeta[] = [
   {
     id: 'birthday',
     name: 'Birthday Events',
-    blurb: 'Festive bunting, confetti and waves.',
-    color: '#6E1624',
+    blurb: 'Festive purple bunting, confetti and waves.',
+    color: '#7E22CE',
     font: 'sans',
     sampleTitle: 'Ananya Turns 5',
     sampleMessage: 'Thank you for celebrating with us!',
@@ -79,8 +79,8 @@ export const TEMPLATES: TemplateMeta[] = [
   {
     id: 'promo',
     name: 'Promotional & Marketing',
-    blurb: 'Bold sunburst with a call-out badge.',
-    color: '#C69A70',
+    blurb: 'Bold sunburst with a royal purple call-out badge.',
+    color: '#431182',
     font: 'sans',
     sampleTitle: 'Your Brand',
     sampleMessage: 'Grand Opening · Visit Us Today',
@@ -88,20 +88,18 @@ export const TEMPLATES: TemplateMeta[] = [
 ];
 
 export const LABEL_COLOURS = [
-  { name: 'Burgundy', hex: '#500D18' },
-  { name: 'Rosewood', hex: '#6E1624' },
-  { name: 'Champagne Gold', hex: '#C69A70' },
-  { name: 'Ivory', hex: '#F8EFE5' },
-  { name: 'Pearl White', hex: '#FFFFFF' },
-  { name: 'Cocoa', hex: '#49302B' },
-  { name: 'Onyx', hex: '#1B1716' },
+  { name: 'PRIME White & Purple', hex: '#581C87' },
+  { name: 'Royal Purple & White', hex: '#4C1D95' },
+  { name: 'Imperial Violet & White', hex: '#6B21A8' },
+  { name: 'Festive Purple & White', hex: '#7E22CE' },
+  { name: 'Deep Indigo Purple & White', hex: '#431182' },
 ];
 
 export const templateMeta = (id: TemplateId) => TEMPLATES.find((t) => t.id === id) ?? TEMPLATES[0];
 
 export const colourName = (hex: string) => {
   const match = LABEL_COLOURS.find((c) => c.hex.toLowerCase() === hex.toLowerCase());
-  return match ? `${match.name} (${match.hex.toUpperCase()})` : `Custom colour (${hex.toUpperCase()})`;
+  return match ? match.name : 'PRIME White & Purple';
 };
 
 // ---------------------------------------------------------------------------
@@ -150,18 +148,16 @@ export const BOTTLES: Record<SizeId, BottleSpec> = {
 
 type RGB = [number, number, number];
 
-const CREAM: RGB = [251, 247, 242];
-const MAROON: RGB = [62, 9, 18];
-const GOLD: RGB = [198, 154, 112];
-const GOLD_DARK: RGB = [150, 105, 62];
+const PURPLE_DEEP: RGB = [59, 7, 100];       // #3B0764 - rich brand royal purple ink (high-contrast AAA text)
+const PURPLE_ROYAL: RGB = [88, 28, 135];     // #581C87 - PRIME bottle brand royal purple
+const PURPLE_TINT: RGB = [248, 245, 254];    // #F8F5FE - subtle off-white purple tint for depth
 const WHITE: RGB = [255, 255, 255];
-const BLACK: RGB = [0, 0, 0];
 
 const hexToRgb = (hex: string): RGB => {
   let h = hex.replace('#', '').trim();
   if (h.length === 3) h = h.split('').map((c) => c + c).join('');
   const n = parseInt(h, 16);
-  if (Number.isNaN(n)) return [80, 13, 24];
+  if (Number.isNaN(n)) return PURPLE_ROYAL;
   return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
 };
 
@@ -171,18 +167,6 @@ const mix = (a: RGB, b: RGB, t: number): RGB => [
   Math.round(a[1] + (b[1] - a[1]) * t),
   Math.round(a[2] + (b[2] - a[2]) * t),
 ];
-const luminance = ([r, g, b]: RGB) => {
-  const f = (c: number) => {
-    const v = c / 255;
-    return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
-  };
-  return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
-};
-const contrast = (a: RGB, b: RGB) => {
-  const la = luminance(a);
-  const lb = luminance(b);
-  return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05);
-};
 
 interface Scheme {
   bg: RGB;
@@ -195,21 +179,19 @@ interface Scheme {
   dark: boolean;
 }
 
+// Builds the signature PRIME H₂O White & Purple scheme.
+// White/light label background, and all artwork, typography, borders and decorative flourishes in purple.
 const makeScheme = (hex: string): Scheme => {
-  const bg = hexToRgb(hex);
-  const dark = luminance(bg) < 0.22;
-  const ink: RGB = dark ? CREAM : contrast(bg, MAROON) >= 4.5 ? MAROON : [24, 12, 10];
-  let accent: RGB = dark ? GOLD : GOLD_DARK;
-  if (contrast(bg, accent) < 2.2) accent = dark ? CREAM : MAROON;
+  const accent = hexToRgb(hex);
   return {
-    bg,
-    bgLight: mix(bg, WHITE, dark ? 0.12 : 0.4),
-    bgDark: mix(bg, BLACK, dark ? 0.35 : 0.1),
-    ink,
-    soft: mix(ink, bg, 0.22),
+    bg: WHITE,
+    bgLight: WHITE,
+    bgDark: PURPLE_TINT,
+    ink: PURPLE_DEEP,
+    soft: mix(PURPLE_DEEP, accent, 0.45),
     accent,
-    onAccent: luminance(accent) > 0.3 ? MAROON : CREAM,
-    dark,
+    onAccent: WHITE,
+    dark: false,
   };
 };
 
@@ -597,7 +579,9 @@ function bgBirthday(ctx: CanvasRenderingContext2D, s: Scheme) {
   ctx.fillRect(0, 0, LABEL_W, LABEL_H);
 
   const rand = seeded(7);
-  const palette = [s.accent, mix(s.accent, WHITE, 0.45), s.ink, mix(s.bg, WHITE, s.dark ? 0.35 : 0)];
+  const PURPLE_LAVENDER: RGB = [192, 132, 252];
+  const PURPLE_VIOLET: RGB = [147, 51, 234];
+  const palette = [s.accent, PURPLE_LAVENDER, s.ink, PURPLE_VIOLET];
   for (let i = 0; i < 110; i++) {
     const x = rand() * LABEL_W;
     const y = 150 + rand() * (LABEL_H - 330);
@@ -621,8 +605,8 @@ function bgBirthday(ctx: CanvasRenderingContext2D, s: Scheme) {
   }
   // bunting
   const flags = 24;
-  const flagColours = [s.accent, s.ink, mix(s.accent, WHITE, 0.45)];
-  ctx.strokeStyle = rgba(s.ink, 0.6);
+  const flagColours = [s.accent, PURPLE_VIOLET, s.ink, PURPLE_LAVENDER];
+  ctx.strokeStyle = rgba(s.ink, 0.5);
   ctx.lineWidth = 3;
   ctx.beginPath();
   for (let i = 0; i <= 60; i++) {
@@ -671,7 +655,7 @@ function bgPromo(ctx: CanvasRenderingContext2D, s: Scheme) {
   const cx = LABEL_W / 2;
   const cy = LABEL_H * 0.44;
   const rays = 36;
-  ctx.fillStyle = rgba(s.dark ? WHITE : s.bgDark, s.dark ? 0.05 : 0.22);
+  ctx.fillStyle = rgba(s.accent, 0.08);
   for (let i = 0; i < rays; i += 2) {
     const a0 = (i / rays) * TAU;
     const a1 = ((i + 1) / rays) * TAU;
@@ -683,12 +667,12 @@ function bgPromo(ctx: CanvasRenderingContext2D, s: Scheme) {
     ctx.fill();
   }
   const glow = ctx.createRadialGradient(cx, cy, 30, cx, cy, 520);
-  glow.addColorStop(0, rgba(s.bgLight, 0.9));
+  glow.addColorStop(0, rgba(s.bgLight, 0.95));
   glow.addColorStop(1, rgba(s.bg, 0));
   ctx.fillStyle = glow;
   ctx.fillRect(0, 0, LABEL_W, LABEL_H);
   // diagonal sashes
-  ctx.fillStyle = rgba(s.ink, 0.9);
+  ctx.fillStyle = rgba(s.ink, 0.95);
   ctx.beginPath();
   ctx.moveTo(0, 0);
   ctx.lineTo(300, 0);
@@ -703,7 +687,7 @@ function bgPromo(ctx: CanvasRenderingContext2D, s: Scheme) {
   ctx.lineTo(0, 340);
   ctx.closePath();
   ctx.fill();
-  ctx.fillStyle = rgba(s.ink, 0.9);
+  ctx.fillStyle = rgba(s.ink, 0.95);
   ctx.beginPath();
   ctx.moveTo(LABEL_W, LABEL_H - 400);
   ctx.lineTo(LABEL_W, LABEL_H - 130);
@@ -713,7 +697,7 @@ function bgPromo(ctx: CanvasRenderingContext2D, s: Scheme) {
   // bottom ribbon
   ctx.fillStyle = rgba(s.accent);
   ctx.fillRect(0, LABEL_H - 130, LABEL_W, 90);
-  ctx.fillStyle = rgba(s.ink, 0.9);
+  ctx.fillStyle = rgba(s.ink, 0.95);
   ctx.fillRect(0, LABEL_H - 40, LABEL_W, 40);
 }
 
@@ -1007,16 +991,16 @@ export function composePreview(bottleCanvas: HTMLCanvasElement, labelCanvas: HTM
   c.height = H;
   const ctx = c.getContext('2d');
   if (!ctx) return Promise.resolve(null);
-  ctx.fillStyle = '#F8EFE5';
+  ctx.fillStyle = '#FAF8FC';
   ctx.fillRect(0, 0, W, H);
-  ctx.fillStyle = '#500D18';
+  ctx.fillStyle = '#4C1D95';
   ctx.fillRect(0, 0, W, 120);
   ctx.textBaseline = 'middle';
-  ctx.fillStyle = '#FBF7F2';
+  ctx.fillStyle = '#FFFFFF';
   ctx.font = fontSpec(800, 40, SANS);
   setSpacing(ctx, 8);
   ctx.fillText('PRIME H₂O', 70, 60);
-  ctx.fillStyle = '#C69A70';
+  ctx.fillStyle = '#E9D5FF';
   ctx.font = fontSpec(600, 22, SANS);
   setSpacing(ctx, 5);
   ctx.textAlign = 'right';
@@ -1041,20 +1025,20 @@ export function composePreview(bottleCanvas: HTMLCanvasElement, labelCanvas: HTM
   const lh = (lw * LABEL_H) / LABEL_W;
   const ly = 200;
   ctx.save();
-  ctx.shadowColor = 'rgba(80,13,24,0.25)';
+  ctx.shadowColor = 'rgba(76,29,149,0.2)';
   ctx.shadowBlur = 40;
   ctx.shadowOffsetY = 16;
   ctx.drawImage(labelCanvas, lx, ly, lw, lh);
   ctx.restore();
-  ctx.strokeStyle = '#C69A70';
+  ctx.strokeStyle = '#7E22CE';
   ctx.lineWidth = 2;
   ctx.strokeRect(lx, ly, lw, lh);
 
-  ctx.fillStyle = '#500D18';
+  ctx.fillStyle = '#3B0764';
   ctx.font = fontSpec(700, 26, SANS);
   setSpacing(ctx, 1);
   lines.forEach((l, i) => ctx.fillText(l, lx, ly + lh + 60 + i * 40));
-  ctx.fillStyle = 'rgba(73,48,43,0.75)';
+  ctx.fillStyle = 'rgba(76,29,149,0.75)';
   ctx.font = fontSpec(500, 20, SANS);
   ctx.fillText('Preview for reference only. Final artwork, pricing and availability are confirmed by PRIME H₂O.', lx, H - 50);
   return new Promise((resolve) => c.toBlob(resolve, 'image/png'));

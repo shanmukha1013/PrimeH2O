@@ -275,7 +275,7 @@ export const LabelStudio: React.FC = () => {
 
   const logoUsed = !!logo;
   const bottlePct = ((BOTTLES[size].cropBottom - BOTTLES[size].cropTop) / MAX_CROP_H) * 92;
-  const summaryLines = [`Bottle: ${size}   ·   Template: ${meta.name}`, `Label colour: ${colourName(meta.color)}`];
+  const summaryLines = [`Bottle: ${size}   ·   Template: ${meta.name}`, `Label theme: ${colourName(meta.color)}`];
   const layoutText = logo ? 'Logo above text' : 'Text only';
 
   const buildMessage = () => {
@@ -299,7 +299,7 @@ export const LabelStudio: React.FC = () => {
       '',
       '*LABEL DESIGN*',
       `Template: ${meta.name}`,
-      `Label colour: ${colourName(meta.color)}`,
+      `Theme: ${colourName(meta.color)}`,
       `Name on label: ${title.trim()}`,
       `Message / tagline: ${message.trim() || '—'}`,
       `Layout: ${layoutText}`,
@@ -518,10 +518,12 @@ export const LabelStudio: React.FC = () => {
                         <dd className="font-semibold text-brand-maroon leading-snug">{meta.name}</dd>
                       </div>
                       <div>
-                        <dt className="text-[10px] uppercase tracking-[0.18em] text-brand-brown/60">Colour</dt>
+                        <dt className="text-[10px] uppercase tracking-[0.18em] text-brand-brown/60">Theme</dt>
                         <dd className="flex items-center gap-1.5 font-semibold text-brand-maroon">
-                          <span className="w-3 h-3 rounded-full border border-brand-bronze/60" style={{ background: meta.color }} />
-                          {colourName(meta.color).replace(/ \(.*\)$/, '')}
+                          <span className="w-3.5 h-3.5 rounded-full border border-purple-300 bg-white shadow-xs flex items-center justify-center overflow-hidden shrink-0">
+                            <span className="w-1/2 h-full bg-[#581C87] ml-auto" />
+                          </span>
+                          White &amp; Purple
                         </dd>
                       </div>
                     </dl>
@@ -589,7 +591,7 @@ export const LabelStudio: React.FC = () => {
             </Step>
 
             {/* 02 — Template */}
-            <Step n="02" title="Select a Label Template" hint="Each design updates live with your name and logo.">
+            <Step n="02" title="Select a Label Template" hint="All templates feature the signature PRIME H₂O white-and-purple theme.">
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4" role="radiogroup" aria-label="Label template">
                 {TEMPLATES.map((m) => {
                   const Icon = TEMPLATE_ICONS[m.id];
