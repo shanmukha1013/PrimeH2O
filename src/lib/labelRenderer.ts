@@ -213,6 +213,14 @@ const makeScheme = (hex: string): Scheme => {
   };
 };
 
+export const isDarkColour = (hex: string): boolean => {
+  try {
+    return luminance(hexToRgb(hex)) < 0.22;
+  } catch {
+    return true;
+  }
+};
+
 // ---------------------------------------------------------------------------
 // Drawing helpers
 // ---------------------------------------------------------------------------
