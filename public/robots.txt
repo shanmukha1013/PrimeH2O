@@ -3,4 +3,11 @@ Allow: /
 Disallow: /admin
 Disallow: /api/
 
+# Explicitly ensure Google search crawlers and favicon/image bots have full access
+User-agent: Googlebot
+Allow: /
+
+User-agent: Googlebot-Image
+Allow: /
+
 Sitemap: https://primeh2o.vercel.app/sitemap.xml
