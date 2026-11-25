@@ -61,21 +61,21 @@ const todayISO = () => {
 };
 
 const inputClass = (error?: string) =>
-  `w-full px-4 py-3 bg-brand-cream border text-sm text-brand-brown placeholder-brand-brown/40 focus:outline-none focus:ring-1 transition-all rounded-sm ${
+  `w-full px-4 py-3 bg-white border text-sm text-brand-slate placeholder-brand-slate/40 focus:outline-none focus:ring-1 transition-all rounded-sm ${
     error
       ? 'border-red-600 focus:ring-red-600'
-      : 'border-brand-bronze/40 focus:border-brand-maroon focus:ring-brand-maroon'
+      : 'border-brand-lavender/50 focus:border-brand-purple focus:ring-brand-purple'
   }`;
 
-const fieldLabel = 'block text-xs uppercase tracking-[0.16em] font-bold text-brand-maroon';
+const fieldLabel = 'block text-xs uppercase tracking-[0.16em] font-bold text-brand-purple';
 
 const Step: React.FC<{ n: string; title: string; hint?: string; children: React.ReactNode }> = ({ n, title, hint, children }) => (
-  <div className="bg-brand-cream-pure/80 border border-brand-bronze/30 rounded-frame p-5 sm:p-7 shadow-luxury">
+  <div className="bg-white/90 border border-brand-lavender/40 rounded-frame p-5 sm:p-7 shadow-luxury">
     <div className="flex items-start gap-4 mb-5">
-      <span className="font-editorial text-3xl sm:text-4xl leading-none text-brand-bronze">{n}</span>
+      <span className="font-editorial text-3xl sm:text-4xl leading-none text-brand-purple-light">{n}</span>
       <div className="pt-0.5">
-        <h3 className="text-xs sm:text-sm uppercase tracking-[0.2em] font-bold text-brand-maroon">{title}</h3>
-        {hint && <p className="text-xs sm:text-sm text-brand-brown/70 mt-1">{hint}</p>}
+        <h3 className="text-xs sm:text-sm uppercase tracking-[0.2em] font-bold text-brand-purple">{title}</h3>
+        {hint && <p className="text-xs sm:text-sm text-brand-slate/70 mt-1">{hint}</p>}
       </div>
     </div>
     {children}
@@ -436,25 +436,25 @@ export const LabelStudio: React.FC = () => {
     <section
       ref={sectionRef}
       id="customize"
-      className="relative py-16 sm:py-20 md:py-24 lg:py-28 bg-cream-gradient border-t border-brand-bronze/25 scroll-mt-[72px] lg:scroll-mt-[80px] overflow-hidden"
+      className="relative py-16 sm:py-20 md:py-24 lg:py-28 bg-lavender-gradient border-t border-brand-lavender/35 scroll-mt-[72px] lg:scroll-mt-[80px] overflow-hidden"
       aria-label="Create your own PRIME custom label"
     >
-      <div className="absolute top-40 -left-40 w-[480px] h-[480px] rounded-full bg-brand-bronze/10 blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-20 -right-40 w-[420px] h-[420px] rounded-full bg-brand-maroon/5 blur-[120px] pointer-events-none" />
+      <div className="absolute top-40 -left-40 w-[480px] h-[480px] rounded-full bg-brand-lavender/10 blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-20 -right-40 w-[420px] h-[420px] rounded-full bg-brand-purple/5 blur-[120px] pointer-events-none" />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="max-w-3xl mx-auto text-center space-y-4">
           <div className="inline-flex items-center gap-2">
-            <span className="w-8 h-px bg-brand-bronze" />
-            <span className="text-xs uppercase tracking-[0.28em] font-semibold text-brand-maroon">Create Your Own PRIME</span>
-            <span className="w-8 h-px bg-brand-bronze" />
+            <span className="w-8 h-px bg-brand-purple-light" />
+            <span className="text-xs uppercase tracking-[0.28em] font-semibold text-brand-purple">Create Your Own PRIME</span>
+            <span className="w-8 h-px bg-brand-purple-light" />
           </div>
-          <h2 className="font-editorial text-4xl sm:text-5xl md:text-6xl font-normal text-brand-maroon leading-tight text-balance">
+          <h2 className="font-editorial text-4xl sm:text-5xl md:text-6xl font-normal text-brand-purple leading-tight text-balance">
             Your Bottle. Your Brand.{' '}
-            <span className="italic text-brand-bronze-dark">Your Identity.</span>
+            <span className="italic text-brand-purple">Your Identity.</span>
           </h2>
-          <p className="text-base sm:text-lg text-brand-brown/85 max-w-2xl mx-auto text-balance">
+          <p className="text-base sm:text-lg text-brand-slate/85 max-w-2xl mx-auto text-balance">
             Make every bottle uniquely yours. Personalize PRIME H₂O bottles with your company logo, brand name, event
             details or personal message.
           </p>
@@ -464,16 +464,16 @@ export const LabelStudio: React.FC = () => {
           {/* ================= PREVIEW (right on desktop, first on mobile) ================= */}
           <aside className="lg:col-span-5 lg:order-2">
             <div ref={previewRef} className="lg:sticky lg:top-24 scroll-mt-24">
-              <div className="rounded-frame border border-brand-bronze/40 shadow-luxury-lg overflow-hidden bg-brand-cream-pure">
-                <div className="flex items-center justify-between px-5 py-3 bg-maroon-gradient">
-                  <span className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.24em] font-bold text-brand-cream">
+              <div className="rounded-frame border border-brand-lavender/50 shadow-luxury-lg overflow-hidden bg-white">
+                <div className="flex items-center justify-between px-5 py-3 bg-purple-gradient">
+                  <span className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.24em] font-bold text-white">
                     <span className="relative flex w-2 h-2">
-                      <span className="absolute inset-0 rounded-full bg-brand-bronze animate-ping opacity-75" />
-                      <span className="relative w-2 h-2 rounded-full bg-brand-bronze" />
+                      <span className="absolute inset-0 rounded-full bg-brand-purple-light animate-ping opacity-75" />
+                      <span className="relative w-2 h-2 rounded-full bg-brand-purple-light" />
                     </span>
                     Live Preview
                   </span>
-                  <span className="text-[11px] uppercase tracking-[0.2em] font-semibold text-brand-bronze-light border border-brand-bronze/50 rounded-sm px-2.5 py-1">
+                  <span className="text-[11px] uppercase tracking-[0.2em] font-semibold text-brand-lavender border border-brand-lavender/60 rounded-sm px-2.5 py-1">
                     {size}
                   </span>
                 </div>
@@ -490,16 +490,16 @@ export const LabelStudio: React.FC = () => {
                     style={{ height: `${bottlePct}%` }}
                   />
                   {!bottleImgs[size] && (
-                    <div className="absolute inset-0 flex items-center justify-center text-xs uppercase tracking-[0.2em] text-brand-brown/60">
+                    <div className="absolute inset-0 flex items-center justify-center text-xs uppercase tracking-[0.2em] text-brand-slate/60">
                       Loading bottle…
                     </div>
                   )}
                 </div>
 
                 {/* Flat artwork + summary */}
-                <div className="grid grid-cols-5 gap-4 p-4 sm:p-5 border-t border-brand-bronze/25 bg-brand-cream-light">
+                <div className="grid grid-cols-5 gap-4 p-4 sm:p-5 border-t border-brand-lavender/35 bg-brand-lavender-pure">
                   <div className="col-span-3">
-                    <span className="block text-[10px] uppercase tracking-[0.22em] font-bold text-brand-bronze-dark mb-1.5">
+                    <span className="block text-[10px] uppercase tracking-[0.22em] font-bold text-brand-purple mb-1.5">
                       Label Artwork
                     </span>
                     <canvas
@@ -508,18 +508,18 @@ export const LabelStudio: React.FC = () => {
                       height={LABEL_H}
                       role="img"
                       aria-label="Flat view of your label artwork"
-                      className="w-full h-auto rounded-tile border border-brand-bronze/40 shadow-sm"
+                      className="w-full h-auto rounded-tile border border-brand-lavender/50 shadow-sm"
                     />
                   </div>
-                  <div className="col-span-2 flex flex-col justify-between gap-3 text-xs text-brand-brown">
+                  <div className="col-span-2 flex flex-col justify-between gap-3 text-xs text-brand-slate">
                     <dl className="space-y-1.5">
                       <div>
-                        <dt className="text-[10px] uppercase tracking-[0.18em] text-brand-brown/60">Template</dt>
-                        <dd className="font-semibold text-brand-maroon leading-snug">{meta.name}</dd>
+                        <dt className="text-[10px] uppercase tracking-[0.18em] text-brand-slate/60">Template</dt>
+                        <dd className="font-semibold text-brand-purple leading-snug">{meta.name}</dd>
                       </div>
                       <div>
-                        <dt className="text-[10px] uppercase tracking-[0.18em] text-brand-brown/60">Theme</dt>
-                        <dd className="flex items-center gap-1.5 font-semibold text-brand-maroon">
+                        <dt className="text-[10px] uppercase tracking-[0.18em] text-brand-slate/60">Theme</dt>
+                        <dd className="flex items-center gap-1.5 font-semibold text-brand-purple">
                           <span className="w-3.5 h-3.5 rounded-full border border-purple-300 bg-white shadow-xs flex items-center justify-center overflow-hidden shrink-0">
                             <span className="w-1/2 h-full bg-[#581C87] ml-auto" />
                           </span>
@@ -530,15 +530,15 @@ export const LabelStudio: React.FC = () => {
                     <button
                       type="button"
                       onClick={downloadPreview}
-                      className="inline-flex items-center justify-center gap-1.5 py-2 px-2 text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.14em] text-brand-maroon border border-brand-maroon/30 hover:bg-brand-cream-dark/60 transition-colors rounded-sm"
+                      className="inline-flex items-center justify-center gap-1.5 py-2 px-2 text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.14em] text-brand-purple border border-brand-purple/30 hover:bg-brand-lavender-light/60 transition-colors rounded-sm"
                     >
-                      <Download className="w-3.5 h-3.5 text-brand-bronze-dark" />
+                      <Download className="w-3.5 h-3.5 text-brand-purple" />
                       Download
                     </button>
                   </div>
                 </div>
               </div>
-              <p className="mt-3 text-[11px] text-brand-brown/65 text-center">
+              <p className="mt-3 text-[11px] text-brand-slate/65 text-center">
                 Digital preview for reference. Final print proof is shared by PRIME H₂O before production.
               </p>
             </div>
@@ -561,13 +561,13 @@ export const LabelStudio: React.FC = () => {
                       onClick={() => setSize(s)}
                       className={`group relative flex flex-col items-center gap-2 pt-4 pb-3 px-2 rounded-tile border transition-all duration-300 hover:-translate-y-0.5 ${
                         active
-                          ? 'border-brand-maroon ring-1 ring-brand-maroon bg-brand-cream-light shadow-luxury'
-                          : 'border-brand-bronze/35 bg-brand-cream hover:border-brand-bronze'
+                          ? 'border-brand-purple ring-1 ring-brand-maroon bg-brand-lavender-pure shadow-luxury'
+                          : 'border-brand-lavender/45 bg-white hover:border-brand-purple-light'
                       }`}
                     >
                       {active && (
-                        <span className="absolute top-2 right-2 w-5 h-5 rounded-full bg-brand-maroon flex items-center justify-center">
-                          <Check className="w-3 h-3 text-brand-cream" />
+                        <span className="absolute top-2 right-2 w-5 h-5 rounded-full bg-brand-purple flex items-center justify-center">
+                          <Check className="w-3 h-3 text-white" />
                         </span>
                       )}
                       <div className="h-24 sm:h-32 flex items-end">
@@ -578,9 +578,9 @@ export const LabelStudio: React.FC = () => {
                           style={{ height: `${((BOTTLES[s].cropBottom - BOTTLES[s].cropTop) / MAX_CROP_H) * 100}%` }}
                         />
                       </div>
-                      <span className="font-editorial text-xl sm:text-2xl font-semibold text-brand-maroon leading-none">{s}</span>
+                      <span className="font-editorial text-xl sm:text-2xl font-semibold text-brand-purple leading-none">{s}</span>
                       {p && (
-                        <span className="hidden sm:block text-[10px] uppercase tracking-[0.14em] text-brand-brown/70 text-center leading-tight">
+                        <span className="hidden sm:block text-[10px] uppercase tracking-[0.14em] text-brand-slate/70 text-center leading-tight">
                           {p.badge}
                         </span>
                       )}
@@ -605,8 +605,8 @@ export const LabelStudio: React.FC = () => {
                       onClick={() => chooseTemplate(m.id)}
                       className={`group text-left rounded-tile border overflow-hidden transition-all duration-300 hover:-translate-y-0.5 ${
                         active
-                          ? 'border-brand-maroon ring-1 ring-brand-maroon shadow-luxury bg-brand-cream-light'
-                          : 'border-brand-bronze/35 bg-brand-cream hover:border-brand-bronze hover:shadow-luxury'
+                          ? 'border-brand-purple ring-1 ring-brand-maroon shadow-luxury bg-brand-lavender-pure'
+                          : 'border-brand-lavender/45 bg-white hover:border-brand-purple-light hover:shadow-luxury'
                       }`}
                     >
                       <div className="relative">
@@ -620,17 +620,17 @@ export const LabelStudio: React.FC = () => {
                           className="block w-full h-auto"
                         />
                         {active && (
-                          <span className="absolute top-2 right-2 w-5 h-5 rounded-full bg-brand-maroon border border-brand-bronze flex items-center justify-center">
-                            <Check className="w-3 h-3 text-brand-cream" />
+                          <span className="absolute top-2 right-2 w-5 h-5 rounded-full bg-brand-purple border border-brand-purple-light flex items-center justify-center">
+                            <Check className="w-3 h-3 text-white" />
                           </span>
                         )}
                       </div>
                       <div className="p-2.5 sm:p-3">
-                        <span className="flex items-center gap-1.5 text-[11px] sm:text-xs font-bold uppercase tracking-[0.1em] text-brand-maroon leading-tight">
-                          <Icon className="w-3.5 h-3.5 shrink-0 text-brand-bronze-dark" />
+                        <span className="flex items-center gap-1.5 text-[11px] sm:text-xs font-bold uppercase tracking-[0.1em] text-brand-purple leading-tight">
+                          <Icon className="w-3.5 h-3.5 shrink-0 text-brand-purple" />
                           {m.name}
                         </span>
-                        <span className="hidden sm:block mt-1 text-[11px] text-brand-brown/70 leading-snug">{m.blurb}</span>
+                        <span className="hidden sm:block mt-1 text-[11px] text-brand-slate/70 leading-snug">{m.blurb}</span>
                       </div>
                     </button>
                   );
@@ -644,9 +644,9 @@ export const LabelStudio: React.FC = () => {
                 <div>
                   <div className="flex items-baseline justify-between">
                     <label htmlFor="cl-title" className={fieldLabel}>
-                      Company or Personal Name <span className="text-brand-maroon-rich">*</span>
+                      Company or Personal Name <span className="text-brand-purple-rich">*</span>
                     </label>
-                    <span className="text-[11px] text-brand-brown/50">{title.length}/40</span>
+                    <span className="text-[11px] text-brand-slate/50">{title.length}/40</span>
                   </div>
                   <input
                     id="cl-title"
@@ -666,14 +666,14 @@ export const LabelStudio: React.FC = () => {
                 <div>
                   <span className={fieldLabel}>Logo or Personal Image</span>
                   {logo ? (
-                    <div className="mt-1.5 flex items-center gap-4 p-3 border border-brand-bronze/40 rounded-sm bg-brand-cream">
-                      <div className="w-16 h-16 rounded-tile bg-white border border-brand-bronze/30 flex items-center justify-center overflow-hidden shrink-0">
+                    <div className="mt-1.5 flex items-center gap-4 p-3 border border-brand-lavender/50 rounded-sm bg-white">
+                      <div className="w-16 h-16 rounded-tile bg-white border border-brand-lavender/40 flex items-center justify-center overflow-hidden shrink-0">
                         <img src={logo.url} alt="Your uploaded logo" className="max-w-full max-h-full object-contain" />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="text-sm font-semibold text-brand-maroon truncate">{logo.file.name}</p>
-                        <p className="text-xs text-brand-brown/60">{(logo.file.size / 1024).toFixed(0)} KB · shown on your label</p>
-                        <label className="mt-1 inline-block text-xs font-semibold text-brand-bronze-dark underline cursor-pointer hover:text-brand-maroon">
+                        <p className="text-sm font-semibold text-brand-purple truncate">{logo.file.name}</p>
+                        <p className="text-xs text-brand-slate/60">{(logo.file.size / 1024).toFixed(0)} KB · shown on your label</p>
+                        <label className="mt-1 inline-block text-xs font-semibold text-brand-purple underline cursor-pointer hover:text-brand-purple">
                           Replace
                           <input
                             type="file"
@@ -689,7 +689,7 @@ export const LabelStudio: React.FC = () => {
                       <button
                         type="button"
                         onClick={removeLogo}
-                        className="p-2 text-brand-brown/60 hover:text-brand-maroon transition-colors"
+                        className="p-2 text-brand-slate/60 hover:text-brand-purple transition-colors"
                         aria-label="Remove logo"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -708,14 +708,14 @@ export const LabelStudio: React.FC = () => {
                         handleLogoFile(e.dataTransfer.files?.[0]);
                       }}
                       className={`mt-1.5 flex flex-col items-center justify-center gap-2 px-4 py-6 border-2 border-dashed rounded-sm cursor-pointer transition-colors text-center ${
-                        dragOver ? 'border-brand-maroon bg-brand-cream-dark/50' : 'border-brand-bronze/50 bg-brand-cream hover:border-brand-maroon/60'
+                        dragOver ? 'border-brand-purple bg-brand-lavender-light/50' : 'border-brand-lavender/60 bg-white hover:border-brand-purple/60'
                       }`}
                     >
-                      <span className="w-11 h-11 rounded-full bg-brand-maroon flex items-center justify-center">
-                        <ImagePlus className="w-5 h-5 text-brand-bronze-light" />
+                      <span className="w-11 h-11 rounded-full bg-brand-purple flex items-center justify-center">
+                        <ImagePlus className="w-5 h-5 text-brand-lavender" />
                       </span>
-                      <span className="text-sm font-semibold text-brand-maroon">Upload your logo or image</span>
-                      <span className="text-xs text-brand-brown/60">PNG, JPG, WEBP or SVG · up to 8 MB · drag &amp; drop or tap</span>
+                      <span className="text-sm font-semibold text-brand-purple">Upload your logo or image</span>
+                      <span className="text-xs text-brand-slate/60">PNG, JPG, WEBP or SVG · up to 8 MB · drag &amp; drop or tap</span>
                       <input
                         id="cl-logo"
                         type="file"
@@ -736,7 +736,7 @@ export const LabelStudio: React.FC = () => {
                     <label htmlFor="cl-message" className={fieldLabel}>
                       Custom Message or Tagline
                     </label>
-                    <span className="text-[11px] text-brand-brown/50">{message.length}/80</span>
+                    <span className="text-[11px] text-brand-slate/50">{message.length}/80</span>
                   </div>
                   <input
                     id="cl-message"
@@ -757,7 +757,7 @@ export const LabelStudio: React.FC = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div>
                     <label htmlFor="cl-name" className={fieldLabel}>
-                      Your Name <span className="text-brand-maroon-rich">*</span>
+                      Your Name <span className="text-brand-purple-rich">*</span>
                     </label>
                     <input
                       id="cl-name"
@@ -772,7 +772,7 @@ export const LabelStudio: React.FC = () => {
                   </div>
                   <div>
                     <label htmlFor="cl-company" className={fieldLabel}>
-                      Company Name <span className="normal-case tracking-normal font-medium text-brand-brown/55">(optional)</span>
+                      Company Name <span className="normal-case tracking-normal font-medium text-brand-slate/55">(optional)</span>
                     </label>
                     <input
                       id="cl-company"
@@ -786,7 +786,7 @@ export const LabelStudio: React.FC = () => {
                   </div>
                   <div>
                     <label htmlFor="cl-phone" className={fieldLabel}>
-                      Phone Number <span className="text-brand-maroon-rich">*</span>
+                      Phone Number <span className="text-brand-purple-rich">*</span>
                     </label>
                     <input
                       id="cl-phone"
@@ -801,7 +801,7 @@ export const LabelStudio: React.FC = () => {
                   </div>
                   <div>
                     <label htmlFor="cl-email" className={fieldLabel}>
-                      Email <span className="text-brand-maroon-rich">*</span>
+                      Email <span className="text-brand-purple-rich">*</span>
                     </label>
                     <input
                       id="cl-email"
@@ -833,7 +833,7 @@ export const LabelStudio: React.FC = () => {
                   </div>
                   <div>
                     <label htmlFor="cl-quantity" className={fieldLabel}>
-                      Quantity (bottles) <span className="text-brand-maroon-rich">*</span>
+                      Quantity (bottles) <span className="text-brand-purple-rich">*</span>
                     </label>
                     <input
                       id="cl-quantity"
@@ -850,7 +850,7 @@ export const LabelStudio: React.FC = () => {
                   </div>
                   <div className="sm:col-span-2">
                     <label htmlFor="cl-date" className={fieldLabel}>
-                      Preferred Delivery Date <span className="normal-case tracking-normal font-medium text-brand-brown/55">(optional)</span>
+                      Preferred Delivery Date <span className="normal-case tracking-normal font-medium text-brand-slate/55">(optional)</span>
                     </label>
                     <input
                       id="cl-date"
@@ -863,7 +863,7 @@ export const LabelStudio: React.FC = () => {
                     <FieldError msg={errors.date} />
                   </div>
                 </div>
-                <div className="p-4 rounded-sm border border-brand-bronze/40 bg-brand-cream-light/70 space-y-3">
+                <div className="p-4 rounded-sm border border-brand-lavender/50 bg-brand-lavender-pure/90 space-y-3">
                   <label htmlFor="cl-wa-optin" className="flex items-start gap-3 cursor-pointer">
                     <input
                       id="cl-wa-optin"
@@ -873,19 +873,19 @@ export const LabelStudio: React.FC = () => {
                         setWaOptIn(e.target.checked);
                         if (errors.whatsapp) setErrors((x) => ({ ...x, whatsapp: '' }));
                       }}
-                      className="mt-0.5 h-4 w-4 shrink-0 accent-[#500D18]"
+                      className="mt-0.5 h-4 w-4 shrink-0 accent-[#5812B8]"
                     />
-                    <span className="text-sm text-brand-brown leading-relaxed">
-                      <span className="font-semibold text-brand-maroon">WhatsApp order updates </span>
-                      <span className="text-brand-brown/60">(optional)</span>
-                      <span className="block text-xs text-brand-brown/75 mt-1">{WHATSAPP_CONSENT_TEXT}</span>
+                    <span className="text-sm text-brand-slate leading-relaxed">
+                      <span className="font-semibold text-brand-purple">WhatsApp order updates </span>
+                      <span className="text-brand-slate/60">(optional)</span>
+                      <span className="block text-xs text-brand-slate/75 mt-1">{WHATSAPP_CONSENT_TEXT}</span>
                     </span>
                   </label>
                   {waOptIn && (
                     <div className="pl-7">
                       <label htmlFor="cl-whatsapp" className={fieldLabel}>
                         WhatsApp Number{' '}
-                        <span className="normal-case tracking-normal font-medium text-brand-brown/55">(leave blank if same as phone)</span>
+                        <span className="normal-case tracking-normal font-medium text-brand-slate/55">(leave blank if same as phone)</span>
                       </label>
                       <input
                         id="cl-whatsapp"
@@ -899,7 +899,7 @@ export const LabelStudio: React.FC = () => {
                       <FieldError msg={errors.whatsapp} />
                     </div>
                   )}
-                  <p className="text-xs text-brand-brown/65 pl-7">
+                  <p className="text-xs text-brand-slate/65 pl-7">
                     Your order request, our decision and every status update are always sent to your email.
                   </p>
                 </div>
@@ -938,13 +938,13 @@ export const LabelStudio: React.FC = () => {
                 type="button"
                 onClick={handleRequest}
                 disabled={server.phase === 'submitting'}
-                className="group w-full disabled:opacity-75 disabled:cursor-wait inline-flex items-center justify-center gap-3 py-5 px-6 text-sm sm:text-base font-bold uppercase tracking-[0.2em] bg-maroon-gradient text-brand-cream rounded-sm shadow-luxury-lg border border-brand-bronze/50 hover:shadow-bronze-glow hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300"
+                className="group w-full disabled:opacity-75 disabled:cursor-wait inline-flex items-center justify-center gap-3 py-5 px-6 text-sm sm:text-base font-bold uppercase tracking-[0.2em] bg-purple-gradient text-white rounded-sm shadow-luxury-lg border border-brand-lavender/60 hover:shadow-purple-glow hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300"
               >
-                <MessageCircle className="w-5 h-5 text-brand-bronze transition-transform duration-300 group-hover:scale-110" />
+                <MessageCircle className="w-5 h-5 text-brand-purple-light transition-transform duration-300 group-hover:scale-110" />
                 Request Custom Bottle Order
               </button>
-              <p className="flex items-start justify-center gap-2 text-xs text-brand-brown/70 text-center">
-                <Info className="w-3.5 h-3.5 mt-0.5 shrink-0 text-brand-bronze-dark" />
+              <p className="flex items-start justify-center gap-2 text-xs text-brand-slate/70 text-center">
+                <Info className="w-3.5 h-3.5 mt-0.5 shrink-0 text-brand-purple" />
                 <span>
                   Sends your order request and label design to PRIME H₂O and opens WhatsApp ({WHATSAPP_DISPLAY}) with the details
                   pre-filled. Every order is reviewed by PRIME H₂O before it is confirmed.
@@ -958,20 +958,20 @@ export const LabelStudio: React.FC = () => {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0 }}
                     role="status"
-                    className="p-5 sm:p-6 bg-brand-cream-pure border border-brand-bronze/50 rounded-sm shadow-luxury space-y-4"
+                    className="p-5 sm:p-6 bg-white border border-brand-lavender/60 rounded-sm shadow-luxury space-y-4"
                   >
                     <div>
                       {server.phase === 'done' ? (
                         <>
-                          <h4 className="font-editorial text-2xl text-brand-maroon font-semibold">Order request received</h4>
-                          <p className="mt-1 text-xs uppercase tracking-[0.18em] text-brand-brown/80">
+                          <h4 className="font-editorial text-2xl text-brand-purple font-semibold">Order request received</h4>
+                          <p className="mt-1 text-xs uppercase tracking-[0.18em] text-brand-slate/80">
                             Order ID{' '}
-                            <span className="font-bold text-brand-maroon tracking-[0.12em] select-all">{server.result.enquiryId}</span>
-                            <span className="ml-2 inline-block px-2 py-0.5 rounded-sm bg-brand-bronze/20 text-brand-maroon tracking-[0.1em] normal-case font-semibold">
+                            <span className="font-bold text-brand-purple tracking-[0.12em] select-all">{server.result.enquiryId}</span>
+                            <span className="ml-2 inline-block px-2 py-0.5 rounded-sm bg-brand-lavender/20 text-brand-purple tracking-[0.1em] normal-case font-semibold">
                               Awaiting confirmation
                             </span>
                           </p>
-                          <p className="mt-2 text-sm text-brand-brown leading-relaxed">
+                          <p className="mt-2 text-sm text-brand-slate leading-relaxed">
                             Your order request and label design have reached PRIME H₂O. <strong>This is not an order confirmation yet:</strong>{' '}
                             our team reviews every order and will let you know once it has been accepted.{' '}
                             {emailStatusText(server.result.customerEmail, 'order')} {whatsAppStatusText(server.result.customerWhatsApp)} We also
@@ -980,29 +980,29 @@ export const LabelStudio: React.FC = () => {
                         </>
                       ) : server.phase === 'error' ? (
                         <>
-                          <h4 className="font-editorial text-2xl text-brand-maroon font-semibold">We couldn't save your order request online</h4>
-                          <p className="mt-1 text-sm text-brand-brown leading-relaxed">
+                          <h4 className="font-editorial text-2xl text-brand-purple font-semibold">We couldn't save your order request online</h4>
+                          <p className="mt-1 text-sm text-brand-slate leading-relaxed">
                             {server.error} WhatsApp has opened with your enquiry pre-filled. Tap <strong>Send</strong> there so it reaches us,
                             or try again below.
                           </p>
                         </>
                       ) : (
                         <>
-                          <h4 className="font-editorial text-2xl text-brand-maroon font-semibold">Sending your order request…</h4>
-                          <p className="mt-1 text-sm text-brand-brown leading-relaxed">
+                          <h4 className="font-editorial text-2xl text-brand-purple font-semibold">Sending your order request…</h4>
+                          <p className="mt-1 text-sm text-brand-slate leading-relaxed">
                             Uploading your details and label design to PRIME H₂O. WhatsApp has also opened with your enquiry pre-filled.
                           </p>
                         </>
                       )}
                     </div>
                     {logoUsed && logo && server.phase !== 'done' && (
-                      <div className="p-3.5 rounded-sm bg-brand-cream border border-brand-bronze/40 text-sm text-brand-brown">
-                        <strong className="text-brand-maroon">Your logo is not part of the WhatsApp message.</strong> WhatsApp links can only carry
+                      <div className="p-3.5 rounded-sm bg-white border border-brand-lavender/50 text-sm text-brand-slate">
+                        <strong className="text-brand-purple">Your logo is not part of the WhatsApp message.</strong> WhatsApp links can only carry
                         text, so if you message us there, please attach <span className="font-semibold">{logo.file.name}</span> in the same chat.
                       </div>
                     )}
                     {logoUsed && logo && server.phase === 'done' && (
-                      <div className="p-3.5 rounded-sm bg-brand-cream border border-brand-bronze/40 text-sm text-brand-brown">
+                      <div className="p-3.5 rounded-sm bg-white border border-brand-lavender/50 text-sm text-brand-slate">
                         Your logo <span className="font-semibold">{logo.file.name}</span> was uploaded with order request{' '}
                         <span className="font-semibold">{server.result.enquiryId}</span>, so our team already has it.
                       </div>
@@ -1012,9 +1012,9 @@ export const LabelStudio: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => void submitToServer()}
-                          className="flex-1 inline-flex items-center justify-center gap-2 py-3 px-4 text-xs font-bold uppercase tracking-[0.14em] bg-brand-maroon text-brand-cream hover:bg-brand-maroon-rich transition-colors rounded-sm"
+                          className="flex-1 inline-flex items-center justify-center gap-2 py-3 px-4 text-xs font-bold uppercase tracking-[0.14em] bg-brand-purple text-white hover:bg-brand-purple-rich transition-colors rounded-sm"
                         >
-                          <RotateCcw className="w-4 h-4 text-brand-bronze" />
+                          <RotateCcw className="w-4 h-4 text-brand-purple-light" />
                           Try Again
                         </button>
                       )}
@@ -1022,27 +1022,27 @@ export const LabelStudio: React.FC = () => {
                         <button
                           type="button"
                           onClick={shareToChat}
-                          className="flex-1 inline-flex items-center justify-center gap-2 py-3 px-4 text-xs font-bold uppercase tracking-[0.14em] bg-brand-maroon text-brand-cream hover:bg-brand-maroon-rich transition-colors rounded-sm"
+                          className="flex-1 inline-flex items-center justify-center gap-2 py-3 px-4 text-xs font-bold uppercase tracking-[0.14em] bg-brand-purple text-white hover:bg-brand-purple-rich transition-colors rounded-sm"
                         >
-                          <Share2 className="w-4 h-4 text-brand-bronze" />
+                          <Share2 className="w-4 h-4 text-brand-purple-light" />
                           {logoUsed ? 'Share Logo & Preview' : 'Share Preview'}
                         </button>
                       )}
                       <button
                         type="button"
                         onClick={downloadPreview}
-                        className="flex-1 inline-flex items-center justify-center gap-2 py-3 px-4 text-xs font-bold uppercase tracking-[0.14em] bg-brand-cream text-brand-maroon border border-brand-maroon/30 hover:bg-brand-cream-dark/60 transition-colors rounded-sm"
+                        className="flex-1 inline-flex items-center justify-center gap-2 py-3 px-4 text-xs font-bold uppercase tracking-[0.14em] bg-white text-brand-purple border border-brand-purple/30 hover:bg-brand-lavender-light/60 transition-colors rounded-sm"
                       >
-                        <Download className="w-4 h-4 text-brand-bronze-dark" />
+                        <Download className="w-4 h-4 text-brand-purple" />
                         Download Preview
                       </button>
                       <a
                         href={sentUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex-1 inline-flex items-center justify-center gap-2 py-3 px-4 text-xs font-bold uppercase tracking-[0.14em] bg-brand-cream text-brand-maroon border border-brand-maroon/30 hover:bg-brand-cream-dark/60 transition-colors rounded-sm"
+                        className="flex-1 inline-flex items-center justify-center gap-2 py-3 px-4 text-xs font-bold uppercase tracking-[0.14em] bg-white text-brand-purple border border-brand-purple/30 hover:bg-brand-lavender-light/60 transition-colors rounded-sm"
                       >
-                        <ExternalLink className="w-4 h-4 text-brand-bronze-dark" />
+                        <ExternalLink className="w-4 h-4 text-brand-purple" />
                         Reopen WhatsApp
                       </a>
                     </div>
@@ -1063,9 +1063,9 @@ export const LabelStudio: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
             onClick={() => previewRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-            className="lg:hidden fixed bottom-5 right-5 z-40 inline-flex items-center gap-2 py-3 px-4 text-xs font-bold uppercase tracking-[0.16em] bg-brand-maroon text-brand-cream rounded-full shadow-luxury-lg border border-brand-bronze/60"
+            className="lg:hidden fixed bottom-5 right-5 z-40 inline-flex items-center gap-2 py-3 px-4 text-xs font-bold uppercase tracking-[0.16em] bg-brand-purple text-white rounded-full shadow-luxury-lg border border-brand-lavender/70"
           >
-            <Eye className="w-4 h-4 text-brand-bronze" />
+            <Eye className="w-4 h-4 text-brand-purple-light" />
             Preview
           </motion.button>
         )}

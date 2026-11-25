@@ -164,8 +164,8 @@ const ago = (iso: string) => {
 };
 const errorText = (e: unknown) => (e instanceof Error ? e.message : 'Something went wrong.');
 
-const card = 'bg-brand-cream-pure border border-brand-cream-dark rounded-sm shadow-[0_1px_0_rgba(80,13,24,0.04)]';
-const sectionTitle = 'text-[11px] uppercase tracking-[0.22em] font-bold text-brand-maroon';
+const card = 'bg-white border border-brand-cream-dark rounded-sm shadow-[0_1px_0_rgba(80,13,24,0.04)]';
+const sectionTitle = 'text-[11px] uppercase tracking-[0.22em] font-bold text-brand-purple';
 
 const StatusBadge: React.FC<{ status: OrderStatus | null; large?: boolean }> = ({ status, large }) =>
   status ? (
@@ -178,7 +178,7 @@ const StatusBadge: React.FC<{ status: OrderStatus | null; large?: boolean }> = (
       {STATUS_META[status].label}
     </span>
   ) : (
-    <span className={`inline-flex items-center rounded-full ring-1 ring-brand-bronze/50 bg-brand-cream text-brand-brown font-semibold ${large ? 'px-3 py-1 text-sm' : 'px-2 py-0.5 text-[11px]'}`}>
+    <span className={`inline-flex items-center rounded-full ring-1 ring-brand-bronze/50 bg-white text-brand-slate font-semibold ${large ? 'px-3 py-1 text-sm' : 'px-2 py-0.5 text-[11px]'}`}>
       Enquiry
     </span>
   );
@@ -199,7 +199,7 @@ export const AdminApp: React.FC = () => {
 
   if (checking) {
     return (
-      <div className="min-h-screen grid place-items-center text-brand-maroon">
+      <div className="min-h-screen grid place-items-center text-brand-purple">
         <LoaderCircle className="w-7 h-7 animate-spin" aria-label="Loading" />
       </div>
     );
@@ -230,12 +230,12 @@ const Login: React.FC<{ onLogin: (a: Admin) => void }> = ({ onLogin }) => {
     <div className="min-h-screen flex items-center justify-center px-4 py-10 bg-cream-gradient">
       <form onSubmit={submit} className={`${card} w-full max-w-sm overflow-hidden`}>
         <div className="bg-maroon-gradient px-6 py-6 text-center">
-          <div className="text-xl font-extrabold tracking-[0.35em] text-brand-cream">PRIME H₂O</div>
-          <div className="mt-1 text-[11px] uppercase tracking-[0.3em] text-brand-bronze-light">Order administration</div>
+          <div className="text-xl font-extrabold tracking-[0.35em] text-white">PRIME H₂O</div>
+          <div className="mt-1 text-[11px] uppercase tracking-[0.3em] text-brand-lavender">Order administration</div>
         </div>
         <div className="p-6 space-y-4">
           <div>
-            <label htmlFor="admin-email" className="block text-xs font-bold uppercase tracking-[0.14em] text-brand-maroon">
+            <label htmlFor="admin-email" className="block text-xs font-bold uppercase tracking-[0.14em] text-brand-purple">
               Email
             </label>
             <input
@@ -249,7 +249,7 @@ const Login: React.FC<{ onLogin: (a: Admin) => void }> = ({ onLogin }) => {
             />
           </div>
           <div>
-            <label htmlFor="admin-password" className="block text-xs font-bold uppercase tracking-[0.14em] text-brand-maroon">
+            <label htmlFor="admin-password" className="block text-xs font-bold uppercase tracking-[0.14em] text-brand-purple">
               Password
             </label>
             <input
@@ -270,12 +270,12 @@ const Login: React.FC<{ onLogin: (a: Admin) => void }> = ({ onLogin }) => {
           <button
             type="submit"
             disabled={busy}
-            className="w-full inline-flex items-center justify-center gap-2 rounded-sm bg-brand-maroon px-4 py-3 text-sm font-bold uppercase tracking-[0.16em] text-brand-cream hover:bg-brand-maroon-rich disabled:opacity-70"
+            className="w-full inline-flex items-center justify-center gap-2 rounded-sm bg-brand-purple px-4 py-3 text-sm font-bold uppercase tracking-[0.16em] text-white hover:bg-brand-purple-rich disabled:opacity-70"
           >
-            {busy ? <LoaderCircle className="w-4 h-4 animate-spin" /> : <Lock className="w-4 h-4 text-brand-bronze" />}
+            {busy ? <LoaderCircle className="w-4 h-4 animate-spin" /> : <Lock className="w-4 h-4 text-brand-purple-light" />}
             Sign in
           </button>
-          <p className="text-xs text-brand-brown/60 text-center">Only PRIME H₂O administrators can sign in.</p>
+          <p className="text-xs text-brand-slate/60 text-center">Only PRIME H₂O administrators can sign in.</p>
         </div>
       </form>
     </div>
@@ -412,32 +412,32 @@ const Dashboard: React.FC<{ admin: Admin; onSignedOut: () => void }> = ({ admin,
   };
 
   return (
-    <div className="min-h-screen bg-brand-cream">
-      <header className="bg-maroon-gradient text-brand-cream">
+    <div className="min-h-screen bg-white">
+      <header className="bg-maroon-gradient text-white">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
           <a href="/admin" className="flex items-baseline gap-3 min-w-0">
             <span className="font-extrabold tracking-[0.3em] text-base sm:text-lg">PRIME H₂O</span>
-            <span className="hidden sm:inline text-[11px] uppercase tracking-[0.28em] text-brand-bronze-light">Orders</span>
+            <span className="hidden sm:inline text-[11px] uppercase tracking-[0.28em] text-brand-lavender">Orders</span>
           </a>
           <div className="flex items-center gap-3 text-sm">
             <button
               type="button"
               onClick={() => setShowPrices(true)}
-              className="inline-flex items-center gap-1.5 rounded-sm border border-brand-bronze/50 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.14em] hover:bg-white/10"
+              className="inline-flex items-center gap-1.5 rounded-sm border border-brand-lavender/60 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.14em] hover:bg-white/10"
             >
-              <Tag className="w-3.5 h-3.5 text-brand-bronze" />
+              <Tag className="w-3.5 h-3.5 text-brand-purple-light" />
               Prices
             </button>
-            <span className="hidden sm:inline text-brand-cream/80 truncate max-w-[220px]" title={admin.email}>
+            <span className="hidden sm:inline text-white/80 truncate max-w-[220px]" title={admin.email}>
               {admin.name}
-              {admin.role === 'viewer' && <span className="ml-2 text-[10px] uppercase tracking-[0.2em] text-brand-bronze-light">read-only</span>}
+              {admin.role === 'viewer' && <span className="ml-2 text-[10px] uppercase tracking-[0.2em] text-brand-lavender">read-only</span>}
             </span>
             <button
               type="button"
               onClick={signOut}
-              className="inline-flex items-center gap-1.5 rounded-sm border border-brand-bronze/50 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.14em] hover:bg-white/10"
+              className="inline-flex items-center gap-1.5 rounded-sm border border-brand-lavender/60 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.14em] hover:bg-white/10"
             >
-              <LogOut className="w-3.5 h-3.5 text-brand-bronze" />
+              <LogOut className="w-3.5 h-3.5 text-brand-purple-light" />
               Sign out
             </button>
           </div>
@@ -451,14 +451,14 @@ const Dashboard: React.FC<{ admin: Admin; onSignedOut: () => void }> = ({ admin,
         {/* ---- list */}
         <section className={selected ? 'hidden lg:block' : ''} aria-label="Orders">
           <div className="relative">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-brand-brown/50" />
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-brand-slate/50" />
             <input
               type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search order ID, name, phone, WhatsApp, email"
               aria-label="Search orders"
-              className="w-full rounded-sm border border-brand-cream-dark bg-brand-cream-pure pl-9 pr-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-bronze"
+              className="w-full rounded-sm border border-brand-cream-dark bg-white pl-9 pr-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-bronze"
             />
           </div>
 
@@ -475,14 +475,14 @@ const Dashboard: React.FC<{ admin: Admin; onSignedOut: () => void }> = ({ admin,
                     aria-selected={active}
                     onClick={() => setTab(t)}
                     className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
-                      active ? 'bg-brand-maroon text-brand-cream' : 'bg-brand-cream-pure text-brand-brown border border-brand-cream-dark hover:border-brand-bronze'
+                      active ? 'bg-brand-purple text-white' : 'bg-white text-brand-slate border border-brand-cream-dark hover:border-brand-lavender'
                     }`}
                   >
                     {t.label}
                     {n !== null && (
                       <span
                         className={`min-w-[1.25rem] rounded-full px-1.5 text-[10px] leading-4 ${
-                          active ? 'bg-white/20' : t.key === 'PENDING' && n > 0 ? 'bg-amber-400 text-amber-950' : 'bg-brand-cream-tint'
+                          active ? 'bg-white/20' : t.key === 'PENDING' && n > 0 ? 'bg-amber-400 text-amber-950' : 'bg-brand-lavender-pure'
                         }`}
                       >
                         {n}
@@ -493,7 +493,7 @@ const Dashboard: React.FC<{ admin: Admin; onSignedOut: () => void }> = ({ admin,
               })}
             </div>
           )}
-          {search && <p className="mt-3 text-xs text-brand-brown/70">Results for “{search}” across all orders and enquiries</p>}
+          {search && <p className="mt-3 text-xs text-brand-slate/70">Results for “{search}” across all orders and enquiries</p>}
 
           <div className="mt-4 space-y-2">
             {listError && (
@@ -502,13 +502,13 @@ const Dashboard: React.FC<{ admin: Admin; onSignedOut: () => void }> = ({ admin,
               </p>
             )}
             {loadingList && !items.length && (
-              <div className="py-10 grid place-items-center text-brand-maroon">
+              <div className="py-10 grid place-items-center text-brand-purple">
                 <LoaderCircle className="w-6 h-6 animate-spin" />
               </div>
             )}
             {!loadingList && !items.length && !listError && (
-              <div className={`${card} px-4 py-10 text-center text-sm text-brand-brown/70`}>
-                <Inbox className="w-6 h-6 mx-auto mb-2 text-brand-bronze" />
+              <div className={`${card} px-4 py-10 text-center text-sm text-brand-slate/70`}>
+                <Inbox className="w-6 h-6 mx-auto mb-2 text-brand-purple-light" />
                 {search ? 'Nothing matches your search.' : tab.key === 'PENDING' ? 'No orders are waiting for approval.' : 'Nothing here yet.'}
               </div>
             )}
@@ -521,9 +521,9 @@ const Dashboard: React.FC<{ admin: Admin; onSignedOut: () => void }> = ({ admin,
         {/* ---- detail */}
         <section className={selected ? '' : 'hidden lg:block'} aria-label="Order details">
           {!selected && (
-            <div className={`${card} px-6 py-16 text-center text-brand-brown/70`}>
-              <Package className="w-8 h-8 mx-auto mb-3 text-brand-bronze" />
-              <p className="font-editorial text-2xl text-brand-maroon">Select an order to review it</p>
+            <div className={`${card} px-6 py-16 text-center text-brand-slate/70`}>
+              <Package className="w-8 h-8 mx-auto mb-3 text-brand-purple-light" />
+              <p className="font-editorial text-2xl text-brand-purple">Select an order to review it</p>
               {counts && counts.PENDING > 0 && (
                 <p className="mt-2 text-sm">
                   {counts.PENDING} order{counts.PENDING === 1 ? ' is' : 's are'} waiting for your approval.
@@ -540,7 +540,7 @@ const Dashboard: React.FC<{ admin: Admin; onSignedOut: () => void }> = ({ admin,
             </div>
           )}
           {selected && !detail && !detailError && (
-            <div className="py-16 grid place-items-center text-brand-maroon">
+            <div className="py-16 grid place-items-center text-brand-purple">
               <LoaderCircle className="w-6 h-6 animate-spin" />
             </div>
           )}
@@ -571,7 +571,7 @@ const BackButton: React.FC<{ onClick: () => void }> = ({ onClick }) => (
   <button
     type="button"
     onClick={onClick}
-    className="lg:hidden inline-flex items-center gap-1 text-xs font-bold uppercase tracking-[0.14em] text-brand-bronze-dark hover:text-brand-maroon"
+    className="lg:hidden inline-flex items-center gap-1 text-xs font-bold uppercase tracking-[0.14em] text-brand-purple hover:text-brand-purple"
   >
     <ChevronLeft className="w-4 h-4" /> All orders
   </button>
@@ -582,35 +582,35 @@ const ListRow: React.FC<{ item: ListItem; active: boolean; onSelect: () => void 
     type="button"
     onClick={onSelect}
     aria-current={active}
-    className={`w-full text-left ${card} px-4 py-3 transition-colors ${active ? 'ring-2 ring-brand-maroon border-transparent' : 'hover:border-brand-bronze'}`}
+    className={`w-full text-left ${card} px-4 py-3 transition-colors ${active ? 'ring-2 ring-brand-maroon border-transparent' : 'hover:border-brand-lavender'}`}
   >
     <div className="flex items-center justify-between gap-2">
-      <span className="font-mono text-[11px] tracking-wider text-brand-brown/70">{item.public_id}</span>
-      <span className="text-[11px] text-brand-brown/60" title={fmtDateTime(item.created_at)}>
+      <span className="font-mono text-[11px] tracking-wider text-brand-slate/70">{item.public_id}</span>
+      <span className="text-[11px] text-brand-slate/60" title={fmtDateTime(item.created_at)}>
         {ago(item.created_at)}
       </span>
     </div>
     <div className="mt-1 flex items-start justify-between gap-3">
       <div className="min-w-0">
-        <div className="font-semibold text-brand-brown-deep truncate">{item.customer_name}</div>
-        {item.company_name && <div className="text-xs text-brand-brown/70 truncate">{item.company_name}</div>}
+        <div className="font-semibold text-brand-slate-deep truncate">{item.customer_name}</div>
+        {item.company_name && <div className="text-xs text-brand-slate/70 truncate">{item.company_name}</div>}
       </div>
       <StatusBadge status={item.order_status} />
     </div>
-    <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-brand-brown/80">
+    <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-brand-slate/80">
       {item.source === 'product_order' ? (
         <>
-          <span className="inline-flex items-center gap-1 font-semibold text-brand-maroon">
-            <ShoppingBag className="w-3.5 h-3.5 text-brand-bronze-dark" />
+          <span className="inline-flex items-center gap-1 font-semibold text-brand-purple">
+            <ShoppingBag className="w-3.5 h-3.5 text-brand-purple" />
             Online
           </span>
           <span className="inline-flex items-center gap-1">
-            <Package className="w-3.5 h-3.5 text-brand-bronze-dark" />
+            <Package className="w-3.5 h-3.5 text-brand-purple" />
             {(item.items ?? []).map((i) => `${i.size} × ${i.quantity.toLocaleString('en-IN')}`).join(', ')}
           </span>
           {item.delivery_city && (
             <span className="inline-flex items-center gap-1">
-              <MapPin className="w-3.5 h-3.5 text-brand-bronze-dark" />
+              <MapPin className="w-3.5 h-3.5 text-brand-purple" />
               {item.delivery_city}
             </span>
           )}
@@ -619,17 +619,17 @@ const ListRow: React.FC<{ item: ListItem; active: boolean; onSelect: () => void 
       ) : item.source === 'custom_bottle' ? (
         <>
           <span className="inline-flex items-center gap-1">
-            <Package className="w-3.5 h-3.5 text-brand-bronze-dark" />
+            <Package className="w-3.5 h-3.5 text-brand-purple" />
             {item.bottle_size} × {item.quantity?.toLocaleString('en-IN')}
           </span>
           <span className="inline-flex items-center gap-1">
-            <CalendarDays className="w-3.5 h-3.5 text-brand-bronze-dark" />
+            <CalendarDays className="w-3.5 h-3.5 text-brand-purple" />
             {fmtDate(item.delivery_date)}
           </span>
         </>
       ) : (
         <span className="inline-flex items-center gap-1">
-          <Mail className="w-3.5 h-3.5 text-brand-bronze-dark" />
+          <Mail className="w-3.5 h-3.5 text-brand-purple" />
           {item.bottle_size ?? 'General enquiry'}
         </span>
       )}
@@ -663,8 +663,8 @@ interface DetailProps {
 
 const Field: React.FC<{ label: string; children: React.ReactNode }> = ({ label, children }) => (
   <div>
-    <dt className="text-[11px] uppercase tracking-[0.14em] text-brand-brown/60">{label}</dt>
-    <dd className="mt-0.5 text-sm text-brand-brown-deep break-words">{children}</dd>
+    <dt className="text-[11px] uppercase tracking-[0.14em] text-brand-slate/60">{label}</dt>
+    <dd className="mt-0.5 text-sm text-brand-slate-deep break-words">{children}</dd>
   </div>
 );
 
@@ -680,21 +680,21 @@ const OrderDetail: React.FC<DetailProps> = ({ detail, system, canEdit, onBack, o
         <BackButton onClick={onBack} />
         <div className="mt-1 lg:mt-0 flex flex-wrap items-start justify-between gap-3">
           <div>
-            <p className="text-[11px] uppercase tracking-[0.22em] text-brand-bronze-dark font-bold">{SOURCE_LABEL[detail.source]}</p>
-            <h1 className="mt-1 font-mono text-xl sm:text-2xl font-bold tracking-wider text-brand-maroon select-all">{detail.public_id}</h1>
-            <p className="mt-1 text-xs text-brand-brown/70">Received {fmtDateTime(detail.created_at)}</p>
+            <p className="text-[11px] uppercase tracking-[0.22em] text-brand-purple font-bold">{SOURCE_LABEL[detail.source]}</p>
+            <h1 className="mt-1 font-mono text-xl sm:text-2xl font-bold tracking-wider text-brand-purple select-all">{detail.public_id}</h1>
+            <p className="mt-1 text-xs text-brand-slate/70">Received {fmtDateTime(detail.created_at)}</p>
           </div>
           <StatusBadge status={detail.order_status} large />
         </div>
         {isOrder && canEdit ? (
           <OrderActions detail={detail} system={system} canEdit={canEdit} onUpdated={onUpdated} setPaused={setPaused} handleAuth={handleAuth} />
         ) : isOrder ? (
-          <p className="mt-4 inline-flex items-center gap-2 text-sm text-brand-brown/80">
-            <Lock className="w-4 h-4 text-brand-bronze-dark" />
+          <p className="mt-4 inline-flex items-center gap-2 text-sm text-brand-slate/80">
+            <Lock className="w-4 h-4 text-brand-purple" />
             Your account is read-only. Ask an administrator to accept, reject or update this order.
           </p>
         ) : (
-          <p className="mt-4 text-sm text-brand-brown/80">
+          <p className="mt-4 text-sm text-brand-slate/80">
             General enquiries from the Contact form are not orders. Reply to the customer directly by phone, email or WhatsApp.
           </p>
         )}
@@ -706,25 +706,25 @@ const OrderDetail: React.FC<DetailProps> = ({ detail, system, canEdit, onBack, o
           <dl className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3">
             <Field label="Name">
               <span className="inline-flex items-center gap-1.5">
-                <User className="w-3.5 h-3.5 text-brand-bronze-dark" />
+                <User className="w-3.5 h-3.5 text-brand-purple" />
                 {detail.customer_name}
               </span>
             </Field>
             <Field label="Company">
               <span className="inline-flex items-center gap-1.5">
-                <Building2 className="w-3.5 h-3.5 text-brand-bronze-dark" />
+                <Building2 className="w-3.5 h-3.5 text-brand-purple" />
                 {detail.company_name || '—'}
               </span>
             </Field>
             <Field label="Phone">
-              <a href={`tel:${detail.customer_phone}`} className="inline-flex items-center gap-1.5 text-brand-maroon underline-offset-2 hover:underline">
+              <a href={`tel:${detail.customer_phone}`} className="inline-flex items-center gap-1.5 text-brand-purple underline-offset-2 hover:underline">
                 <Phone className="w-3.5 h-3.5" />
                 {fmtPhone(detail.customer_phone)}
               </a>
             </Field>
             <Field label="Email">
               {detail.customer_email ? (
-                <a href={`mailto:${detail.customer_email}`} className="inline-flex items-center gap-1.5 text-brand-maroon underline-offset-2 hover:underline min-w-0 [overflow-wrap:anywhere]">
+                <a href={`mailto:${detail.customer_email}`} className="inline-flex items-center gap-1.5 text-brand-purple underline-offset-2 hover:underline min-w-0 [overflow-wrap:anywhere]">
                   <Mail className="w-3.5 h-3.5 shrink-0" />
                   {detail.customer_email}
                 </a>
@@ -739,7 +739,7 @@ const OrderDetail: React.FC<DetailProps> = ({ detail, system, canEdit, onBack, o
                     href={`https://wa.me/${detail.customer_whatsapp.replace(/\D/g, '')}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 text-brand-maroon underline-offset-2 hover:underline"
+                    className="inline-flex items-center gap-1.5 text-brand-purple underline-offset-2 hover:underline"
                   >
                     <MessageCircle className="w-3.5 h-3.5" />
                     {fmtPhone(detail.customer_whatsapp)}
@@ -762,12 +762,12 @@ const OrderDetail: React.FC<DetailProps> = ({ detail, system, canEdit, onBack, o
                       <span className="inline-flex items-center gap-1.5 font-semibold text-emerald-800">
                         <MessageCircle className="w-3.5 h-3.5" /> Opted in · {fmtPhone(detail.customer_whatsapp)}
                       </span>
-                      <span className="block text-xs text-brand-brown/60">Consent given {fmtDateTime(detail.whatsapp_opt_in_at)}</span>
+                      <span className="block text-xs text-brand-slate/60">Consent given {fmtDateTime(detail.whatsapp_opt_in_at)}</span>
                     </span>
                   ) : detail.whatsapp_opt_out_at ? (
                     <span className="text-red-800">Opted out (replied STOP) on {fmtDateTime(detail.whatsapp_opt_out_at)}. The customer only gets email.</span>
                   ) : (
-                    <span className="text-brand-brown/80">Not opted in. The customer only gets email.</span>
+                    <span className="text-brand-slate/80">Not opted in. The customer only gets email.</span>
                   )}
                 </Field>
               </div>
@@ -784,7 +784,7 @@ const OrderDetail: React.FC<DetailProps> = ({ detail, system, canEdit, onBack, o
                 <div className="col-span-2">
                   <Field label="Delivery address">
                     <span className="inline-flex items-start gap-1.5">
-                      <MapPin className="w-3.5 h-3.5 mt-0.5 shrink-0 text-brand-bronze-dark" />
+                      <MapPin className="w-3.5 h-3.5 mt-0.5 shrink-0 text-brand-purple" />
                       <span className="whitespace-pre-line">
                         {detail.delivery_address}
                         {'\n'}
@@ -858,7 +858,7 @@ const OrderDetail: React.FC<DetailProps> = ({ detail, system, canEdit, onBack, o
                 const f = detail.files.find((x) => x.kind === kind);
                 return (
                   <figure key={kind} className="w-40">
-                    <figcaption className="text-[11px] uppercase tracking-[0.14em] text-brand-brown/60 mb-1">{kind === 'logo' ? 'Uploaded logo' : 'Label preview'}</figcaption>
+                    <figcaption className="text-[11px] uppercase tracking-[0.14em] text-brand-slate/60 mb-1">{kind === 'logo' ? 'Uploaded logo' : 'Label preview'}</figcaption>
                     {f ? (
                       <>
                         <a href={api.fileUrl(detail.public_id, kind)} target="_blank" rel="noopener noreferrer" className="block">
@@ -869,16 +869,16 @@ const OrderDetail: React.FC<DetailProps> = ({ detail, system, canEdit, onBack, o
                           />
                         </a>
                         <div className="mt-1 flex items-center justify-between text-[11px]">
-                          <span className="truncate text-brand-brown/70" title={f.filename}>
+                          <span className="truncate text-brand-slate/70" title={f.filename}>
                             {f.filename}
                           </span>
-                          <a href={api.fileUrl(detail.public_id, kind, true)} className="inline-flex items-center gap-0.5 text-brand-maroon hover:underline shrink-0">
+                          <a href={api.fileUrl(detail.public_id, kind, true)} className="inline-flex items-center gap-0.5 text-brand-purple hover:underline shrink-0">
                             <Download className="w-3 h-3" /> Save
                           </a>
                         </div>
                       </>
                     ) : (
-                      <div className="h-40 w-40 grid place-items-center rounded-sm border border-dashed border-brand-cream-dark text-xs text-brand-brown/50 text-center px-2">
+                      <div className="h-40 w-40 grid place-items-center rounded-sm border border-dashed border-brand-cream-dark text-xs text-brand-slate/50 text-center px-2">
                         {kind === 'logo' ? 'No logo uploaded' : 'No preview'}
                       </div>
                     )}
@@ -916,8 +916,8 @@ const OrderActions: React.FC<Omit<DetailProps, 'onBack'>> = ({ detail, system, o
 
   if (!detail.allowedTransitions.length) {
     return (
-      <p className="mt-4 inline-flex items-center gap-2 text-sm text-brand-brown/80">
-        <Check className="w-4 h-4 text-brand-bronze-dark" />
+      <p className="mt-4 inline-flex items-center gap-2 text-sm text-brand-slate/80">
+        <Check className="w-4 h-4 text-brand-purple" />
         This order is {STATUS_META[detail.order_status!].label.toLowerCase()}. No further changes are possible.
       </p>
     );
@@ -970,10 +970,10 @@ const OrderActions: React.FC<Omit<DetailProps, 'onBack'>> = ({ detail, system, o
                 className={`inline-flex items-center gap-2 rounded-sm px-4 py-2.5 text-xs font-bold uppercase tracking-[0.14em] transition-colors ${
                   danger
                     ? 'border border-red-300 text-red-800 bg-white hover:bg-red-50'
-                    : 'bg-brand-maroon text-brand-cream hover:bg-brand-maroon-rich shadow-luxury'
+                    : 'bg-brand-purple text-white hover:bg-brand-purple-rich shadow-luxury'
                 }`}
               >
-                <Icon className={`w-4 h-4 ${danger ? '' : 'text-brand-bronze'}`} />
+                <Icon className={`w-4 h-4 ${danger ? '' : 'text-brand-purple-light'}`} />
                 {t.label}
               </button>
             );
@@ -982,12 +982,12 @@ const OrderActions: React.FC<Omit<DetailProps, 'onBack'>> = ({ detail, system, o
       )}
 
       {open && copy && (
-        <div className={`rounded-sm border p-4 ${copy.danger ? 'border-red-200 bg-red-50/60' : 'border-brand-bronze/50 bg-brand-cream-light'}`}>
-          <h3 className="font-semibold text-brand-maroon">
+        <div className={`rounded-sm border p-4 ${copy.danger ? 'border-red-200 bg-red-50/60' : 'border-brand-lavender/60 bg-brand-lavender-pure'}`}>
+          <h3 className="font-semibold text-brand-purple">
             {open.label}: {detail.public_id}
           </h3>
-          <p className="mt-1 text-sm text-brand-brown">{copy.effect}</p>
-          <p className="mt-2 text-xs text-brand-brown/80">
+          <p className="mt-1 text-sm text-brand-slate">{copy.effect}</p>
+          <p className="mt-2 text-xs text-brand-slate/80">
             {detail.customer_email || detail.whatsapp_opt_in ? (
               <>
                 Notifications: the customer gets this by {customerChannels}
@@ -1004,7 +1004,7 @@ const OrderActions: React.FC<Omit<DetailProps, 'onBack'>> = ({ detail, system, o
             <p className="mt-1 text-xs font-semibold text-red-800">WhatsApp is not connected, so WhatsApp messages will be recorded as not sent.</p>
           )}
           {system?.email.sandbox && <p className="mt-1 text-xs font-semibold text-amber-800">Email test mode: emails will not actually be delivered.</p>}
-          <label htmlFor="action-note" className="mt-3 block text-xs font-bold uppercase tracking-[0.14em] text-brand-maroon">
+          <label htmlFor="action-note" className="mt-3 block text-xs font-bold uppercase tracking-[0.14em] text-brand-purple">
             {copy.noteLabel}
           </label>
           <textarea
@@ -1027,7 +1027,7 @@ const OrderActions: React.FC<Omit<DetailProps, 'onBack'>> = ({ detail, system, o
               onClick={submit}
               disabled={submitting}
               className={`inline-flex items-center gap-2 rounded-sm px-4 py-2.5 text-xs font-bold uppercase tracking-[0.14em] text-white disabled:opacity-70 ${
-                copy.danger ? 'bg-red-700 hover:bg-red-800' : 'bg-brand-maroon hover:bg-brand-maroon-rich'
+                copy.danger ? 'bg-red-700 hover:bg-red-800' : 'bg-brand-purple hover:bg-brand-purple-rich'
               }`}
             >
               {submitting ? <LoaderCircle className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
@@ -1037,7 +1037,7 @@ const OrderActions: React.FC<Omit<DetailProps, 'onBack'>> = ({ detail, system, o
               type="button"
               onClick={() => setOpen(null)}
               disabled={submitting}
-              className="rounded-sm border border-brand-cream-dark bg-white px-4 py-2.5 text-xs font-bold uppercase tracking-[0.14em] text-brand-brown hover:border-brand-bronze"
+              className="rounded-sm border border-brand-cream-dark bg-white px-4 py-2.5 text-xs font-bold uppercase tracking-[0.14em] text-brand-slate hover:border-brand-lavender"
             >
               Back
             </button>
@@ -1054,7 +1054,7 @@ const ProductLines: React.FC<{ detail: Detail }> = ({ detail }) => (
   <div className="mt-3 overflow-x-auto">
     <table className="w-full text-sm">
       <thead>
-        <tr className="text-left text-[11px] uppercase tracking-[0.12em] text-brand-brown/60 border-b border-brand-cream-dark">
+        <tr className="text-left text-[11px] uppercase tracking-[0.12em] text-brand-slate/60 border-b border-brand-cream-dark">
           <th className="py-1.5 pr-3 font-semibold">Product</th>
           <th className="py-1.5 px-3 font-semibold text-right">Bottles</th>
           <th className="py-1.5 px-3 font-semibold text-right">Price / bottle</th>
@@ -1064,7 +1064,7 @@ const ProductLines: React.FC<{ detail: Detail }> = ({ detail }) => (
       <tbody className="divide-y divide-brand-cream-dark">
         {detail.items.map((i) => (
           <tr key={i.product_code}>
-            <td className="py-2 pr-3 font-semibold text-brand-brown-deep whitespace-nowrap">{i.product_name}</td>
+            <td className="py-2 pr-3 font-semibold text-brand-slate-deep whitespace-nowrap">{i.product_name}</td>
             <td className="py-2 px-3 text-right tabular-nums">{i.quantity.toLocaleString('en-IN')}</td>
             <td className="py-2 px-3 text-right tabular-nums">{i.unit_price_paise != null ? fmtRupees(i.unit_price_paise) : <span className="text-amber-800">Not set</span>}</td>
             <td className="py-2 pl-3 text-right tabular-nums font-semibold">{i.line_total_paise != null ? fmtRupees(i.line_total_paise) : '—'}</td>
@@ -1073,10 +1073,10 @@ const ProductLines: React.FC<{ detail: Detail }> = ({ detail }) => (
       </tbody>
       <tfoot>
         <tr className="border-t-2 border-brand-cream-dark">
-          <td className="pt-2 pr-3 text-[11px] uppercase tracking-[0.14em] font-bold text-brand-maroon">Total</td>
+          <td className="pt-2 pr-3 text-[11px] uppercase tracking-[0.14em] font-bold text-brand-purple">Total</td>
           <td className="pt-2 px-3 text-right tabular-nums font-semibold">{detail.items.reduce((s, i) => s + i.quantity, 0).toLocaleString('en-IN')}</td>
           <td />
-          <td className="pt-2 pl-3 text-right tabular-nums font-bold text-brand-maroon">
+          <td className="pt-2 pl-3 text-right tabular-nums font-bold text-brand-purple">
             {detail.total_paise != null ? fmtRupees(detail.total_paise) : <span className="text-amber-800 font-semibold">To be confirmed</span>}
           </td>
         </tr>
@@ -1128,24 +1128,24 @@ const PricesPanel: React.FC<{ canEdit: boolean; onClose: () => void; handleAuth:
 
   return (
     <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-4 overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="prices-title">
-      <div className="fixed inset-0 bg-brand-maroon-deep/60" onClick={onClose} />
+      <div className="fixed inset-0 bg-brand-purple-deep/80" onClick={onClose} />
       <div className={`${card} relative w-full max-w-xl my-8`}>
-        <div className="flex items-center justify-between gap-3 bg-maroon-gradient px-5 py-4 text-brand-cream">
+        <div className="flex items-center justify-between gap-3 bg-maroon-gradient px-5 py-4 text-white">
           <h2 id="prices-title" className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-[0.18em]">
-            <Tag className="w-4 h-4 text-brand-bronze" /> Product prices
+            <Tag className="w-4 h-4 text-brand-purple-light" /> Product prices
           </h2>
           <button type="button" onClick={onClose} aria-label="Close" className="p-1 rounded-sm hover:bg-white/10">
             <X className="w-5 h-5" />
           </button>
         </div>
         <div className="p-5 space-y-4">
-          <p className="text-sm text-brand-brown/80">
+          <p className="text-sm text-brand-slate/80">
             Price per bottle, in rupees, as customers should see it on the website and in their order confirmation. Leave a price empty to show
             “Price confirmed by PRIME H₂O” instead. Changes apply to new orders only; placed orders keep their price.
           </p>
           {!canEdit && (
-            <p className="inline-flex items-center gap-2 text-sm text-brand-brown/80">
-              <Lock className="w-4 h-4 text-brand-bronze-dark" /> Your account is read-only. Ask an administrator to change prices.
+            <p className="inline-flex items-center gap-2 text-sm text-brand-slate/80">
+              <Lock className="w-4 h-4 text-brand-purple" /> Your account is read-only. Ask an administrator to change prices.
             </p>
           )}
           {error && (
@@ -1159,7 +1159,7 @@ const PricesPanel: React.FC<{ canEdit: boolean; onClose: () => void; handleAuth:
             </p>
           )}
           {!products && !error && (
-            <div className="py-6 grid place-items-center text-brand-maroon">
+            <div className="py-6 grid place-items-center text-brand-purple">
               <LoaderCircle className="w-6 h-6 animate-spin" />
             </div>
           )}
@@ -1171,11 +1171,11 @@ const PricesPanel: React.FC<{ canEdit: boolean; onClose: () => void; handleAuth:
               <div key={p.code} className="rounded-sm border border-brand-cream-dark bg-white/70 p-4">
                 <div className="flex flex-wrap items-end gap-3">
                   <div className="flex-1 min-w-[10rem]">
-                    <label htmlFor={`price-${p.code}`} className="block text-xs font-bold uppercase tracking-[0.14em] text-brand-maroon">
+                    <label htmlFor={`price-${p.code}`} className="block text-xs font-bold uppercase tracking-[0.14em] text-brand-purple">
                       {p.name}
                     </label>
                     <div className="mt-1.5 flex items-center rounded-sm border border-brand-cream-dark bg-white focus-within:ring-2 focus-within:ring-brand-bronze">
-                      <span className="pl-3 text-sm text-brand-brown/70">₹</span>
+                      <span className="pl-3 text-sm text-brand-slate/70">₹</span>
                       <input
                         id={`price-${p.code}`}
                         type="text"
@@ -1184,9 +1184,9 @@ const PricesPanel: React.FC<{ canEdit: boolean; onClose: () => void; handleAuth:
                         value={draft}
                         onChange={(e) => setDrafts((d) => ({ ...d, [p.code]: e.target.value.replace(/[^\d.]/g, '') }))}
                         placeholder="Not set"
-                        className="w-full bg-transparent px-2 py-2 text-sm focus:outline-none disabled:text-brand-brown/60"
+                        className="w-full bg-transparent px-2 py-2 text-sm focus:outline-none disabled:text-brand-slate/60"
                       />
-                      <span className="pr-3 text-xs text-brand-brown/60 whitespace-nowrap">per bottle</span>
+                      <span className="pr-3 text-xs text-brand-slate/60 whitespace-nowrap">per bottle</span>
                     </div>
                   </div>
                   {canEdit && (
@@ -1195,9 +1195,9 @@ const PricesPanel: React.FC<{ canEdit: boolean; onClose: () => void; handleAuth:
                         type="button"
                         disabled={!changed || !draft.trim() || busy === p.code}
                         onClick={() => save(p.code, draft.trim())}
-                        className="inline-flex items-center gap-1.5 rounded-sm bg-brand-maroon px-3 py-2 text-xs font-bold uppercase tracking-[0.12em] text-brand-cream hover:bg-brand-maroon-rich disabled:opacity-50"
+                        className="inline-flex items-center gap-1.5 rounded-sm bg-brand-purple px-3 py-2 text-xs font-bold uppercase tracking-[0.12em] text-white hover:bg-brand-purple-rich disabled:opacity-50"
                       >
-                        {busy === p.code ? <LoaderCircle className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5 text-brand-bronze" />}
+                        {busy === p.code ? <LoaderCircle className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5 text-brand-purple-light" />}
                         Save
                       </button>
                       {p.unitPricePaise != null && (
@@ -1205,7 +1205,7 @@ const PricesPanel: React.FC<{ canEdit: boolean; onClose: () => void; handleAuth:
                           type="button"
                           disabled={busy === p.code}
                           onClick={() => save(p.code, null)}
-                          className="rounded-sm border border-brand-cream-dark bg-white px-3 py-2 text-xs font-bold uppercase tracking-[0.12em] text-brand-brown hover:border-brand-bronze disabled:opacity-50"
+                          className="rounded-sm border border-brand-cream-dark bg-white px-3 py-2 text-xs font-bold uppercase tracking-[0.12em] text-brand-slate hover:border-brand-lavender disabled:opacity-50"
                         >
                           Remove
                         </button>
@@ -1213,7 +1213,7 @@ const PricesPanel: React.FC<{ canEdit: boolean; onClose: () => void; handleAuth:
                     </div>
                   )}
                 </div>
-                <p className="mt-2 text-[11px] text-brand-brown/60">
+                <p className="mt-2 text-[11px] text-brand-slate/60">
                   {p.unitPricePaise != null ? `Customers see ${fmtRupees(p.unitPricePaise)} per bottle.` : 'No price set: customers see “Price confirmed by PRIME H₂O”.'}
                   {p.priceUpdatedAt && ` Last changed ${fmtDateTime(p.priceUpdatedAt)}${p.priceUpdatedBy ? ` by ${p.priceUpdatedBy}` : ''}.`}
                 </p>
@@ -1231,24 +1231,24 @@ const PricesPanel: React.FC<{ canEdit: boolean; onClose: () => void; handleAuth:
 const StatusHistory: React.FC<{ history: HistoryEntry[] }> = ({ history }) => (
   <div className={`${card} p-5`}>
     <h2 className={`${sectionTitle} inline-flex items-center gap-2`}>
-      <History className="w-4 h-4 text-brand-bronze-dark" /> Status history
+      <History className="w-4 h-4 text-brand-purple" /> Status history
     </h2>
     <ol className="mt-4 space-y-4">
       {history.map((h, i) => (
         <li key={h.id} className="relative pl-6">
           <span className={`absolute left-0 top-1.5 h-2.5 w-2.5 rounded-full ${STATUS_META[h.to_status].dot}`} />
-          {i < history.length - 1 && <span className="absolute left-[4.5px] top-5 bottom-[-14px] w-px bg-brand-cream-dark" />}
+          {i < history.length - 1 && <span className="absolute left-[4.5px] top-5 bottom-[-14px] w-px bg-brand-lavender-light" />}
           <div className="flex flex-wrap items-baseline gap-x-2 text-sm">
-            <span className="font-semibold text-brand-brown-deep">
+            <span className="font-semibold text-brand-slate-deep">
               {h.from_status ? `${STATUS_META[h.from_status].label} → ${STATUS_META[h.to_status].label}` : 'Order request submitted (Pending approval)'}
             </span>
-            <span className="text-xs text-brand-brown/60">{fmtDateTime(h.created_at)}</span>
+            <span className="text-xs text-brand-slate/60">{fmtDateTime(h.created_at)}</span>
           </div>
-          <div className="text-xs text-brand-brown/70">
+          <div className="text-xs text-brand-slate/70">
             by {h.actor_label}
             {h.actor_email ? ` (${h.actor_email})` : ''}
           </div>
-          {h.note && <p className="mt-1.5 text-sm bg-brand-cream-light border-l-2 border-brand-bronze px-3 py-1.5 whitespace-pre-wrap">{h.note}</p>}
+          {h.note && <p className="mt-1.5 text-sm bg-brand-lavender-pure border-l-2 border-brand-lavender px-3 py-1.5 whitespace-pre-wrap">{h.note}</p>}
         </li>
       ))}
     </ol>
@@ -1296,7 +1296,7 @@ const NotificationCell: React.FC<{
   const title = `${audience === 'owner' ? 'You' : 'Customer'} · ${channel === 'email' ? 'Email' : 'WhatsApp'}`;
   if (!n) {
     return (
-      <div className="rounded-sm border border-dashed border-brand-cream-dark p-3 text-xs text-brand-brown/50">
+      <div className="rounded-sm border border-dashed border-brand-cream-dark p-3 text-xs text-brand-slate/50">
         <span className="inline-flex items-center gap-1.5 font-bold uppercase tracking-[0.12em]">
           <Icon className="w-3.5 h-3.5" /> {title}
         </span>
@@ -1310,13 +1310,13 @@ const NotificationCell: React.FC<{
   return (
     <div className="rounded-sm border border-brand-cream-dark bg-white/70 p-3">
       <div className="flex items-start justify-between gap-2">
-        <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.12em] text-brand-maroon">
+        <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.12em] text-brand-purple">
           <Icon className="w-3.5 h-3.5" /> {title}
         </span>
         <span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold whitespace-nowrap ${s.cls}`}>{s.label}</span>
       </div>
-      <div className="mt-1 text-xs text-brand-brown/75 break-all">{n.recipient}</div>
-      {s.hint && <div className="mt-1 text-xs text-brand-brown/65">{s.hint}</div>}
+      <div className="mt-1 text-xs text-brand-slate/75 break-all">{n.recipient}</div>
+      {s.hint && <div className="mt-1 text-xs text-brand-slate/65">{s.hint}</div>}
       {n.last_error && (
         <div className={`mt-1.5 text-xs ${n.status === 'skipped' ? 'text-stone-700' : 'text-red-800'}`}>
           {n.status === 'skipped' ? 'Reason: ' : ''}
@@ -1324,7 +1324,7 @@ const NotificationCell: React.FC<{
         </div>
       )}
       {mine.length > 0 && (
-        <ul className="mt-1.5 space-y-0.5 text-[11px] text-brand-brown/60">
+        <ul className="mt-1.5 space-y-0.5 text-[11px] text-brand-slate/60">
           {mine.map((e, i) => (
             <li key={i}>
               {e.provider === 'admin' ? 'Manual retry' : `Provider: ${e.event}`} · {fmtDateTime(e.occurred_at ?? e.received_at)}
@@ -1342,7 +1342,7 @@ const NotificationCell: React.FC<{
             await onRetry(n.id);
             setBusy(false);
           }}
-          className="mt-2 inline-flex items-center gap-1.5 rounded-sm border border-brand-bronze/60 px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.12em] text-brand-maroon hover:bg-brand-cream disabled:opacity-60"
+          className="mt-2 inline-flex items-center gap-1.5 rounded-sm border border-brand-lavender/70 px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.12em] text-brand-purple hover:bg-white disabled:opacity-60"
         >
           <RefreshCw className={`w-3 h-3 ${busy ? 'animate-spin' : ''}`} /> Retry
         </button>
@@ -1384,9 +1384,9 @@ const Notifications: React.FC<{
   return (
     <div className={`${card} p-5`}>
       <h2 className={`${sectionTitle} inline-flex items-center gap-2`}>
-        <Send className="w-4 h-4 text-brand-bronze-dark" /> Notifications
+        <Send className="w-4 h-4 text-brand-purple" /> Notifications
       </h2>
-      <p className="mt-1 text-xs text-brand-brown/65">
+      <p className="mt-1 text-xs text-brand-slate/65">
         Each message is tracked separately. “Accepted by provider” means Brevo or Meta took the message; it only shows Delivered once the provider confirms delivery.
       </p>
       {error && (
@@ -1398,8 +1398,8 @@ const Notifications: React.FC<{
         {groups.map((g) => (
           <div key={g.event}>
             <div className="flex flex-wrap items-baseline gap-2">
-              <h3 className="text-sm font-semibold text-brand-brown-deep">{EVENT_LABEL[g.event] ?? g.event}</h3>
-              <span className="text-xs text-brand-brown/60">{fmtDateTime(g.at)}</span>
+              <h3 className="text-sm font-semibold text-brand-slate-deep">{EVENT_LABEL[g.event] ?? g.event}</h3>
+              <span className="text-xs text-brand-slate/60">{fmtDateTime(g.at)}</span>
             </div>
             <div className="mt-2 grid gap-2 sm:grid-cols-2">
               {cells
@@ -1418,9 +1418,9 @@ const Notifications: React.FC<{
             </div>
           </div>
         ))}
-        {!groups.length && <p className="text-sm text-brand-brown/70">No notifications recorded.</p>}
+        {!groups.length && <p className="text-sm text-brand-slate/70">No notifications recorded.</p>}
       </div>
-      <a href="/" className="mt-5 inline-flex items-center gap-1 text-xs text-brand-brown/60 hover:text-brand-maroon">
+      <a href="/" className="mt-5 inline-flex items-center gap-1 text-xs text-brand-slate/60 hover:text-brand-purple">
         <ExternalLink className="w-3 h-3" /> Open the website
       </a>
     </div>

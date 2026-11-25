@@ -9,29 +9,52 @@ export default {
     extend: {
       colors: {
         brand: {
+          purple: {
+            DEFAULT: '#5812B8', // Deep PRIME Purple
+            deep: '#321064',    // Dark Purple (contrast sections)
+            rich: '#45108A',
+            light: '#792BE0',   // Mountain Purple
+            mountain: '#792BE0',
+            dark: '#240B48',
+          },
+          lavender: {
+            DEFAULT: '#B99AE8', // Soft Lavender (accents)
+            light: '#EDE5F8',   // Light Lavender (card backgrounds)
+            pure: '#F9F6FE',    // Ultra-light surface
+            tint: '#F0EAF9',
+            dark: '#9B72CF',
+          },
+          slate: {
+            DEFAULT: '#2D1854', // Dark purple text
+            deep: '#1A0B36',
+            light: '#584577',
+            muted: '#7E6C9E',
+          },
+          white: '#FFFFFF',     // Pure White
+          // Backward compatibility mappings ensuring any remaining legacy classes render in the new palette
           maroon: {
-            DEFAULT: '#500D18',
-            deep: '#3E0912',
-            rich: '#5A101C',
-            light: '#6E1624',
+            DEFAULT: '#5812B8',
+            deep: '#321064',
+            rich: '#45108A',
+            light: '#792BE0',
           },
           cream: {
-            DEFAULT: '#F8EFE5',
-            light: '#FAF5EE',
-            pure: '#FBF7F2',
-            tint: '#EFE2D4',
-            dark: '#E7D5C2',
+            DEFAULT: '#FFFFFF',
+            light: '#FFFFFF',
+            pure: '#FFFFFF',
+            tint: '#F9F6FE',
+            dark: '#EDE5F8',
           },
           bronze: {
-            DEFAULT: '#C69A70',
-            light: '#D4B08C',
-            dark: '#AF8057',
-            metallic: '#B88657',
+            DEFAULT: '#792BE0',
+            light: '#B99AE8',
+            dark: '#5812B8',
+            metallic: '#6822C8',
           },
           brown: {
-            DEFAULT: '#49302B',
-            deep: '#3B241F',
-            light: '#5E3F39',
+            DEFAULT: '#2D1854',
+            deep: '#1A0B36',
+            light: '#584577',
           }
         }
       },
@@ -46,14 +69,19 @@ export default {
         tile: '0.625rem',
       },
       boxShadow: {
-        'luxury': '0 20px 40px -15px rgba(80, 13, 24, 0.15)',
-        'luxury-lg': '0 30px 60px -20px rgba(80, 13, 24, 0.25)',
-        'bronze-glow': '0 0 30px rgba(198, 154, 112, 0.25)',
+        'luxury': '0 20px 40px -15px rgba(88, 18, 184, 0.12)',
+        'luxury-lg': '0 30px 60px -20px rgba(50, 16, 100, 0.22)',
+        'bronze-glow': '0 0 30px rgba(121, 43, 224, 0.25)',
+        'purple-glow': '0 0 30px rgba(121, 43, 224, 0.25)',
       },
       backgroundImage: {
-        'maroon-gradient': 'linear-gradient(180deg, #500D18 0%, #3E0912 100%)',
-        'cream-gradient': 'linear-gradient(180deg, #FAF5EE 0%, #F8EFE5 100%)',
-        'bronze-sheen': 'linear-gradient(135deg, #D4B08C 0%, #C69A70 50%, #AF8057 100%)',
+        'purple-gradient': 'linear-gradient(180deg, #5812B8 0%, #321064 100%)',
+        'lavender-gradient': 'linear-gradient(180deg, #FFFFFF 0%, #EDE5F8 100%)',
+        'surface-gradient': 'linear-gradient(180deg, #FFFFFF 0%, #F9F6FE 100%)',
+        'purple-sheen': 'linear-gradient(135deg, #B99AE8 0%, #792BE0 50%, #5812B8 100%)',
+        'maroon-gradient': 'linear-gradient(180deg, #5812B8 0%, #321064 100%)',
+        'cream-gradient': 'linear-gradient(180deg, #FFFFFF 0%, #EDE5F8 100%)',
+        'bronze-sheen': 'linear-gradient(135deg, #B99AE8 0%, #792BE0 50%, #5812B8 100%)',
       }
     },
   },

@@ -57,7 +57,7 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-brand-cream text-brand-brown font-sans selection:bg-brand-maroon selection:text-brand-cream relative">
+    <div className="min-h-screen bg-white text-brand-slate font-sans selection:bg-brand-purple selection:text-white relative">
       {/* Top Navbar */}
       <Navbar
         onOpenContact={() => {

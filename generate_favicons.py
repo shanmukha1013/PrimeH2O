@@ -23,13 +23,14 @@ import numpy as np
 from PIL import Image, ImageFilter
 
 SOURCE = 'public/assets/logo_header.png'
-SOURCE_BG = np.array([83, 11, 22])        # burgundy behind the lettering in the source
+SOURCE_BG = np.array([0x58, 0x12, 0xB8])        # Deep PRIME purple behind the lettering
 PRIME_BOX = (38, 28, 565, 142)            # PRIME lettering in the source (l, t, r, b)
 H2O_BOX = (236, 239, 366, 290)            # H2O lettering in the source
 
-BURGUNDY = (0x50, 0x0D, 0x18)             # #500D18
-CREAM = (254, 250, 238)
-BRONZE = (238, 175, 109)
+DEEP_PURPLE = (0x58, 0x12, 0xB8)          # #5812B8 (Deep PRIME Purple)
+PURE_WHITE = (255, 255, 255)              # #FFFFFF (Pure White)
+SOFT_LAVENDER = (185, 154, 232)           # #B99AE8 (Soft Lavender)
+MOUNTAIN_PURPLE = (121, 43, 224)          # #792BE0 (Mountain Purple)
 
 PRIME_WIDTH = 0.80                        # share of the icon width
 H2O_WIDTH = 0.42
@@ -52,14 +53,14 @@ def lettering_mask(box, width_px):
 
 
 def build_master(size=1024):
-    icon = Image.new('RGB', (size, size), BURGUNDY)
+    icon = Image.new('RGB', (size, size), DEEP_PURPLE)
     prime = lettering_mask(PRIME_BOX, round(size * PRIME_WIDTH))
     h2o = lettering_mask(H2O_BOX, round(size * H2O_WIDTH))
     gap = round(size * GAP)
 
     top = (size - (prime.height + gap + h2o.height)) // 2
-    icon.paste(Image.new('RGB', prime.size, CREAM), ((size - prime.width) // 2, top), prime)
-    icon.paste(Image.new('RGB', h2o.size, BRONZE), ((size - h2o.width) // 2, top + prime.height + gap), h2o)
+    icon.paste(Image.new('RGB', prime.size, PURE_WHITE), ((size - prime.width) // 2, top), prime)
+    icon.paste(Image.new('RGB', h2o.size, SOFT_LAVENDER), ((size - h2o.width) // 2, top + prime.height + gap), h2o)
 
     # Every lettering corner must sit inside the inscribed circle.
     half = size / 2

@@ -43,17 +43,17 @@ const BUSINESS_PHONE = '8143489222';
 const BUSINESS_EMAIL = 'prime2417@gmail.com';
 
 const inputClass = (error?: string) =>
-  `w-full px-4 py-3 bg-brand-cream border text-sm text-brand-brown placeholder-brand-brown/40 focus:outline-none focus:ring-1 transition-all rounded-sm ${
-    error ? 'border-red-600 focus:ring-red-600' : 'border-brand-bronze/40 focus:border-brand-maroon focus:ring-brand-maroon'
+  `w-full px-4 py-3 bg-white border text-sm text-brand-slate placeholder-brand-slate/40 focus:outline-none focus:ring-1 transition-all rounded-sm ${
+    error ? 'border-red-600 focus:ring-red-600' : 'border-brand-lavender/50 focus:border-brand-purple focus:ring-brand-purple'
   }`;
-const fieldLabel = 'block text-xs uppercase tracking-[0.16em] font-bold text-brand-maroon';
+const fieldLabel = 'block text-xs uppercase tracking-[0.16em] font-bold text-brand-purple';
 
 const Required = () => (
-  <span className="text-brand-maroon-rich" aria-hidden="true">
+  <span className="text-brand-purple-rich" aria-hidden="true">
     *
   </span>
 );
-const Optional = () => <span className="normal-case tracking-normal font-medium text-brand-brown/55">(optional)</span>;
+const Optional = () => <span className="normal-case tracking-normal font-medium text-brand-slate/55">(optional)</span>;
 
 const FieldError: React.FC<{ id?: string; msg?: string }> = ({ id, msg }) =>
   msg ? (
@@ -63,12 +63,12 @@ const FieldError: React.FC<{ id?: string; msg?: string }> = ({ id, msg }) =>
   ) : null;
 
 const Step: React.FC<{ n: string; title: string; hint?: string; children: React.ReactNode }> = ({ n, title, hint, children }) => (
-  <div className="bg-brand-cream-pure/80 border border-brand-bronze/30 rounded-frame p-5 sm:p-7 shadow-luxury">
+  <div className="bg-white/90 border border-brand-lavender/40 rounded-frame p-5 sm:p-7 shadow-luxury">
     <div className="flex items-start gap-4 mb-5">
-      <span className="font-editorial text-3xl sm:text-4xl leading-none text-brand-bronze">{n}</span>
+      <span className="font-editorial text-3xl sm:text-4xl leading-none text-brand-purple-light">{n}</span>
       <div className="pt-0.5">
-        <h3 className="text-xs sm:text-sm uppercase tracking-[0.2em] font-bold text-brand-maroon">{title}</h3>
-        {hint && <p className="text-xs sm:text-sm text-brand-brown/70 mt-1">{hint}</p>}
+        <h3 className="text-xs sm:text-sm uppercase tracking-[0.2em] font-bold text-brand-purple">{title}</h3>
+        {hint && <p className="text-xs sm:text-sm text-brand-slate/70 mt-1">{hint}</p>}
       </div>
     </div>
     {children}
@@ -267,32 +267,32 @@ export const ProductOrder: React.FC<ProductOrderProps> = ({ preselect }) => {
     <section
       ref={sectionRef}
       id="order"
-      className="relative py-16 sm:py-20 md:py-24 lg:py-28 bg-brand-cream-light border-t border-brand-bronze/25 scroll-mt-[72px] lg:scroll-mt-[80px] overflow-hidden"
+      className="relative py-16 sm:py-20 md:py-24 lg:py-28 bg-brand-lavender-pure border-t border-brand-lavender/35 scroll-mt-[72px] lg:scroll-mt-[80px] overflow-hidden"
       aria-label="Order PRIME H₂O online"
     >
-      <div className="absolute -top-24 -right-40 w-[460px] h-[460px] rounded-full bg-brand-bronze/10 blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-10 -left-40 w-[420px] h-[420px] rounded-full bg-brand-maroon/5 blur-[120px] pointer-events-none" />
+      <div className="absolute -top-24 -right-40 w-[460px] h-[460px] rounded-full bg-brand-lavender/10 blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-10 -left-40 w-[420px] h-[420px] rounded-full bg-brand-purple/5 blur-[120px] pointer-events-none" />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="max-w-3xl mx-auto text-center space-y-4">
           <div className="inline-flex items-center gap-2">
-            <span className="w-8 h-px bg-brand-bronze" />
-            <span className="text-xs uppercase tracking-[0.28em] font-semibold text-brand-maroon">Order Online</span>
-            <span className="w-8 h-px bg-brand-bronze" />
+            <span className="w-8 h-px bg-brand-purple-light" />
+            <span className="text-xs uppercase tracking-[0.28em] font-semibold text-brand-purple">Order Online</span>
+            <span className="w-8 h-px bg-brand-purple-light" />
           </div>
-          <h2 className="font-editorial text-4xl sm:text-5xl md:text-6xl font-normal text-brand-maroon leading-tight text-balance">
-            Order PRIME H<sub className="text-[0.55em] relative bottom-[-0.05em]">2</sub>O <span className="italic text-brand-bronze-dark">Online.</span>
+          <h2 className="font-editorial text-4xl sm:text-5xl md:text-6xl font-normal text-brand-purple leading-tight text-balance">
+            Order PRIME H<sub className="text-[0.55em] relative bottom-[-0.05em]">2</sub>O <span className="italic text-brand-purple">Online.</span>
           </h2>
-          <p className="text-base sm:text-lg text-brand-brown/85 max-w-2xl mx-auto text-balance">
+          <p className="text-base sm:text-lg text-brand-slate/85 max-w-2xl mx-auto text-balance">
             Choose your bottle sizes and quantities, tell us where to deliver, and our team will confirm your order.
           </p>
         </div>
 
         {catalogue.phase === 'loading' && (
-          <div className="mt-12 md:mt-16 py-16 grid place-items-center text-brand-maroon" role="status">
+          <div className="mt-12 md:mt-16 py-16 grid place-items-center text-brand-purple" role="status">
             <LoaderCircle className="w-7 h-7 animate-spin" aria-hidden="true" />
-            <span className="mt-3 text-xs uppercase tracking-[0.2em] text-brand-brown/70">Loading products…</span>
+            <span className="mt-3 text-xs uppercase tracking-[0.2em] text-brand-slate/70">Loading products…</span>
           </div>
         )}
 
@@ -328,19 +328,19 @@ export const ProductOrder: React.FC<ProductOrderProps> = ({ preselect }) => {
                       <div
                         key={p.code}
                         className={`flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-tile border transition-all duration-200 ${
-                          err ? 'border-red-600 bg-brand-cream-pure' : qty > 0 ? 'border-brand-maroon/60 bg-brand-cream-pure shadow-luxury' : 'border-brand-bronze/30 bg-brand-cream/60'
+                          err ? 'border-red-600 bg-white' : qty > 0 ? 'border-brand-purple/60 bg-white shadow-luxury' : 'border-brand-lavender/40 bg-white/60'
                         }`}
                       >
-                        <div className="w-12 h-20 sm:w-16 sm:h-24 shrink-0 flex items-end justify-center rounded-tile bg-brand-cream-dark/40 border border-brand-bronze/20 overflow-hidden">
-                          <img src={imageFor(p.code)} alt={`${p.name} packaged drinking water bottle`} className="h-[90%] w-auto object-contain drop-shadow-[0_6px_8px_rgba(80,13,24,0.18)]" loading="lazy" />
+                        <div className="w-12 h-20 sm:w-16 sm:h-24 shrink-0 flex items-end justify-center rounded-tile bg-brand-lavender-light/40 border border-brand-lavender/30 overflow-hidden">
+                          <img src={imageFor(p.code)} alt={`${p.name} packaged drinking water bottle`} className="h-[90%] w-auto object-contain drop-shadow-[0_6px_8px_rgba(88,18,184,0.18)]" loading="lazy" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="font-semibold text-brand-maroon text-sm sm:text-base">{p.name}</div>
-                          <div className="text-xs text-brand-brown/75 mt-0.5">
+                          <div className="font-semibold text-brand-purple text-sm sm:text-base">{p.name}</div>
+                          <div className="text-xs text-brand-slate/75 mt-0.5">
                             {p.unitPricePaise != null ? `${formatRupees(p.unitPricePaise)} per bottle` : 'Price confirmed by PRIME H₂O'}
                           </div>
                           {qty > 0 && (
-                            <div className="text-xs font-semibold text-brand-bronze-dark mt-0.5">
+                            <div className="text-xs font-semibold text-brand-purple mt-0.5">
                               {formatBottles(qty)}
                               {p.unitPricePaise != null && ` · ${formatRupees(qty * p.unitPricePaise)}`}
                             </div>
@@ -353,7 +353,7 @@ export const ProductOrder: React.FC<ProductOrderProps> = ({ preselect }) => {
                             onClick={() => stepQty(p.code, -1)}
                             disabled={qty === 0}
                             aria-label={`One bottle fewer of ${p.size}`}
-                            className="w-9 sm:w-10 h-10 grid place-items-center border border-brand-bronze/40 rounded-l-sm text-brand-maroon bg-brand-cream hover:bg-brand-cream-dark/60 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                            className="w-9 sm:w-10 h-10 grid place-items-center border border-brand-lavender/50 rounded-l-sm text-brand-purple bg-white hover:bg-brand-lavender-light/60 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                           >
                             <Minus className="w-3.5 h-3.5" />
                           </button>
@@ -370,15 +370,15 @@ export const ProductOrder: React.FC<ProductOrderProps> = ({ preselect }) => {
                             placeholder="0"
                             onChange={(e) => setQty(p.code, e.target.value)}
                             aria-invalid={!!err}
-                            className={`w-14 sm:w-20 h-10 text-center border-y bg-brand-cream-pure text-sm font-semibold text-brand-brown-deep focus:outline-none focus:ring-1 focus:ring-brand-maroon ${
-                              err ? 'border-red-600' : 'border-brand-bronze/40'
+                            className={`w-14 sm:w-20 h-10 text-center border-y bg-white text-sm font-semibold text-brand-slate-deep focus:outline-none focus:ring-1 focus:ring-brand-purple ${
+                              err ? 'border-red-600' : 'border-brand-lavender/50'
                             }`}
                           />
                           <button
                             type="button"
                             onClick={() => stepQty(p.code, 1)}
                             aria-label={`One bottle more of ${p.size}`}
-                            className="w-9 sm:w-10 h-10 grid place-items-center border border-brand-bronze/40 rounded-r-sm text-brand-maroon bg-brand-cream hover:bg-brand-cream-dark/60 transition-colors"
+                            className="w-9 sm:w-10 h-10 grid place-items-center border border-brand-lavender/50 rounded-r-sm text-brand-purple bg-white hover:bg-brand-lavender-light/60 transition-colors"
                           >
                             <Plus className="w-3.5 h-3.5" />
                           </button>
@@ -387,7 +387,7 @@ export const ProductOrder: React.FC<ProductOrderProps> = ({ preselect }) => {
                     );
                   })}
                   <FieldError msg={errors.items} />
-                  <p className="text-xs text-brand-brown/65">Quantities are in bottles.</p>
+                  <p className="text-xs text-brand-slate/65">Quantities are in bottles.</p>
                 </div>
               </Step>
 
@@ -448,7 +448,7 @@ export const ProductOrder: React.FC<ProductOrderProps> = ({ preselect }) => {
                   </div>
                   <div className="sm:col-span-2 space-y-3">
                     <span className={fieldLabel}>WhatsApp Number</span>
-                    <label className="flex items-center gap-2.5 cursor-pointer text-sm text-brand-brown">
+                    <label className="flex items-center gap-2.5 cursor-pointer text-sm text-brand-slate">
                       <input
                         type="checkbox"
                         checked={form.whatsappSame}
@@ -456,7 +456,7 @@ export const ProductOrder: React.FC<ProductOrderProps> = ({ preselect }) => {
                           setForm((f) => ({ ...f, whatsappSame: e.target.checked }));
                           if (errors.whatsapp) setErrors((x) => ({ ...x, whatsapp: '' }));
                         }}
-                        className="h-4 w-4 shrink-0 accent-[#500D18]"
+                        className="h-4 w-4 shrink-0 accent-[#5812B8]"
                       />
                       Same as my mobile number
                     </label>
@@ -565,21 +565,21 @@ export const ProductOrder: React.FC<ProductOrderProps> = ({ preselect }) => {
               {/* 04 — Updates & instructions */}
               <Step n="04" title="Updates & Instructions">
                 <div className="space-y-5">
-                  <div className="p-4 rounded-sm border border-brand-bronze/40 bg-brand-cream-light/70">
+                  <div className="p-4 rounded-sm border border-brand-lavender/50 bg-brand-lavender-pure/90">
                     <label htmlFor="po-wa-optin" className="flex items-start gap-3 cursor-pointer">
                       <input
                         id="po-wa-optin"
                         type="checkbox"
                         checked={waOptIn}
                         onChange={(e) => setWaOptIn(e.target.checked)}
-                        className="mt-0.5 h-4 w-4 shrink-0 accent-[#500D18]"
+                        className="mt-0.5 h-4 w-4 shrink-0 accent-[#5812B8]"
                       />
-                      <span className="text-sm text-brand-brown leading-relaxed">
-                        <span className="font-semibold text-brand-maroon">WhatsApp order updates </span>
-                        <span className="text-brand-brown/60">(optional)</span>
-                        <span className="block text-xs text-brand-brown/75 mt-1">{WHATSAPP_CONSENT_TEXT}</span>
+                      <span className="text-sm text-brand-slate leading-relaxed">
+                        <span className="font-semibold text-brand-purple">WhatsApp order updates </span>
+                        <span className="text-brand-slate/60">(optional)</span>
+                        <span className="block text-xs text-brand-slate/75 mt-1">{WHATSAPP_CONSENT_TEXT}</span>
                         {waOptIn && updatesTo && (
-                          <span className="block text-xs font-semibold text-brand-bronze-dark mt-1.5">Updates will be sent to {updatesTo}.</span>
+                          <span className="block text-xs font-semibold text-brand-purple mt-1.5">Updates will be sent to {updatesTo}.</span>
                         )}
                       </span>
                     </label>
@@ -606,13 +606,13 @@ export const ProductOrder: React.FC<ProductOrderProps> = ({ preselect }) => {
 
             {/* Summary + place order */}
             <aside className="lg:col-span-5 lg:sticky lg:top-24">
-              <div className="rounded-frame border border-brand-bronze/40 shadow-luxury-lg overflow-hidden bg-brand-cream-pure">
-                <div className="flex items-center justify-between gap-3 px-5 py-3 bg-maroon-gradient">
-                  <span className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.24em] font-bold text-brand-cream">
-                    <ShoppingBag className="w-4 h-4 text-brand-bronze" aria-hidden="true" />
+              <div className="rounded-frame border border-brand-lavender/50 shadow-luxury-lg overflow-hidden bg-white">
+                <div className="flex items-center justify-between gap-3 px-5 py-3 bg-purple-gradient">
+                  <span className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.24em] font-bold text-white">
+                    <ShoppingBag className="w-4 h-4 text-brand-purple-light" aria-hidden="true" />
                     Your Order
                   </span>
-                  <span className="text-[11px] uppercase tracking-[0.18em] font-semibold text-brand-bronze-light">
+                  <span className="text-[11px] uppercase tracking-[0.18em] font-semibold text-brand-lavender">
                     {totalBottles ? formatBottles(totalBottles) : 'No bottles yet'}
                   </span>
                 </div>
@@ -623,37 +623,37 @@ export const ProductOrder: React.FC<ProductOrderProps> = ({ preselect }) => {
                       {lines.map((l) => (
                         <li key={l.product.code} className="py-2.5 flex items-start justify-between gap-3 text-sm">
                           <span className="min-w-0">
-                            <span className="font-semibold text-brand-maroon">{l.product.name}</span>
-                            <span className="block text-xs text-brand-brown/70">
+                            <span className="font-semibold text-brand-purple">{l.product.name}</span>
+                            <span className="block text-xs text-brand-slate/70">
                               {formatBottles(l.qty)}
                               {l.product.unitPricePaise != null && ` × ${formatRupees(l.product.unitPricePaise)}`}
                             </span>
                           </span>
-                          <span className="font-semibold text-brand-brown-deep whitespace-nowrap">
+                          <span className="font-semibold text-brand-slate-deep whitespace-nowrap">
                             {l.product.unitPricePaise != null ? formatRupees(l.qty * l.product.unitPricePaise) : 'To be confirmed'}
                           </span>
                         </li>
                       ))}
                     </ul>
                   ) : (
-                    <p className="text-sm text-brand-brown/70">Choose a bottle size and enter how many bottles you need.</p>
+                    <p className="text-sm text-brand-slate/70">Choose a bottle size and enter how many bottles you need.</p>
                   )}
 
-                  <div className="flex items-baseline justify-between gap-3 border-t border-brand-bronze/30 pt-3">
-                    <span className="text-xs uppercase tracking-[0.18em] font-bold text-brand-maroon">Total</span>
-                    <span className="font-editorial text-2xl sm:text-3xl text-brand-maroon text-right">
+                  <div className="flex items-baseline justify-between gap-3 border-t border-brand-lavender/40 pt-3">
+                    <span className="text-xs uppercase tracking-[0.18em] font-bold text-brand-purple">Total</span>
+                    <span className="font-editorial text-2xl sm:text-3xl text-brand-purple text-right">
                       {total != null ? formatRupees(total) : lines.length ? 'To be confirmed' : '—'}
                     </span>
                   </div>
                   {lines.length > 0 && total == null && (
-                    <p className="text-xs text-brand-brown/70">
+                    <p className="text-xs text-brand-slate/70">
                       {anyPriceListed ? 'Some sizes do not have a price listed online yet.' : 'Prices are not listed online yet.'} PRIME H₂O will
                       confirm the amount with you when your order is confirmed.
                     </p>
                   )}
 
-                  <p className="flex items-start gap-2 text-xs text-brand-brown/75">
-                    <Info className="w-3.5 h-3.5 mt-0.5 shrink-0 text-brand-bronze-dark" aria-hidden="true" />
+                  <p className="flex items-start gap-2 text-xs text-brand-slate/75">
+                    <Info className="w-3.5 h-3.5 mt-0.5 shrink-0 text-brand-purple" aria-hidden="true" />
                     <span>Every order is reviewed by PRIME H₂O and confirmed with you before delivery. Delivery and payment are arranged when your order is confirmed.</span>
                   </p>
 
@@ -667,25 +667,25 @@ export const ProductOrder: React.FC<ProductOrderProps> = ({ preselect }) => {
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="group w-full disabled:opacity-75 disabled:cursor-wait inline-flex items-center justify-center gap-3 py-4 px-6 text-sm font-bold uppercase tracking-[0.2em] bg-maroon-gradient text-brand-cream rounded-sm shadow-luxury-lg border border-brand-bronze/50 hover:shadow-bronze-glow hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300"
+                    className="group w-full disabled:opacity-75 disabled:cursor-wait inline-flex items-center justify-center gap-3 py-4 px-6 text-sm font-bold uppercase tracking-[0.2em] bg-purple-gradient text-white rounded-sm shadow-luxury-lg border border-brand-lavender/60 hover:shadow-purple-glow hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300"
                   >
                     {submitting ? (
                       <>
-                        <LoaderCircle className="w-5 h-5 animate-spin text-brand-bronze" aria-hidden="true" />
+                        <LoaderCircle className="w-5 h-5 animate-spin text-brand-purple-light" aria-hidden="true" />
                         Placing your order…
                       </>
                     ) : (
                       <>
-                        <ShoppingBag className="w-5 h-5 text-brand-bronze transition-transform duration-300 group-hover:scale-110" aria-hidden="true" />
+                        <ShoppingBag className="w-5 h-5 text-brand-purple-light transition-transform duration-300 group-hover:scale-110" aria-hidden="true" />
                         {server.phase === 'error' ? 'Try Again' : 'Place Order'}
                       </>
                     )}
                   </button>
 
-                  <p className="flex items-start gap-2 text-[11px] leading-relaxed text-brand-brown/65">
-                    <ShieldCheck className="w-3.5 h-3.5 mt-0.5 shrink-0 text-brand-bronze-dark" aria-hidden="true" />
+                  <p className="flex items-start gap-2 text-[11px] leading-relaxed text-brand-slate/65">
+                    <ShieldCheck className="w-3.5 h-3.5 mt-0.5 shrink-0 text-brand-purple" aria-hidden="true" />
                     <span>
-                      <strong className="font-semibold text-brand-brown/80">Privacy:</strong> PRIME H₂O stores the details you enter to process,
+                      <strong className="font-semibold text-brand-slate/80">Privacy:</strong> PRIME H₂O stores the details you enter to process,
                       deliver and update you about this order. They are visible only to PRIME H₂O staff, and are shared with our messaging providers
                       (Brevo for email, Meta for WhatsApp) only to send your order updates. WhatsApp updates are sent only if you tick the box above.
                     </span>
@@ -735,49 +735,49 @@ const OrderConfirmation: React.FC<{ result: ProductOrderResult; onNewOrder: () =
       transition={{ duration: 0.45 }}
       role="status"
       aria-live="polite"
-      className="mt-12 md:mt-16 max-w-5xl mx-auto rounded-frame border border-brand-bronze/50 bg-brand-cream-pure shadow-luxury-lg overflow-hidden"
+      className="mt-12 md:mt-16 max-w-5xl mx-auto rounded-frame border border-brand-lavender/60 bg-white shadow-luxury-lg overflow-hidden"
     >
-      <div className="bg-maroon-gradient px-6 py-8 sm:px-10 sm:py-10 text-center text-brand-cream">
-        <CircleCheck className="w-12 h-12 mx-auto text-brand-bronze" aria-hidden="true" />
+      <div className="bg-purple-gradient px-6 py-8 sm:px-10 sm:py-10 text-center text-white">
+        <CircleCheck className="w-12 h-12 mx-auto text-brand-purple-light" aria-hidden="true" />
         <h3 className="mt-3 font-editorial text-3xl sm:text-4xl">Order Successfully Received</h3>
-        <p className="mt-2 text-sm text-brand-cream/80">Thank you for choosing PRIME H₂O{o ? `, ${o.customer.name}` : ''}.</p>
+        <p className="mt-2 text-sm text-white/80">Thank you for choosing PRIME H₂O{o ? `, ${o.customer.name}` : ''}.</p>
         <div className="mt-6 flex flex-wrap items-center justify-center gap-x-3 gap-y-2">
-          <span className="text-[11px] uppercase tracking-[0.24em] text-brand-bronze-light">Order ID</span>
+          <span className="text-[11px] uppercase tracking-[0.24em] text-brand-lavender">Order ID</span>
           <span className="font-mono text-xl sm:text-2xl font-bold tracking-wider select-all">{id}</span>
           <button
             type="button"
             onClick={copy}
-            className="inline-flex items-center gap-1.5 rounded-sm border border-brand-bronze/60 px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.14em] hover:bg-white/10 transition-colors"
+            className="inline-flex items-center gap-1.5 rounded-sm border border-brand-lavender/70 px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.14em] hover:bg-white/10 transition-colors"
           >
-            <Copy className="w-3.5 h-3.5 text-brand-bronze" aria-hidden="true" />
+            <Copy className="w-3.5 h-3.5 text-brand-purple-light" aria-hidden="true" />
             {copied ? 'Copied' : 'Copy'}
           </button>
         </div>
         <div className="mt-4">
-          <span className="inline-flex items-center gap-2 rounded-full bg-brand-cream/10 border border-brand-bronze/50 px-3 py-1 text-xs font-semibold tracking-wide">
+          <span className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-brand-lavender/60 px-3 py-1 text-xs font-semibold tracking-wide">
             <span className="w-2 h-2 rounded-full bg-amber-400" aria-hidden="true" />
             Status: Received — Awaiting Confirmation
           </span>
         </div>
-        {placed && <p className="mt-2 text-xs text-brand-cream/70">Placed {placed} IST</p>}
+        {placed && <p className="mt-2 text-xs text-white/70">Placed {placed} IST</p>}
       </div>
 
       <div className="p-6 sm:p-10 space-y-8">
-        <div className="max-w-2xl mx-auto text-center space-y-2 text-sm sm:text-base text-brand-brown leading-relaxed">
+        <div className="max-w-2xl mx-auto text-center space-y-2 text-sm sm:text-base text-brand-slate leading-relaxed">
           <p>
             Your order has been saved. <strong>Our team will review it and confirm it with you</strong> before delivery. Please keep your Order ID
             for any questions.
           </p>
-          {notices.length > 0 && <p className="text-sm text-brand-brown/80">{notices.join(' ')}</p>}
+          {notices.length > 0 && <p className="text-sm text-brand-slate/80">{notices.join(' ')}</p>}
         </div>
 
         {o && (
           <div className="grid gap-6 md:grid-cols-2">
-            <div className="rounded-sm border border-brand-bronze/30 bg-brand-cream-light/60 p-5">
-              <h4 className="text-[11px] uppercase tracking-[0.22em] font-bold text-brand-maroon">Order Summary</h4>
+            <div className="rounded-sm border border-brand-lavender/40 bg-brand-lavender-pure/80 p-5">
+              <h4 className="text-[11px] uppercase tracking-[0.22em] font-bold text-brand-purple">Order Summary</h4>
               <table className="mt-3 w-full text-sm">
                 <thead>
-                  <tr className="text-left text-[11px] uppercase tracking-[0.12em] text-brand-brown/60">
+                  <tr className="text-left text-[11px] uppercase tracking-[0.12em] text-brand-slate/60">
                     <th className="pb-2 font-semibold">Product</th>
                     <th className="pb-2 font-semibold text-right">Qty</th>
                     <th className="pb-2 font-semibold text-right">Amount</th>
@@ -787,8 +787,8 @@ const OrderConfirmation: React.FC<{ result: ProductOrderResult; onNewOrder: () =
                   {o.items.map((i) => (
                     <tr key={i.code} className="align-top">
                       <td className="py-2 pr-2">
-                        <span className="font-semibold text-brand-maroon">{i.name}</span>
-                        <span className="block text-xs text-brand-brown/70">
+                        <span className="font-semibold text-brand-purple">{i.name}</span>
+                        <span className="block text-xs text-brand-slate/70">
                           {i.unitPricePaise != null ? `${formatRupees(i.unitPricePaise)} per bottle` : 'Price to be confirmed'}
                         </span>
                       </td>
@@ -800,11 +800,11 @@ const OrderConfirmation: React.FC<{ result: ProductOrderResult; onNewOrder: () =
                   ))}
                 </tbody>
                 <tfoot>
-                  <tr className="border-t border-brand-bronze/40">
-                    <td colSpan={2} className="pt-3 text-[11px] uppercase tracking-[0.18em] font-bold text-brand-maroon">
+                  <tr className="border-t border-brand-lavender/50">
+                    <td colSpan={2} className="pt-3 text-[11px] uppercase tracking-[0.18em] font-bold text-brand-purple">
                       Total
                     </td>
-                    <td className="pt-3 text-right font-editorial text-xl text-brand-maroon whitespace-nowrap">
+                    <td className="pt-3 text-right font-editorial text-xl text-brand-purple whitespace-nowrap">
                       {o.totalPaise != null ? formatRupees(o.totalPaise) : 'To be confirmed'}
                     </td>
                   </tr>
@@ -812,28 +812,28 @@ const OrderConfirmation: React.FC<{ result: ProductOrderResult; onNewOrder: () =
               </table>
             </div>
 
-            <div className="rounded-sm border border-brand-bronze/30 bg-brand-cream-light/60 p-5 space-y-4 text-sm">
+            <div className="rounded-sm border border-brand-lavender/40 bg-brand-lavender-pure/80 p-5 space-y-4 text-sm">
               <div>
-                <h4 className="text-[11px] uppercase tracking-[0.22em] font-bold text-brand-maroon">Customer</h4>
+                <h4 className="text-[11px] uppercase tracking-[0.22em] font-bold text-brand-purple">Customer</h4>
                 <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">
-                  <dt className="text-brand-brown/60">Name</dt>
-                  <dd className="font-semibold text-brand-brown-deep break-words">{o.customer.name}</dd>
-                  <dt className="text-brand-brown/60">Mobile</dt>
+                  <dt className="text-brand-slate/60">Name</dt>
+                  <dd className="font-semibold text-brand-slate-deep break-words">{o.customer.name}</dd>
+                  <dt className="text-brand-slate/60">Mobile</dt>
                   <dd>{formatPhone(o.customer.phone)}</dd>
-                  <dt className="text-brand-brown/60">WhatsApp</dt>
+                  <dt className="text-brand-slate/60">WhatsApp</dt>
                   <dd>
                     {o.customer.whatsapp ? formatPhone(o.customer.whatsapp) : '—'}
-                    <span className="block text-xs text-brand-brown/60">{o.whatsappOptIn ? 'Order updates on WhatsApp: yes' : 'No WhatsApp updates'}</span>
+                    <span className="block text-xs text-brand-slate/60">{o.whatsappOptIn ? 'Order updates on WhatsApp: yes' : 'No WhatsApp updates'}</span>
                   </dd>
-                  <dt className="text-brand-brown/60">Email</dt>
+                  <dt className="text-brand-slate/60">Email</dt>
                   <dd className="[overflow-wrap:anywhere]">{o.customer.email || '—'}</dd>
                 </dl>
               </div>
               <div>
-                <h4 className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.22em] font-bold text-brand-maroon">
+                <h4 className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.22em] font-bold text-brand-purple">
                   <MapPin className="w-3.5 h-3.5" aria-hidden="true" /> Delivery Address
                 </h4>
-                <address className="mt-2 not-italic text-brand-brown-deep leading-relaxed whitespace-pre-line break-words">
+                <address className="mt-2 not-italic text-brand-slate-deep leading-relaxed whitespace-pre-line break-words">
                   {o.delivery.address}
                   {'\n'}
                   {o.delivery.city}, {o.delivery.state} – {o.delivery.pinCode}
@@ -841,25 +841,25 @@ const OrderConfirmation: React.FC<{ result: ProductOrderResult; onNewOrder: () =
               </div>
               {o.instructions && (
                 <div>
-                  <h4 className="text-[11px] uppercase tracking-[0.22em] font-bold text-brand-maroon">Instructions</h4>
-                  <p className="mt-2 text-brand-brown whitespace-pre-wrap break-words">{o.instructions}</p>
+                  <h4 className="text-[11px] uppercase tracking-[0.22em] font-bold text-brand-purple">Instructions</h4>
+                  <p className="mt-2 text-brand-slate whitespace-pre-wrap break-words">{o.instructions}</p>
                 </div>
               )}
             </div>
           </div>
         )}
 
-        <div className="rounded-sm border border-brand-bronze/30 p-5 text-sm text-brand-brown">
-          <p className="font-semibold text-brand-maroon">Questions about your order? Quote {id}.</p>
+        <div className="rounded-sm border border-brand-lavender/40 p-5 text-sm text-brand-slate">
+          <p className="font-semibold text-brand-purple">Questions about your order? Quote {id}.</p>
           <div className="mt-3 flex flex-wrap gap-x-6 gap-y-2">
-            <a href={whatsappUrlWithText(`Hi PRIME H₂O! I placed order ${id} on your website.`)} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-brand-maroon hover:underline underline-offset-2">
-              <MessageCircle className="w-4 h-4 text-brand-bronze-dark" aria-hidden="true" /> WhatsApp {WHATSAPP_DISPLAY}
+            <a href={whatsappUrlWithText(`Hi PRIME H₂O! I placed order ${id} on your website.`)} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-brand-purple hover:underline underline-offset-2">
+              <MessageCircle className="w-4 h-4 text-brand-purple" aria-hidden="true" /> WhatsApp {WHATSAPP_DISPLAY}
             </a>
-            <a href={`tel:${BUSINESS_PHONE}`} className="inline-flex items-center gap-2 text-brand-maroon hover:underline underline-offset-2">
-              <Phone className="w-4 h-4 text-brand-bronze-dark" aria-hidden="true" /> Call {BUSINESS_PHONE}
+            <a href={`tel:${BUSINESS_PHONE}`} className="inline-flex items-center gap-2 text-brand-purple hover:underline underline-offset-2">
+              <Phone className="w-4 h-4 text-brand-purple" aria-hidden="true" /> Call {BUSINESS_PHONE}
             </a>
-            <a href={`mailto:${BUSINESS_EMAIL}?subject=${encodeURIComponent(`Order ${id}`)}`} className="inline-flex items-center gap-2 text-brand-maroon hover:underline underline-offset-2 [overflow-wrap:anywhere]">
-              <Mail className="w-4 h-4 text-brand-bronze-dark" aria-hidden="true" /> {BUSINESS_EMAIL}
+            <a href={`mailto:${BUSINESS_EMAIL}?subject=${encodeURIComponent(`Order ${id}`)}`} className="inline-flex items-center gap-2 text-brand-purple hover:underline underline-offset-2 [overflow-wrap:anywhere]">
+              <Mail className="w-4 h-4 text-brand-purple" aria-hidden="true" /> {BUSINESS_EMAIL}
             </a>
           </div>
         </div>
@@ -868,9 +868,9 @@ const OrderConfirmation: React.FC<{ result: ProductOrderResult; onNewOrder: () =
           <button
             type="button"
             onClick={onNewOrder}
-            className="inline-flex items-center justify-center gap-2 py-3 px-6 text-xs font-bold uppercase tracking-[0.16em] bg-brand-maroon text-brand-cream hover:bg-brand-maroon-rich transition-colors rounded-sm shadow-md"
+            className="inline-flex items-center justify-center gap-2 py-3 px-6 text-xs font-bold uppercase tracking-[0.16em] bg-brand-purple text-white hover:bg-brand-purple-rich transition-colors rounded-sm shadow-md"
           >
-            <RotateCcw className="w-4 h-4 text-brand-bronze" aria-hidden="true" />
+            <RotateCcw className="w-4 h-4 text-brand-purple-light" aria-hidden="true" />
             Place Another Order
           </button>
         </div>
@@ -882,29 +882,29 @@ const OrderConfirmation: React.FC<{ result: ProductOrderResult; onNewOrder: () =
 // ------------------------------------------------------------------ fallback
 
 const OrderingUnavailable: React.FC<{ onRetry: () => void }> = ({ onRetry }) => (
-  <div className="mt-12 md:mt-16 max-w-2xl mx-auto text-center rounded-frame border border-brand-bronze/40 bg-brand-cream-pure p-8 sm:p-10 shadow-luxury">
-    <MessageCircle className="w-9 h-9 mx-auto text-brand-bronze-dark" aria-hidden="true" />
-    <h3 className="mt-3 font-editorial text-2xl sm:text-3xl text-brand-maroon">Online ordering is not available right now</h3>
-    <p className="mt-2 text-sm text-brand-brown/80">You can still order straight away on WhatsApp or by phone.</p>
+  <div className="mt-12 md:mt-16 max-w-2xl mx-auto text-center rounded-frame border border-brand-lavender/50 bg-white p-8 sm:p-10 shadow-luxury">
+    <MessageCircle className="w-9 h-9 mx-auto text-brand-purple" aria-hidden="true" />
+    <h3 className="mt-3 font-editorial text-2xl sm:text-3xl text-brand-purple">Online ordering is not available right now</h3>
+    <p className="mt-2 text-sm text-brand-slate/80">You can still order straight away on WhatsApp or by phone.</p>
     <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
       <a
         href={WHATSAPP_ORDER_URL}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex items-center justify-center gap-2 py-3 px-5 text-xs font-bold uppercase tracking-[0.16em] bg-brand-maroon text-brand-cream hover:bg-brand-maroon-rich transition-colors rounded-sm shadow-md"
+        className="inline-flex items-center justify-center gap-2 py-3 px-5 text-xs font-bold uppercase tracking-[0.16em] bg-brand-purple text-white hover:bg-brand-purple-rich transition-colors rounded-sm shadow-md"
       >
-        <MessageCircle className="w-4 h-4 text-brand-bronze" aria-hidden="true" /> Order on WhatsApp
+        <MessageCircle className="w-4 h-4 text-brand-purple-light" aria-hidden="true" /> Order on WhatsApp
       </a>
       <a
         href={`tel:${BUSINESS_PHONE}`}
-        className="inline-flex items-center justify-center gap-2 py-3 px-5 text-xs font-bold uppercase tracking-[0.16em] bg-brand-cream text-brand-maroon border border-brand-maroon/30 hover:bg-brand-cream-dark/60 transition-colors rounded-sm"
+        className="inline-flex items-center justify-center gap-2 py-3 px-5 text-xs font-bold uppercase tracking-[0.16em] bg-white text-brand-purple border border-brand-purple/30 hover:bg-brand-lavender-light/60 transition-colors rounded-sm"
       >
-        <Phone className="w-4 h-4 text-brand-bronze-dark" aria-hidden="true" /> Call {BUSINESS_PHONE}
+        <Phone className="w-4 h-4 text-brand-purple" aria-hidden="true" /> Call {BUSINESS_PHONE}
       </a>
       <button
         type="button"
         onClick={onRetry}
-        className="inline-flex items-center justify-center gap-2 py-3 px-5 text-xs font-bold uppercase tracking-[0.16em] text-brand-bronze-dark hover:text-brand-maroon transition-colors"
+        className="inline-flex items-center justify-center gap-2 py-3 px-5 text-xs font-bold uppercase tracking-[0.16em] text-brand-purple hover:text-brand-purple transition-colors"
       >
         <RotateCcw className="w-4 h-4" aria-hidden="true" /> Try again
       </button>

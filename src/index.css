@@ -3,10 +3,17 @@
 @tailwind utilities;
 
 :root {
-  --color-maroon: #500D18;
-  --color-cream: #F8EFE5;
-  --color-bronze: #C69A70;
-  --color-brown: #49302B;
+  --color-purple: #5812B8;
+  --color-mountain: #792BE0;
+  --color-lavender: #B99AE8;
+  --color-light-lavender: #EDE5F8;
+  --color-dark-purple: #321064;
+  --color-white: #FFFFFF;
+  --color-slate: #2D1854;
+  --color-maroon: #5812B8;
+  --color-cream: #FFFFFF;
+  --color-bronze: #792BE0;
+  --color-brown: #2D1854;
 }
 
 @layer base {
@@ -14,29 +21,29 @@
     scroll-behavior: smooth;
     scroll-padding-top: 80px;
     font-family: 'Manrope', system-ui, -apple-system, sans-serif;
-    background-color: #F8EFE5;
-    color: #49302B;
+    background-color: #FFFFFF;
+    color: #2D1854;
   }
 
   body {
-    background-color: #F8EFE5;
-    color: #49302B;
+    background-color: #FFFFFF;
+    color: #2D1854;
     overflow-x: hidden;
   }
 
-  /* Custom scrollbar matching brand palette */
+  /* Custom scrollbar matching new brand palette */
   ::-webkit-scrollbar {
     width: 8px;
   }
   ::-webkit-scrollbar-track {
-    background: #F8EFE5;
+    background: #F9F6FE;
   }
   ::-webkit-scrollbar-thumb {
-    background: #C69A70;
+    background: #B99AE8;
     border-radius: 4px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #500D18;
+    background: #5812B8;
   }
 }
 
@@ -49,25 +56,27 @@
     text-wrap: balance;
   }
 
-  /* Bronze delicate border */
-  .border-bronze-subtle {
-    border-color: rgba(198, 154, 112, 0.35);
+  /* Lavender delicate border */
+  .border-bronze-subtle,
+  .border-lavender-subtle {
+    border-color: rgba(185, 154, 232, 0.35);
   }
 
-  .border-bronze-glow {
-    border-color: #C69A70;
-    box-shadow: 0 0 15px rgba(198, 154, 112, 0.2);
+  .border-bronze-glow,
+  .border-purple-glow {
+    border-color: #792BE0;
+    box-shadow: 0 0 15px rgba(121, 43, 224, 0.2);
   }
 
   /* Editorial lines */
   .editorial-rule {
     height: 1px;
-    background: linear-gradient(90deg, transparent 0%, #C69A70 50%, transparent 100%);
+    background: linear-gradient(90deg, transparent 0%, #B99AE8 50%, transparent 100%);
   }
 
   .editorial-rule-left {
     height: 1px;
-    background: linear-gradient(90deg, #C69A70 0%, rgba(198, 154, 112, 0.1) 100%);
+    background: linear-gradient(90deg, #792BE0 0%, rgba(185, 154, 232, 0.1) 100%);
   }
 }
 

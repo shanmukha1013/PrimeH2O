@@ -29,18 +29,18 @@ export const Footer: React.FC = () => {
 
   return (
     <footer
-      className="bg-brand-maroon text-brand-cream border-t border-brand-bronze/30 pt-16 pb-12 relative overflow-hidden"
+      className="bg-brand-purple text-white border-t border-brand-lavender/40 pt-16 pb-12 relative overflow-hidden"
       aria-label="PRIME H2O Corporate Footer"
     >
       {/* Background ambient lighting */}
-      <div className="absolute top-0 right-1/4 w-96 h-96 bg-brand-bronze/10 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute top-0 right-1/4 w-96 h-96 bg-brand-lavender/10 rounded-full blur-[140px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
         {/* Top Brand Banner */}
-        <div className="border-b border-brand-bronze/25 pb-10 flex items-center justify-between gap-6">
+        <div className="border-b border-brand-lavender/35 pb-10 flex items-center justify-between gap-6">
           <div>
-            <span className="text-xs uppercase tracking-[0.28em] font-semibold text-brand-bronze block mb-2">
+            <span className="text-xs uppercase tracking-[0.28em] font-semibold text-brand-purple-light block mb-2">
               THE GREATNESS OF PRIME H₂O
             </span>
             <BrandLogo variant="light" size="md" showTagline={true} />
@@ -49,14 +49,14 @@ export const Footer: React.FC = () => {
           <button
             type="button"
             onClick={scrollToTop}
-            className="p-2.5 sm:px-4 sm:py-2.5 rounded-sm border border-brand-bronze/40 text-brand-cream hover:text-brand-bronze hover:border-brand-bronze transition-all duration-300 flex items-center gap-2 group"
+            className="p-2.5 sm:px-4 sm:py-2.5 rounded-sm border border-brand-lavender/50 text-white hover:text-brand-purple-light hover:border-brand-purple-light transition-all duration-300 flex items-center gap-2 group"
             aria-label="Back to top of page"
             title="Back to top"
           >
-            <span className="hidden sm:inline text-xs uppercase tracking-[0.16em] font-medium text-brand-cream/80 group-hover:text-brand-bronze transition-colors">
+            <span className="hidden sm:inline text-xs uppercase tracking-[0.16em] font-medium text-white/80 group-hover:text-brand-purple-light transition-colors">
               Back to Top
             </span>
-            <ArrowUp className="w-4 h-4 text-brand-bronze group-hover:-translate-y-0.5 transition-transform" />
+            <ArrowUp className="w-4 h-4 text-brand-purple-light group-hover:-translate-y-0.5 transition-transform" />
           </button>
         </div>
 
@@ -65,14 +65,14 @@ export const Footer: React.FC = () => {
           
           {/* Col 1: About PRIME H2O */}
           <div className="space-y-4">
-            <h4 className="text-xs uppercase tracking-[0.24em] font-bold text-brand-bronze">
+            <h4 className="text-xs uppercase tracking-[0.24em] font-bold text-brand-purple-light">
               About PRIME H₂O
             </h4>
-            <p className="text-xs sm:text-sm text-brand-cream/80 leading-relaxed font-light">
+            <p className="text-xs sm:text-sm text-white/80 leading-relaxed font-light">
               PRIME H₂O (PRIME H2O / PrimeH2O) delivers pure, mineral-balanced packaged drinking water in Hyderabad across Nagole, Bandlaguda, and surrounding regions.
             </p>
             <div className="pt-2">
-              <span className="font-editorial italic text-lg text-brand-bronze-light">
+              <span className="font-editorial italic text-lg text-brand-lavender">
                 I Trust PRIME.
               </span>
             </div>
@@ -80,15 +80,15 @@ export const Footer: React.FC = () => {
 
           {/* Col 2: Navigation Links */}
           <div className="space-y-4">
-            <h4 className="text-xs uppercase tracking-[0.24em] font-bold text-brand-bronze">
+            <h4 className="text-xs uppercase tracking-[0.24em] font-bold text-brand-purple-light">
               Quick Navigation
             </h4>
-            <ul className="space-y-2.5 text-xs sm:text-sm text-brand-cream/80">
+            <ul className="space-y-2.5 text-xs sm:text-sm text-white/80">
               <li>
                 <a
                   href="#home"
                   onClick={(e) => handleNavClick(e, '#home')}
-                  className="hover:text-brand-bronze transition-colors"
+                  className="hover:text-brand-purple-light transition-colors"
                 >
                   Home
                 </a>
@@ -97,7 +97,7 @@ export const Footer: React.FC = () => {
                 <a
                   href="#about"
                   onClick={(e) => handleNavClick(e, '#about')}
-                  className="hover:text-brand-bronze transition-colors"
+                  className="hover:text-brand-purple-light transition-colors"
                 >
                   About Us &amp; Philosophy
                 </a>
@@ -106,7 +106,7 @@ export const Footer: React.FC = () => {
                 <a
                   href="#products"
                   onClick={(e) => handleNavClick(e, '#products')}
-                  className="hover:text-brand-bronze transition-colors"
+                  className="hover:text-brand-purple-light transition-colors"
                 >
                   The PRIME Range
                 </a>
@@ -115,7 +115,7 @@ export const Footer: React.FC = () => {
                 <a
                   href="#order"
                   onClick={(e) => handleNavClick(e, '#order')}
-                  className="hover:text-brand-bronze transition-colors"
+                  className="hover:text-brand-purple-light transition-colors"
                 >
                   Order Online
                 </a>
@@ -124,7 +124,7 @@ export const Footer: React.FC = () => {
                 <a
                   href="#customize"
                   onClick={(e) => handleNavClick(e, '#customize')}
-                  className="hover:text-brand-bronze transition-colors"
+                  className="hover:text-brand-purple-light transition-colors"
                 >
                   Custom Branding
                 </a>
@@ -133,7 +133,7 @@ export const Footer: React.FC = () => {
                 <a
                   href="#why-prime"
                   onClick={(e) => handleNavClick(e, '#why-prime')}
-                  className="hover:text-brand-bronze transition-colors"
+                  className="hover:text-brand-purple-light transition-colors"
                 >
                   Why PRIME H₂O
                 </a>
@@ -142,7 +142,7 @@ export const Footer: React.FC = () => {
                 <a
                   href="#promise"
                   onClick={(e) => handleNavClick(e, '#promise')}
-                  className="hover:text-brand-bronze transition-colors"
+                  className="hover:text-brand-purple-light transition-colors"
                 >
                   Our Brand Promise
                 </a>
@@ -151,7 +151,7 @@ export const Footer: React.FC = () => {
                 <a
                   href="#contact"
                   onClick={(e) => handleNavClick(e, '#contact')}
-                  className="hover:text-brand-bronze transition-colors"
+                  className="hover:text-brand-purple-light transition-colors"
                 >
                   Contact &amp; Inquiries
                 </a>
@@ -161,29 +161,29 @@ export const Footer: React.FC = () => {
 
           {/* Col 3: Bottle Formats */}
           <div className="space-y-4">
-            <h4 className="text-xs uppercase tracking-[0.24em] font-bold text-brand-bronze">
+            <h4 className="text-xs uppercase tracking-[0.24em] font-bold text-brand-purple-light">
               Product Portfolio
             </h4>
-            <ul className="space-y-2.5 text-xs sm:text-sm text-brand-cream/80">
+            <ul className="space-y-2.5 text-xs sm:text-sm text-white/80">
               <li>
-                <a href="#products" className="hover:text-brand-bronze transition-colors flex items-center justify-between">
+                <a href="#products" className="hover:text-brand-purple-light transition-colors flex items-center justify-between">
                   <span>250 mL Bottle</span>
-                  <span className="text-[10px] text-brand-bronze uppercase">Single-Serve</span>
+                  <span className="text-[10px] text-brand-purple-light uppercase">Single-Serve</span>
                 </a>
               </li>
               <li>
-                <a href="#products" className="hover:text-brand-bronze transition-colors flex items-center justify-between">
+                <a href="#products" className="hover:text-brand-purple-light transition-colors flex items-center justify-between">
                   <span>500 mL Bottle</span>
-                  <span className="text-[10px] text-brand-bronze uppercase">Everyday</span>
+                  <span className="text-[10px] text-brand-purple-light uppercase">Everyday</span>
                 </a>
               </li>
               <li>
-                <a href="#products" className="hover:text-brand-bronze transition-colors flex items-center justify-between">
+                <a href="#products" className="hover:text-brand-purple-light transition-colors flex items-center justify-between">
                   <span>1000 mL Bottle</span>
-                  <span className="text-[10px] text-brand-bronze uppercase">Family / Share</span>
+                  <span className="text-[10px] text-brand-purple-light uppercase">Family / Share</span>
                 </a>
               </li>
-              <li className="pt-2 text-xs text-brand-cream/60">
+              <li className="pt-2 text-xs text-white/60">
                 Category: Packaged Drinking Water
               </li>
             </ul>
@@ -191,12 +191,12 @@ export const Footer: React.FC = () => {
 
           {/* Col 4: Corporate Contact */}
           <div className="space-y-4">
-            <h4 className="text-xs uppercase tracking-[0.24em] font-bold text-brand-bronze">
+            <h4 className="text-xs uppercase tracking-[0.24em] font-bold text-brand-purple-light">
               Headquarters
             </h4>
-            <div className="space-y-3 text-xs sm:text-sm text-brand-cream/80">
+            <div className="space-y-3 text-xs sm:text-sm text-white/80">
               <div className="flex items-start gap-2.5">
-                <MapPin className="w-4 h-4 text-brand-bronze shrink-0 mt-0.5" />
+                <MapPin className="w-4 h-4 text-brand-purple-light shrink-0 mt-0.5" />
                 <address className="not-italic leading-relaxed font-light">
                   Nagole, Bandlaguda,<br />
                   Hyderabad, Telangana – 500068.
@@ -204,15 +204,15 @@ export const Footer: React.FC = () => {
               </div>
 
               <div className="flex items-center gap-2.5">
-                <Phone className="w-4 h-4 text-brand-bronze shrink-0" />
-                <a href="tel:8143489222" className="hover:text-brand-bronze transition-colors font-semibold">
+                <Phone className="w-4 h-4 text-brand-purple-light shrink-0" />
+                <a href="tel:8143489222" className="hover:text-brand-purple-light transition-colors font-semibold">
                   8143489222
                 </a>
               </div>
 
               <div className="flex items-center gap-2.5">
-                <Mail className="w-4 h-4 text-brand-bronze shrink-0" />
-                <a href="mailto:prime2417@gmail.com" className="hover:text-brand-bronze transition-colors">
+                <Mail className="w-4 h-4 text-brand-purple-light shrink-0" />
+                <a href="mailto:prime2417@gmail.com" className="hover:text-brand-purple-light transition-colors">
                   prime2417@gmail.com
                 </a>
               </div>
@@ -222,12 +222,12 @@ export const Footer: React.FC = () => {
         </div>
 
         {/* Bottom Legal & Copyright Bar */}
-        <div className="pt-8 mt-4 border-t border-brand-bronze/20 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-brand-cream/60">
+        <div className="pt-8 mt-4 border-t border-brand-lavender/30 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-white/60">
           <p>
             &copy; {currentYear} PRIME H₂O. All Rights Reserved.
           </p>
 
-          <p className="font-editorial italic text-sm text-brand-bronze">
+          <p className="font-editorial italic text-sm text-brand-purple-light">
             THE GREATNESS OF PRIME H₂O &bull; I Trust PRIME
           </p>
 

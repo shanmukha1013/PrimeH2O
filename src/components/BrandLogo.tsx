@@ -34,35 +34,35 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
         <span
           className={`font-sans font-extrabold transition-colors ${
             textSizes[size]
-          } ${isLight ? 'text-brand-cream' : 'text-brand-maroon'}`}
+          } ${isLight ? 'text-white' : 'text-brand-purple'}`}
         >
           PRIME
         </span>{' '}
         <span
           className={`font-sans font-semibold tracking-wider ${
             h2oSizes[size]
-          } text-brand-bronze`}
+          } ${isLight ? 'text-brand-lavender' : 'text-brand-purple-light'}`}
         >
-          H<sub className="font-sans text-[0.7em] bottom-[-0.15em] text-brand-bronze">2</sub>O
+          H<sub className={`font-sans text-[0.7em] bottom-[-0.15em] ${isLight ? 'text-brand-lavender' : 'text-brand-purple-light'}`}>2</sub>O
         </span>
       </div>
 
       <div className="w-full flex items-center justify-between gap-1.5 mt-0.5">
         <div
           className={`h-[1px] flex-1 ${
-            isLight ? 'bg-brand-bronze/40' : 'bg-brand-bronze/50'
+            isLight ? 'bg-brand-lavender/40' : 'bg-brand-purple-light/40'
           }`}
         />
         <span
           className={`text-[9px] uppercase tracking-[0.28em] font-medium ${
-            isLight ? 'text-brand-cream/80' : 'text-brand-brown'
+            isLight ? 'text-white/85' : 'text-brand-slate'
           }`}
         >
           PACKAGED DRINKING WATER
         </span>
         <div
           className={`h-[1px] flex-1 ${
-            isLight ? 'bg-brand-bronze/40' : 'bg-brand-bronze/50'
+            isLight ? 'bg-brand-lavender/40' : 'bg-brand-purple-light/40'
           }`}
         />
       </div>
@@ -70,7 +70,7 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
       {showTagline && (
         <span
           className={`italic font-serif text-xs md:text-sm mt-1 self-center tracking-wider ${
-            isLight ? 'text-brand-bronze-light' : 'text-brand-maroon'
+            isLight ? 'text-brand-lavender' : 'text-brand-purple'
           }`}
         >
           I Trust PRIME
