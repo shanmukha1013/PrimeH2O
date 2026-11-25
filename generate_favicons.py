@@ -23,14 +23,14 @@ import numpy as np
 from PIL import Image, ImageFilter
 
 SOURCE = 'public/assets/logo_header.png'
-SOURCE_BG = np.array([0x58, 0x12, 0xB8])        # Deep PRIME purple behind the lettering
+SOURCE_BG = np.array([0x6D, 0x28, 0xD9])        # Medium PRIME purple behind the lettering
 PRIME_BOX = (38, 28, 565, 142)            # PRIME lettering in the source (l, t, r, b)
 H2O_BOX = (236, 239, 366, 290)            # H2O lettering in the source
 
-DEEP_PURPLE = (0x58, 0x12, 0xB8)          # #5812B8 (Deep PRIME Purple)
+DEEP_PURPLE = (0x6D, 0x28, 0xD9)          # #6D28D9 (Bright medium purple)
 PURE_WHITE = (255, 255, 255)              # #FFFFFF (Pure White)
-SOFT_LAVENDER = (185, 154, 232)           # #B99AE8 (Soft Lavender)
-MOUNTAIN_PURPLE = (121, 43, 224)          # #792BE0 (Mountain Purple)
+SOFT_LAVENDER = (221, 214, 254)           # #DDD6FE (Light lavender/lilac)
+MOUNTAIN_PURPLE = (139, 92, 246)          # #8B5CF6 (Vibrant purple)
 
 PRIME_WIDTH = 0.80                        # share of the icon width
 H2O_WIDTH = 0.42

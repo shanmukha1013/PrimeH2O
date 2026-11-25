@@ -68,18 +68,18 @@ export const BrandIntro: React.FC = () => {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true, margin: '-60px' }}
             transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="lg:col-span-5 relative bg-brand-purple-deep rounded-sm border border-brand-lavender/40 shadow-luxury-lg px-6 py-10 sm:px-10 sm:py-12 text-center overflow-hidden"
+            className="lg:col-span-5 relative bg-gradient-to-br from-[#7C3AED] via-[#6D28D9] to-[#5B21B6] rounded-sm border border-[#A78BFA]/50 shadow-luxury-lg px-6 py-10 sm:px-10 sm:py-12 text-center overflow-hidden"
           >
             {/* Lavender corner accents */}
-            <span className="absolute top-3 left-3 w-6 h-6 border-t border-l border-brand-lavender/70" />
-            <span className="absolute top-3 right-3 w-6 h-6 border-t border-r border-brand-lavender/70" />
-            <span className="absolute bottom-3 left-3 w-6 h-6 border-b border-l border-brand-lavender/70" />
-            <span className="absolute bottom-3 right-3 w-6 h-6 border-b border-r border-brand-lavender/70" />
-            <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-64 h-64 rounded-full bg-brand-lavender/15 blur-[80px] pointer-events-none" />
+            <span className="absolute top-3 left-3 w-6 h-6 border-t border-l border-white/60" />
+            <span className="absolute top-3 right-3 w-6 h-6 border-t border-r border-white/60" />
+            <span className="absolute bottom-3 left-3 w-6 h-6 border-b border-l border-white/60" />
+            <span className="absolute bottom-3 right-3 w-6 h-6 border-b border-r border-white/60" />
+            <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-64 h-64 rounded-full bg-white/15 blur-[80px] pointer-events-none" />
 
             <div className="relative">
-              <div className="mx-auto w-12 h-12 rounded-full border border-brand-lavender/60 bg-white/5 flex items-center justify-center">
-                <Droplet className="w-5 h-5 text-brand-lavender" />
+              <div className="mx-auto w-12 h-12 rounded-full border border-white/40 bg-white/15 flex items-center justify-center">
+                <Droplet className="w-5 h-5 text-white" />
               </div>
 
               <motion.p
@@ -90,14 +90,14 @@ export const BrandIntro: React.FC = () => {
                 className="mt-6 font-editorial text-3xl sm:text-4xl font-medium uppercase tracking-[0.06em] leading-tight text-white"
               >
                 <span className="block">SAVE WATER</span>{' '}
-                <span className="block text-brand-lavender">AND SAVE LIVES.</span>
+                <span className="block text-[#EDE9FE]">AND SAVE LIVES.</span>
               </motion.p>
 
               {/* Divider */}
               <div className="my-8 flex items-center justify-center gap-3">
-                <span className="w-12 h-px bg-brand-lavender/60" />
-                <span className="w-1.5 h-1.5 rotate-45 bg-brand-lavender" />
-                <span className="w-12 h-px bg-brand-lavender/60" />
+                <span className="w-12 h-px bg-white/40" />
+                <span className="w-1.5 h-1.5 rotate-45 bg-white" />
+                <span className="w-12 h-px bg-white/40" />
               </div>
 
               <motion.p
@@ -105,7 +105,7 @@ export const BrandIntro: React.FC = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: 0.6 }}
-                className="font-editorial italic text-4xl sm:text-5xl font-medium tracking-wide text-brand-lavender"
+                className="font-editorial italic text-4xl sm:text-5xl font-medium tracking-wide text-[#EDE9FE]"
               >
                 I TRUST PRIME.
               </motion.p>

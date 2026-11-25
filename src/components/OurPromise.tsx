@@ -6,17 +6,17 @@ export const OurPromise: React.FC = () => {
   return (
     <section
       id="promise"
-      className="relative py-16 sm:py-20 md:py-24 lg:py-28 bg-brand-purple-deep text-white scroll-mt-[72px] lg:scroll-mt-[80px]"
+      className="relative py-16 sm:py-20 md:py-24 lg:py-28 bg-gradient-to-b from-[#F8F7FF] via-[#EDE9FE]/50 to-[#F8F7FF] text-[#3B0764] border-t border-[#EDE9FE] scroll-mt-[72px] lg:scroll-mt-[80px] overflow-hidden"
       aria-label="PRIME H2O Brand Promise"
     >
       {/* Background Decorative Waves & Geometric Lavender Accents */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-30">
+      <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-40">
         {/* Subtle radial studio highlights */}
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-brand-lavender/15 rounded-full blur-[150px]" />
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-[#DDD6FE]/50 rounded-full blur-[150px]" />
 
         {/* Delicate wave lines */}
         <svg
-          className="absolute inset-0 w-full h-full text-brand-lavender/20"
+          className="absolute inset-0 w-full h-full text-[#DDD6FE]/70"
           xmlns="http://www.w3.org/2000/svg"
           preserveAspectRatio="none"
           viewBox="0 0 1440 600"
@@ -39,13 +39,13 @@ export const OurPromise: React.FC = () => {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
         {/* Editorial Frame Box */}
-        <div className="relative border border-brand-lavender/40 rounded-sm p-6 sm:p-10 lg:p-14 bg-brand-purple/20 backdrop-blur-md shadow-2xl">
+        <div className="relative border border-[#DDD6FE] rounded-frame p-6 sm:p-10 lg:p-14 bg-white/90 backdrop-blur-md shadow-xl">
           
           {/* Inner Decorative Corner Borders */}
-          <div className="absolute top-3 left-3 w-6 h-6 border-t-2 border-l-2 border-brand-lavender" />
-          <div className="absolute top-3 right-3 w-6 h-6 border-t-2 border-r-2 border-brand-lavender" />
-          <div className="absolute bottom-3 left-3 w-6 h-6 border-b-2 border-l-2 border-brand-lavender" />
-          <div className="absolute bottom-3 right-3 w-6 h-6 border-b-2 border-r-2 border-brand-lavender" />
+          <div className="absolute top-3 left-3 w-6 h-6 border-t-2 border-l-2 border-[#8B5CF6]" />
+          <div className="absolute top-3 right-3 w-6 h-6 border-t-2 border-r-2 border-[#8B5CF6]" />
+          <div className="absolute bottom-3 left-3 w-6 h-6 border-b-2 border-l-2 border-[#8B5CF6]" />
+          <div className="absolute bottom-3 right-3 w-6 h-6 border-b-2 border-r-2 border-[#8B5CF6]" />
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             
@@ -58,63 +58,63 @@ export const OurPromise: React.FC = () => {
               className="lg:col-span-7 space-y-8 text-left"
             >
               <div className="space-y-3">
-                <span className="text-xs uppercase tracking-[0.28em] font-semibold text-brand-lavender block">
+                <span className="text-xs uppercase tracking-[0.28em] font-bold text-[#6D28D9] block">
                   The Greatness of PRIME H₂O
                 </span>
 
                 {/* Heading with Script Style Flourish */}
-                <h2 className="font-editorial italic text-5xl sm:text-6xl lg:text-7xl font-normal text-white leading-tight">
+                <h2 className="font-editorial italic text-5xl sm:text-6xl lg:text-7xl font-normal text-[#3B0764] leading-tight">
                   Our Promise
                 </h2>
 
-                {/* Lavender Flourish Line */}
-                <div className="w-24 h-1 bg-gradient-to-r from-brand-lavender via-brand-purple-light to-transparent rounded-full" />
+                {/* Vibrant Purple Flourish Line */}
+                <div className="w-24 h-1 bg-gradient-to-r from-[#6D28D9] via-[#8B5CF6] to-transparent rounded-full" />
               </div>
 
               {/* Exact Catalogue Message */}
-              <blockquote className="font-sans text-xl sm:text-2xl md:text-3xl text-white font-light leading-relaxed">
-                &ldquo;At <strong className="font-semibold text-white">PRIME H₂O</strong>, we are committed to delivering pure, safe and refreshing drinking water, because your well-being is our priority.&rdquo;
+              <blockquote className="font-sans text-xl sm:text-2xl md:text-3xl text-[#3B0764] font-light leading-relaxed">
+                &ldquo;At <strong className="font-bold text-[#6D28D9]">PRIME H₂O</strong>, we are committed to delivering pure, safe and refreshing drinking water, because your well-being is our priority.&rdquo;
               </blockquote>
 
-              {/* Three Value Pillars in Lavender/White styling */}
-              <div className="pt-6 border-t border-brand-lavender/30 grid grid-cols-1 sm:grid-cols-3 gap-6">
+              {/* Three Value Pillars */}
+              <div className="pt-6 border-t border-[#DDD6FE] grid grid-cols-1 sm:grid-cols-3 gap-6">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-white/10 border border-brand-lavender/40 flex items-center justify-center shrink-0">
-                    <Sparkles className="w-4 h-4 text-brand-lavender" />
+                  <div className="w-10 h-10 rounded-full bg-[#EDE9FE] border border-[#DDD6FE] flex items-center justify-center shrink-0 shadow-sm">
+                    <Sparkles className="w-4 h-4 text-[#6D28D9]" />
                   </div>
                   <div>
-                    <span className="block text-xs uppercase tracking-[0.16em] font-bold text-white">
+                    <span className="block text-xs uppercase tracking-[0.16em] font-bold text-[#3B0764]">
                       Pure
                     </span>
-                    <span className="text-xs text-white/70 font-light">
+                    <span className="text-xs text-[#6D28D9] font-medium">
                       by Nature
                     </span>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-white/10 border border-brand-lavender/40 flex items-center justify-center shrink-0">
-                    <Heart className="w-4 h-4 text-brand-lavender" />
+                  <div className="w-10 h-10 rounded-full bg-[#EDE9FE] border border-[#DDD6FE] flex items-center justify-center shrink-0 shadow-sm">
+                    <Heart className="w-4 h-4 text-[#6D28D9]" />
                   </div>
                   <div>
-                    <span className="block text-xs uppercase tracking-[0.16em] font-bold text-white">
+                    <span className="block text-xs uppercase tracking-[0.16em] font-bold text-[#3B0764]">
                       Healthy
                     </span>
-                    <span className="text-xs text-white/70 font-light">
+                    <span className="text-xs text-[#6D28D9] font-medium">
                       for Life
                     </span>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-white/10 border border-brand-lavender/40 flex items-center justify-center shrink-0">
-                    <Droplets className="w-4 h-4 text-brand-lavender" />
+                  <div className="w-10 h-10 rounded-full bg-[#EDE9FE] border border-[#DDD6FE] flex items-center justify-center shrink-0 shadow-sm">
+                    <Droplets className="w-4 h-4 text-[#6D28D9]" />
                   </div>
                   <div>
-                    <span className="block text-xs uppercase tracking-[0.16em] font-bold text-white">
+                    <span className="block text-xs uppercase tracking-[0.16em] font-bold text-[#3B0764]">
                       Refreshing
                     </span>
-                    <span className="text-xs text-white/70 font-light">
+                    <span className="text-xs text-[#6D28D9] font-medium">
                       Always
                     </span>
                   </div>
@@ -123,8 +123,8 @@ export const OurPromise: React.FC = () => {
 
               {/* Tagline Endorsement */}
               <div className="pt-2 flex items-center gap-3">
-                <ShieldCheck className="w-5 h-5 text-brand-lavender" />
-                <span className="font-editorial italic text-xl text-brand-lavender">
+                <ShieldCheck className="w-5 h-5 text-[#6D28D9]" />
+                <span className="font-editorial italic text-xl text-[#6D28D9] font-semibold">
                   I Trust PRIME
                 </span>
               </div>
@@ -140,12 +140,12 @@ export const OurPromise: React.FC = () => {
             >
               <div className="relative py-4">
                 {/* Radial studio backlight */}
-                <div className="absolute inset-0 bg-brand-lavender/20 blur-[60px] rounded-full" />
+                <div className="absolute inset-0 bg-[#DDD6FE]/60 blur-[60px] rounded-full" />
                 
                 <img
                   src="/assets/hero_bottle.png"
                   alt="PRIME H2O Packaged Drinking Water Signature Promise"
-                  className="relative z-10 h-80 sm:h-96 md:h-[420px] w-auto object-contain drop-shadow-[0_20px_30px_rgba(0,0,0,0.6)] select-none animate-float-slow"
+                  className="relative z-10 h-80 sm:h-96 md:h-[420px] w-auto object-contain drop-shadow-[0_20px_30px_rgba(109,40,217,0.2)] select-none animate-float-slow"
                   loading="lazy"
                 />
               </div>

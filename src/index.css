@@ -3,17 +3,22 @@
 @tailwind utilities;
 
 :root {
-  --color-purple: #5812B8;
-  --color-mountain: #792BE0;
-  --color-lavender: #B99AE8;
-  --color-light-lavender: #EDE5F8;
-  --color-dark-purple: #321064;
+  --color-primary: #6D28D9;
+  --color-secondary: #8B5CF6;
+  --color-accent: #A78BFA;
+  --color-light-lavender: #EDE9FE;
+  --color-soft-bg: #F8F7FF;
   --color-white: #FFFFFF;
-  --color-slate: #2D1854;
-  --color-maroon: #5812B8;
+  --color-text-purple: #3B0764;
+  --color-purple: #6D28D9;
+  --color-mountain: #8B5CF6;
+  --color-lavender: #A78BFA;
+  --color-dark-purple: #5B21B6;
+  --color-slate: #3B0764;
+  --color-maroon: #6D28D9;
   --color-cream: #FFFFFF;
-  --color-bronze: #792BE0;
-  --color-brown: #2D1854;
+  --color-bronze: #8B5CF6;
+  --color-brown: #3B0764;
 }
 
 @layer base {
@@ -21,29 +26,29 @@
     scroll-behavior: smooth;
     scroll-padding-top: 80px;
     font-family: 'Manrope', system-ui, -apple-system, sans-serif;
-    background-color: #FFFFFF;
-    color: #2D1854;
+    background-color: #F8F7FF;
+    color: #3B0764;
   }
 
   body {
-    background-color: #FFFFFF;
-    color: #2D1854;
+    background-color: #F8F7FF;
+    color: #3B0764;
     overflow-x: hidden;
   }
 
-  /* Custom scrollbar matching new brand palette */
+  /* Custom scrollbar matching bright purple/lavender palette */
   ::-webkit-scrollbar {
     width: 8px;
   }
   ::-webkit-scrollbar-track {
-    background: #F9F6FE;
+    background: #F8F7FF;
   }
   ::-webkit-scrollbar-thumb {
-    background: #B99AE8;
+    background: #DDD6FE;
     border-radius: 4px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #5812B8;
+    background: #8B5CF6;
   }
 }
 
@@ -56,27 +61,27 @@
     text-wrap: balance;
   }
 
-  /* Lavender delicate border */
+  /* Delicate borders */
   .border-bronze-subtle,
   .border-lavender-subtle {
-    border-color: rgba(185, 154, 232, 0.35);
+    border-color: #EDE9FE;
   }
 
   .border-bronze-glow,
   .border-purple-glow {
-    border-color: #792BE0;
-    box-shadow: 0 0 15px rgba(121, 43, 224, 0.2);
+    border-color: #8B5CF6;
+    box-shadow: 0 0 15px rgba(139, 92, 246, 0.2);
   }
 
   /* Editorial lines */
   .editorial-rule {
     height: 1px;
-    background: linear-gradient(90deg, transparent 0%, #B99AE8 50%, transparent 100%);
+    background: linear-gradient(90deg, transparent 0%, #C4B5FD 50%, transparent 100%);
   }
 
   .editorial-rule-left {
     height: 1px;
-    background: linear-gradient(90deg, #792BE0 0%, rgba(185, 154, 232, 0.1) 100%);
+    background: linear-gradient(90deg, #8B5CF6 0%, rgba(196, 181, 253, 0.1) 100%);
   }
 }
 
@@ -92,11 +97,11 @@
 
 @keyframes pulseGlow {
   0%, 100% {
-    opacity: 0.3;
+    opacity: 0.25;
     transform: scale(1);
   }
   50% {
-    opacity: 0.6;
+    opacity: 0.5;
     transform: scale(1.05);
   }
 }

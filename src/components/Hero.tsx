@@ -71,10 +71,10 @@ function useRandomSlideshow(count: number, intervalMs: number): { active: number
 // they are preloaded and the layout never shifts. object-cover never distorts.
 const HeroSlideshow: React.FC<{ active: number; previous: number }> = ({ active, previous }) => (
   <div className="relative w-full">
-    {/* Studio Radial Glow */}
-    <div className="absolute -inset-6 rounded-full bg-brand-lavender/20 blur-[70px] pointer-events-none" />
+    {/* Studio Soft Lilac Radial Glow */}
+    <div className="absolute -inset-6 rounded-full bg-[#DDD6FE]/40 blur-[70px] pointer-events-none" />
 
-    <div className="relative aspect-video lg:aspect-[4/3] overflow-hidden rounded-frame border border-brand-lavender/40 bg-brand-purple-deep shadow-[0_30px_60px_-20px_rgba(50,16,100,0.4)] [transform:translateZ(0)]">
+    <div className="relative aspect-video lg:aspect-[4/3] overflow-hidden rounded-frame border border-[#C4B5FD] bg-white shadow-[0_20px_50px_-15px_rgba(109,40,217,0.18)] [transform:translateZ(0)]">
       {HERO_SLIDES.map((slide, i) => (
         <img
           key={slide.src}
@@ -94,7 +94,7 @@ const HeroSlideshow: React.FC<{ active: number; previous: number }> = ({ active,
           }`}
         />
       ))}
-      <div className="absolute inset-0 rounded-frame ring-1 ring-inset ring-brand-lavender/25 pointer-events-none z-30" />
+      <div className="absolute inset-0 rounded-frame ring-1 ring-inset ring-[#C4B5FD]/40 pointer-events-none z-30" />
     </div>
   </div>
 );
@@ -105,20 +105,20 @@ export const Hero: React.FC = () => {
   return (
     <section
       id="home"
-      className="relative min-h-[90vh] lg:min-h-screen pt-28 sm:pt-32 md:pt-36 lg:pt-36 pb-16 sm:pb-20 md:pb-24 bg-brand-purple-deep flex flex-col justify-center scroll-mt-0"
+      className="relative min-h-[90vh] lg:min-h-screen pt-28 sm:pt-32 md:pt-36 lg:pt-36 pb-16 sm:pb-20 md:pb-24 bg-gradient-to-b from-[#FFFFFF] via-[#F8F7FF] to-[#EDE9FE]/40 flex flex-col justify-center scroll-mt-0 overflow-hidden"
       aria-label="PRIME H2O Hero Section"
     >
       {/* Background Architectural Decor - Subtle Lavender Angles & Editorial Grid */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-40">
-        {/* Subtle radial studio backlight */}
-        <div className="absolute top-1/2 left-3/4 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-brand-lavender/15 rounded-full blur-[140px]" />
+      <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-50">
+        {/* Soft radial highlights */}
+        <div className="absolute top-1/3 left-3/4 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[650px] bg-[#DDD6FE]/40 rounded-full blur-[140px]" />
         
-        {/* Deep purple ambient glow */}
-        <div className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-brand-purple/20 rounded-full blur-[100px]" />
+        {/* Delicate lilac glow */}
+        <div className="absolute bottom-1/4 left-1/4 -translate-x-1/2 translate-y-1/2 w-[450px] h-[450px] bg-[#EDE9FE]/60 rounded-full blur-[120px]" />
 
         {/* Diagonal Soft Lavender Lines */}
         <svg
-          className="absolute inset-0 w-full h-full text-brand-lavender/25"
+          className="absolute inset-0 w-full h-full text-[#DDD6FE]/60"
           xmlns="http://www.w3.org/2000/svg"
           preserveAspectRatio="none"
           viewBox="0 0 1200 800"
@@ -168,17 +168,17 @@ export const Hero: React.FC = () => {
           >
             {/* Small Statement Eyebrow */}
             <div className="inline-flex items-center gap-2.5">
-              <span className="w-6 sm:w-8 h-[1px] bg-brand-lavender" />
-              <span className="text-[11px] sm:text-xs uppercase tracking-[0.28em] font-semibold text-brand-lavender">
+              <span className="w-6 sm:w-8 h-[2px] bg-[#8B5CF6]" />
+              <span className="text-[11px] sm:text-xs uppercase tracking-[0.28em] font-bold text-[#6D28D9]">
                 THE GREATNESS OF PRIME H₂O
               </span>
             </div>
 
             {/* Main Editorial Headline */}
             <div className="space-y-1">
-              <h1 className="font-editorial text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-normal text-white leading-[1.05] tracking-tight text-balance">
+              <h1 className="font-editorial text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-normal text-[#3B0764] leading-[1.05] tracking-tight text-balance">
                 Every Drop.{' '}
-                <span className="block italic text-brand-lavender font-light">
+                <span className="block italic text-[#6D28D9] font-light">
                   A Promise of Greatness.
                 </span>
                 <span className="sr-only"> — PRIME H₂O, premium packaged drinking water in Hyderabad</span>
@@ -186,17 +186,17 @@ export const Hero: React.FC = () => {
             </div>
 
             {/* Supporting Text */}
-            <p className="text-sm sm:text-base md:text-xl text-white/90 font-light leading-relaxed max-w-xl text-balance">
-              Discover <strong className="font-semibold text-white">PRIME H₂O</strong> (PRIME H2O / PrimeH2O) — refreshing packaged drinking water crafted for everyday hydration, events, and bulk supply across Hyderabad from Nagole and Bandlaguda.
+            <p className="text-sm sm:text-base md:text-xl text-[#3B0764]/80 font-normal leading-relaxed max-w-xl text-balance">
+              Discover <strong className="font-bold text-[#3B0764]">PRIME H₂O</strong> (PRIME H2O / PrimeH2O) — refreshing packaged drinking water crafted for everyday hydration, events, and bulk supply across Hyderabad from Nagole and Bandlaguda.
             </p>
 
             {/* Brand Statement Badge */}
             <div className="pt-1 flex items-center gap-4">
-              <div className="px-3.5 py-1.5 sm:px-4 sm:py-2 border-l-2 border-brand-lavender bg-white/5 backdrop-blur-sm">
-                <span className="block text-[10px] sm:text-xs uppercase tracking-[0.24em] text-brand-lavender font-medium">
+              <div className="px-3.5 py-1.5 sm:px-4 sm:py-2 border-l-2 border-[#6D28D9] bg-white/90 backdrop-blur-sm shadow-sm rounded-r-sm">
+                <span className="block text-[10px] sm:text-xs uppercase tracking-[0.24em] text-[#6D28D9] font-semibold">
                   Brand Statement
                 </span>
-                <span className="font-editorial italic text-lg sm:text-2xl text-white font-medium tracking-wide">
+                <span className="font-editorial italic text-lg sm:text-2xl text-[#3B0764] font-medium tracking-wide">
                   I TRUST PRIME.
                 </span>
               </div>
@@ -221,27 +221,27 @@ export const Hero: React.FC = () => {
                     }
                   }
                 }}
-                className="inline-flex items-center justify-center gap-2 px-6 sm:px-7 py-3 sm:py-3.5 text-xs sm:text-sm font-semibold uppercase tracking-[0.18em] text-brand-purple bg-white hover:bg-brand-lavender-light hover:text-brand-purple-deep transition-all duration-300 shadow-luxury rounded-sm border border-brand-lavender/50 hover:scale-[1.02] active:scale-[0.98]"
+                className="inline-flex items-center justify-center gap-2 px-6 sm:px-7 py-3 sm:py-3.5 text-xs sm:text-sm font-bold uppercase tracking-[0.18em] text-white bg-[#6D28D9] hover:bg-[#5B21B6] transition-all duration-300 shadow-lg shadow-[#6D28D9]/25 hover:shadow-[#6D28D9]/40 rounded-sm hover:scale-[1.02] active:scale-[0.98]"
               >
                 <span>Explore Our Products</span>
-                <ArrowRight className="w-4 h-4 text-brand-purple" />
+                <ArrowRight className="w-4 h-4 text-white" />
               </a>
 
             </div>
 
             {/* Trust Pill Indicators */}
-            <div className="pt-4 sm:pt-6 border-t border-brand-lavender/20 flex flex-wrap items-center gap-4 sm:gap-6 text-[11px] sm:text-xs uppercase tracking-[0.16em] text-white/75">
+            <div className="pt-4 sm:pt-6 border-t border-[#DDD6FE] flex flex-wrap items-center gap-4 sm:gap-6 text-[11px] sm:text-xs uppercase tracking-[0.16em] text-[#3B0764]/80">
               <div className="flex items-center gap-2">
-                <Droplet className="w-3.5 h-3.5 text-brand-lavender" />
-                <span>Pure by Nature</span>
+                <Droplet className="w-3.5 h-3.5 text-[#6D28D9]" />
+                <span className="font-medium">Pure by Nature</span>
               </div>
               <div className="flex items-center gap-2">
-                <ShieldCheck className="w-3.5 h-3.5 text-brand-lavender" />
-                <span>Healthy for Life</span>
+                <ShieldCheck className="w-3.5 h-3.5 text-[#6D28D9]" />
+                <span className="font-medium">Healthy for Life</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-brand-lavender" />
-                <span>Refreshing Always</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-[#8B5CF6]" />
+                <span className="font-medium">Refreshing Always</span>
               </div>
             </div>
           </motion.div>
@@ -255,7 +255,7 @@ export const Hero: React.FC = () => {
       </div>
 
       {/* Bottom Scroll Indicator */}
-      <div className="hidden sm:flex absolute bottom-4 left-1/2 -translate-x-1/2 flex-col items-center gap-1.5 text-white/60 hover:text-brand-lavender transition-colors">
+      <div className="hidden sm:flex absolute bottom-4 left-1/2 -translate-x-1/2 flex-col items-center gap-1.5 text-[#6D28D9]/70 hover:text-[#6D28D9] transition-colors">
         <a
           href="#about"
           onClick={(e) => {
@@ -271,8 +271,8 @@ export const Hero: React.FC = () => {
           aria-label="Scroll to About Company"
           className="flex flex-col items-center"
         >
-          <span className="text-[10px] uppercase tracking-[0.24em] font-medium">Scroll</span>
-          <ArrowDown className="w-3.5 h-3.5 animate-bounce mt-1 text-brand-lavender" />
+          <span className="text-[10px] uppercase tracking-[0.24em] font-bold">Scroll</span>
+          <ArrowDown className="w-3.5 h-3.5 animate-bounce mt-1 text-[#6D28D9]" />
         </a>
       </div>
     </section>

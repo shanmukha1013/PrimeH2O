@@ -572,7 +572,7 @@ export const ProductOrder: React.FC<ProductOrderProps> = ({ preselect }) => {
                         type="checkbox"
                         checked={waOptIn}
                         onChange={(e) => setWaOptIn(e.target.checked)}
-                        className="mt-0.5 h-4 w-4 shrink-0 accent-[#5812B8]"
+                        className="mt-0.5 h-4 w-4 shrink-0 accent-[#6D28D9]"
                       />
                       <span className="text-sm text-brand-slate leading-relaxed">
                         <span className="font-semibold text-brand-purple">WhatsApp order updates </span>
